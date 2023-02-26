@@ -1,0 +1,159 @@
+package Heap;
+import javax.sound.midi.Soundbank;
+import java.util.*;
+
+public class HeapProblems {
+
+    public class Pair {
+        Integer key;
+        Integer val;
+
+        Pair(int key, int val) {
+            this.key = key;
+            this.val = val;
+        }
+    }
+
+    public List<Integer> heapify(List<Integer> A) {
+        List<Integer> ans = new ArrayList<>();
+
+        int i=0;
+        while(i < 2*i+1) {
+            int left = i * 2 + 1;
+            int right = i * 2 + 2;
+            int min = Math.min(A.get(i), Math.min(left, right));
+            //Itself is the smallest
+            if (A.get(i) == min) {
+                i = 2 * i + 1;
+            }
+        }
+
+        return ans;
+    }
+
+    public void swap(List<Integer> a, int parInd, int currInd) {
+        int temp  = a.get(parInd);
+        a.set(parInd, a.get(currInd));
+        a.set(currInd, temp);
+    }
+
+    public static void ProductOf3(List<Integer> list) {
+        ArrayList<Integer> ans = new ArrayList<>();
+        PriorityQueue<Integer> queue = new PriorityQueue<>();
+        int product=1;
+        int k= Math.min(list.size(),3);
+        for(int i=0; i<k; i++) {
+            product*=list.get(i);
+            queue.add(list.get(i));
+            if(i<2)
+                ans.add(-1);
+            else
+                ans.add(product);
+        }
+        for (int i=k; i<list.size(); i++) {
+            int val = list.get(i);
+            if(queue.peek() < val) {
+                int min = queue.poll();
+                product/=min;
+                queue.add(val);
+                product*=val;
+            }
+            ans.add(product);
+        }
+
+        System.out.println(ans);
+    }
+    public static List<Integer> LargestElementSubarrays(List<Integer> list, int a) {
+        ArrayList<Integer> ans = new ArrayList<>();
+        PriorityQueue<Integer> queue = new PriorityQueue<>();
+
+        for(int i=0; i<a; i++) {
+            queue.add(list.get(i));
+            if(i<a-1)
+                ans.add(-1);
+            else
+                ans.add(queue.peek());
+        }
+        for (int i=a; i<list.size(); i++) {
+            int val = list.get(i);
+            if(queue.peek() < val) {
+                queue.poll();
+                queue.add(val);
+            }
+            ans.add(queue.peek());
+        }
+
+        return ans;
+    }
+
+    public static int ConnectRopes(List<Integer> A) {
+
+        int ans = 0;
+        PriorityQueue<Integer> queue = new PriorityQueue<>();
+        for(int i=0; i<A.size(); i++) {
+            queue.add(A.get(i));
+        }
+
+        while(queue.size()>1) {
+            int val1 = queue.poll();
+            int val2 = queue.poll();
+            ans += (val1+val2);
+            queue.add(val1+val2);
+        }
+
+        return ans;
+    }
+
+    public static ArrayList<Double> RunningMedian(List<Integer> A) {
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        ArrayList<Double> ans = new ArrayList<>();
+        maxHeap.add(A.get(0));
+        ans.add((double)maxHeap.peek());
+        for(int i=1; i<A.size(); i++) {
+            int val = A.get(i);
+            if(val>maxHeap.peek()) {
+                minHeap.add(val);
+                maxHeap.add(minHeap.poll());
+            }
+            else {
+                maxHeap.add(val);
+            }
+            if(maxHeap.size()-1 > minHeap.size())
+                minHeap.add(maxHeap.poll());
+
+            if(minHeap.size() == maxHeap.size()) {
+                ans.add( ((double)minHeap.peek()+maxHeap.peek())/2 );
+            }
+            else {
+                ans.add((double)maxHeap.peek());
+            }
+
+        }
+        return ans;
+    }
+
+    public static void main(String[] args) {
+
+        /*List<Integer> list  = Arrays.asList(2,4,5,11,6,7,8,20,12,1,3);
+        MinHeap minHeap = new MinHeap(list);
+        minHeap.printHeap();*/
+
+        //Return array with max product of 3 values
+        //for all lengths of given array starting from 1st index
+        /*ProductOf3(Arrays.asList(10,2,6,4));*/
+
+        //Connect all ropes such that cost of connecting is minimized
+        /*System.out.println(ConnectRopes(Arrays.asList(1, 2, 3, 4, 5)));*/
+
+        //Find Ath largest number for all subarrays starting from first index
+        /*System.out.println(LargestElementSubarrays(Arrays.asList(1, 2, 3, 4, 5, 6),4));*/
+
+        //Running Median Problem
+        System.out.println(RunningMedian(Arrays.asList(32, 91, 86, 8, 4, 100, 98, 15, 79, 32, 4, 99 )));
+
+    }
+
+
+
+}
