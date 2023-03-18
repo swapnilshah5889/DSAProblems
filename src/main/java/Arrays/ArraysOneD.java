@@ -294,6 +294,34 @@ public class ArraysOneD {
         return -1;
     }
 
+    //Return array with product for every index where the product
+    //is of all elements in the array except for that index
+    public static ArrayList<Integer> productArray(ArrayList<Integer> A) {
+        ArrayList<Integer> prod = new ArrayList<>();
+        prod.add(A.get(0));
+        int lastIndex = A.size()-1;
+        ArrayList<Integer> prodRev = new ArrayList<>();
+        prodRev.add(A.get(lastIndex));
+        for(int i=1, j=lastIndex-1; i<A.size(); i++, j--) {
+            prod.add(A.get(i) * prod.get(i-1));
+            prodRev.add(0, A.get(j) * prodRev.get(0));
+        }
+
+        System.out.println(prod);
+        System.out.println(prodRev);
+        ArrayList<Integer> ans = new ArrayList<>();
+        ans.add(prodRev.get(1));
+
+        for(int i=1; i<lastIndex; i++) {
+            int val = prod.get(i-1) * prodRev.get(i+1);
+            ans.add(val);
+        }
+
+        ans.add(prod.get(lastIndex-1));
+
+        return ans;
+    }
+
     public static void main(String[] args) {
 
         //Rain water trapping
@@ -324,6 +352,9 @@ public class ArraysOneD {
         //Find indexes such that removing those indexes makes the even and odd sum equal
         /*System.out.println(oddEvenSpecialIndex(new ArrayList<>(Arrays.asList(2, 1, 6, 4))));
         System.out.println(oddEvenSpecialIndex(new ArrayList<>(Arrays.asList(1, 1, 1))));*/
+
+        //Find product for every index in array where it has product of all elements except for that index
+        System.out.println(productArray(new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5))));
 
     }
 }
