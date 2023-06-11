@@ -191,10 +191,157 @@ public class Graphs {
                 graph.add(new ArrayList<>(Arrays.asList(0,0,0,0,0,0,0,0,0,0,0,0,0)));
                 graph.add(new ArrayList<>(Arrays.asList(0,0,0,0,0,0,0,0,0,0,0,0,0)));
                 break;
+            //Undirected Weighted Graph
+            case 5:
+                graph.add(new ArrayList<>(Arrays.asList(2, 4, 10)));
+                graph.add(new ArrayList<>(Arrays.asList(3, 4, 1)));
+                graph.add(new ArrayList<>(Arrays.asList(3, 6, 1)));
+                graph.add(new ArrayList<>(Arrays.asList(1, 2, 4)));
+                graph.add(new ArrayList<>(Arrays.asList(4, 5, 6)));
+                break;
+
+            case 6:
+                graph.add(new ArrayList<>(Arrays.asList(1,2)));
+                graph.add(new ArrayList<>(Arrays.asList(1,3)));
+                graph.add(new ArrayList<>(Arrays.asList(2,3)));
+                graph.add(new ArrayList<>(Arrays.asList(1,4)));
+                graph.add(new ArrayList<>(Arrays.asList(4,3)));
+                graph.add(new ArrayList<>(Arrays.asList(4,5)));
+                graph.add(new ArrayList<>(Arrays.asList(3,5)));
+                break;
         }
 
         return graph;
     }
+
+    public static ArrayList<Integer> Djkstras(int A, ArrayList<ArrayList<Integer>> B, int C) {
+
+        ArrayList<Integer> cost = new ArrayList<>();
+        for(int i=0; i<A; i++)
+            cost.add(-1);
+
+        cost.set(C,0);
+
+        PriorityQueue<Pair> queue = new PriorityQueue<>(new Comparator<Pair>() {
+            @Override
+            public int compare(Pair o1, Pair o2) {
+                return o1.key.compareTo(o2.key);
+            }
+        });
+
+        //Build Graph
+        HashMap<Integer, List<Pair>> graph = new HashMap<>();
+        for(int i=0; i<B.size(); i++) {
+            int key = B.get(i).get(0);
+            Pair neigh = new Pair(B.get(i).get(2), B.get(i).get(1));
+            if(graph.containsKey(key)) {
+                graph.get(key).add(neigh);
+            }
+            else    {
+                ArrayList<Pair> neighbors = new ArrayList<>();
+                neighbors.add(neigh);
+                graph.put(key, neighbors);
+            }
+            if(graph.containsKey(neigh.val)) {
+                graph.get(neigh.val).add(new Pair(neigh.key, key));
+            }
+            else {
+                ArrayList<Pair> neighbors = new ArrayList<>();
+                neighbors.add(new Pair(neigh.key, key));
+                graph.put(neigh.val, neighbors);
+            }
+            if(key == C) {
+                cost.set(neigh.val, neigh.key);
+                queue.add(neigh);
+            }
+            else if(neigh.val == C) {
+                cost.set(key, neigh.key);
+                queue.add(new Pair(neigh.key, key));
+            }
+        }
+
+        while(!queue.isEmpty()) {
+            Pair currNode = queue.remove();
+            List<Pair> neighbors = graph.get(currNode.val);
+            for(int i=0; i<neighbors.size(); i++) {
+                Pair neighNode = neighbors.get(i);
+                if(cost.get(neighNode.val) == -1) {
+                    cost.set(neighNode.val, currNode.key + neighNode.key);
+                    queue.add(new Pair(cost.get(neighNode.val), neighNode.val));
+                }
+                else {
+                    int newCost = currNode.key + neighNode.key;
+                    if(newCost < cost.get(neighNode.val)) {
+                        queue.add(new Pair(newCost, neighNode.val));
+                        cost.set(neighNode.val, newCost);
+                    }
+                }
+            }
+        }
+
+        return cost;
+
+    }
+
+    public static boolean dfsDetectCycle(HashMap<Integer, ArrayList<Integer>> graph, int node,
+                       HashSet<Integer> currPath, HashSet<Integer> visited) {
+        if(currPath.contains(node))
+            return true;
+
+        if(graph.containsKey(node) && !visited.contains(node)) {
+
+            visited.add(node);
+            currPath.add(node);
+            ArrayList<Integer> neighbors = graph.get(node);
+            for(int i =0; i<neighbors.size(); i++) {
+                if(dfsDetectCycle(graph, neighbors.get(i), currPath, visited)) {
+                    return true;
+                }
+            }
+            currPath.remove(node);
+        }
+        return false;
+    }
+
+    public static boolean detectCycle(int A, ArrayList<ArrayList<Integer>> B) {
+        //Build Graph
+        HashMap<Integer, ArrayList<Integer>> graph = new HashMap<>();
+        for(int i=0; i<B.size(); i++) {
+            int node = B.get(i).get(0);
+            int neighbor = B.get(i).get(1);
+            if(graph.containsKey(node)) {
+                graph.get(node).add(neighbor);
+            }
+            else {
+                ArrayList<Integer> neighbors = new ArrayList<>();
+                neighbors.add(neighbor);
+                graph.put(node, neighbors);
+            }
+
+        }
+
+        HashSet<Integer> visited = new HashSet<>();
+        //BFS
+        for(int j=1; j<=A; j++) {
+            if(!visited.contains(j)) {
+                HashSet<Integer> currPath = new HashSet<>();
+                if(dfsDetectCycle(graph, j, currPath, visited)){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static int reverseEdges(int A, ArrayList<ArrayList<Integer>> B) {
+        int reversedEdges = 0;
+
+
+
+        return reversedEdges;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -204,5 +351,10 @@ public class Graphs {
         int[] y = new int[]{3,1,2,4};
         System.out.println(validPath(getSampleGraph(4),x,y,2));*/
 
+        //Djkstras Algorithm for minimum cost to destination from source
+        /*System.out.println(Djkstras(7, getSampleGraph(5), 2));*/
+
+        //Detect Cycle in Graph
+        System.out.println(detectCycle(5, getSampleGraph(6)));
     }
 }

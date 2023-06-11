@@ -307,8 +307,6 @@ public class ArraysOneD {
             prodRev.add(0, A.get(j) * prodRev.get(0));
         }
 
-        System.out.println(prod);
-        System.out.println(prodRev);
         ArrayList<Integer> ans = new ArrayList<>();
         ans.add(prodRev.get(1));
 

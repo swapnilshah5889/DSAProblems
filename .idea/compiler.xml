@@ -9,8 +9,5 @@
         <module name="ScalerAdvanced" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="ScalerAdvanced" target="18" />
-    </bytecodeTargetLevel>
   </component>
 </project>
