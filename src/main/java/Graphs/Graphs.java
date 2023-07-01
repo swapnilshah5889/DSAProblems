@@ -209,6 +209,21 @@ public class Graphs {
                 graph.add(new ArrayList<>(Arrays.asList(4,5)));
                 graph.add(new ArrayList<>(Arrays.asList(3,5)));
                 break;
+
+            case 7:
+                graph.add(new ArrayList<>(Arrays.asList(1,2)));
+                graph.add(new ArrayList<>(Arrays.asList(2,3)));
+                graph.add(new ArrayList<>(Arrays.asList(4,3)));
+                graph.add(new ArrayList<>(Arrays.asList(4,5)));
+                graph.add(new ArrayList<>(Arrays.asList(6,1)));
+                break;
+
+            case 8:
+                graph.add(new ArrayList<>(Arrays.asList(1,2)));
+                graph.add(new ArrayList<>(Arrays.asList(2,3)));
+                graph.add(new ArrayList<>(Arrays.asList(5,6)));
+                graph.add(new ArrayList<>(Arrays.asList(5,7)));
+                break;
         }
 
         return graph;
@@ -335,11 +350,150 @@ public class Graphs {
     }
 
     public static int reverseEdges(int A, ArrayList<ArrayList<Integer>> B) {
-        int reversedEdges = 0;
 
+        // Initialize cost array with -1
+        ArrayList<Integer> cost = new ArrayList<>();
+        for(int i=0; i<=A; i++)
+            cost.add(-1);
 
+        // Set distance of starting node to 0
+        int startNode = 1; // Starting Node
+        cost.set(startNode,0);
 
-        return reversedEdges;
+        // Create a priority queue with Pair Object
+        PriorityQueue<Pair> queue = new PriorityQueue<>(new Comparator<Pair>() {
+            @Override
+            public int compare(Pair o1, Pair o2) {
+                return o1.key.compareTo(o2.key);
+            }
+        });
+
+        // Build Graph
+        HashMap<Integer, List<Pair>> graph = new HashMap<>();
+        for(int i=0; i<B.size(); i++) {
+
+            //Curr Node
+            int currNode = B.get(i).get(0);
+
+            //Neighbor Pair with weight and neighbor id
+            Pair neigh = new Pair(0, B.get(i).get(1));
+
+            //Add neighbor to the graph
+            if(graph.containsKey(currNode)) {
+                graph.get(currNode).add(neigh);
+            }
+            else {
+                ArrayList<Pair> neighbors = new ArrayList<>();
+                neighbors.add(neigh);
+                graph.put(currNode, neighbors);
+            }
+
+            //Add reverse edge
+            if(graph.containsKey(neigh.val)) {
+                graph.get(neigh.val).add(new Pair(1, currNode));
+            }
+            else {
+                ArrayList<Pair> neighbors = new ArrayList<>();
+                neighbors.add(new Pair(1, currNode));
+                graph.put(neigh.val, neighbors);
+            }
+
+            // Add all starting node edges to the queue
+            if(currNode == startNode) {
+                cost.set(neigh.val, neigh.key);
+                queue.add(neigh);
+            }
+            // Add Reverse Edge to Starting Node
+            else if(neigh.val == startNode) {
+                cost.set(currNode, 1);
+                queue.add(new Pair(1, currNode));
+            }
+        }
+
+        System.out.println(cost);
+        /*while(!queue.isEmpty()) {
+            Pair p = queue.poll();
+            System.out.println(p.val +" => "+p.key);
+        }*/
+        while(!queue.isEmpty()) {
+            Pair currNode = queue.remove();
+            List<Pair> neighbors = graph.get(currNode.val);
+            for(int i=0; i<neighbors.size(); i++) {
+                Pair neighNode = neighbors.get(i);
+                if(cost.get(neighNode.val) == -1) {
+                    cost.set(neighNode.val, currNode.key + neighNode.key);
+                    queue.add(new Pair(cost.get(neighNode.val), neighNode.val));
+                }
+                else {
+                    int newCost = currNode.key + neighNode.key;
+                    if(newCost < cost.get(neighNode.val)) {
+                        queue.add(new Pair(newCost, neighNode.val));
+                        cost.set(neighNode.val, newCost);
+                    }
+                }
+            }
+            System.out.println(cost);
+        }
+
+        return cost.get(A);
+    }
+
+    public static int batchesDfs(HashMap<Integer, List<Integer>> graph, int node,
+                                 boolean[] visited, ArrayList<Integer> strengths) {
+
+        if(visited[node]) {
+            return 0;
+        }
+        else {
+            int sum = strengths.get(node);
+            visited[node] = true;
+            if(graph.containsKey(node)) {
+                for (int i = 0; i < graph.get(node).size(); i++) {
+                    sum += batchesDfs(graph, graph.get(node).get(i), visited, strengths);
+                }
+            }
+            return sum;
+        }
+    }
+
+    public static int batches(int A, ArrayList<Integer> B, ArrayList<ArrayList<Integer>> C, int D) {
+        HashMap<Integer, List<Integer>> graph = new HashMap<>();
+        for(int i=0; i<C.size(); i++) {
+            int key = C.get(i).get(0)-1;
+            int neigh = C.get(i).get(1)-1;
+            if(graph.containsKey(key)) {
+                graph.get(key).add(neigh);
+            }
+            else    {
+                ArrayList<Integer> neighbors = new ArrayList<>();
+                neighbors.add(neigh);
+                graph.put(key, neighbors);
+            }
+
+            if(graph.containsKey(neigh)) {
+                graph.get(neigh).add(key);
+            }
+            else {
+                ArrayList<Integer> neighbors = new ArrayList<>();
+                neighbors.add(key);
+                graph.put(neigh, neighbors);
+            }
+        }
+        boolean[] visited = new boolean[A];
+        Arrays.fill(visited, false);
+        System.out.println(graph);
+
+        int count = 0;
+        for(int i=0; i<A; i++) {
+            if(!visited[i]) {
+                int sum = batchesDfs(graph, i, visited, B );
+                System.out.println("Sum : "+sum);
+                if(sum>=D) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     public static void main(String[] args) {
@@ -355,6 +509,11 @@ public class Graphs {
         /*System.out.println(Djkstras(7, getSampleGraph(5), 2));*/
 
         //Detect Cycle in Graph
-        System.out.println(detectCycle(5, getSampleGraph(6)));
+        /*System.out.println(detectCycle(5, getSampleGraph(6)));*/
+
+        //Batches
+        System.out.println(batches(7, new ArrayList<Integer>(Arrays.asList(1,6,7,2,9,4,5))
+                , getSampleGraph(8),12));
+
     }
 }
