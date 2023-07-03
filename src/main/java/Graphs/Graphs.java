@@ -13,6 +13,19 @@ public class Graphs {
         }
     }
 
+    public static class GraphEdge {
+        int node1;
+        int node2;
+        Integer weight;
+
+        public GraphEdge(int node1, int node2, int weight) {
+            this.node1 = node1;
+            this.node2 = node2;
+            this.weight = weight;
+
+        }
+    }
+
     public static void printMatrix(ArrayList<ArrayList<Integer>> graph) {
         for(ArrayList<Integer> row : graph) {
             System.out.println(row);
@@ -223,6 +236,22 @@ public class Graphs {
                 graph.add(new ArrayList<>(Arrays.asList(2,3)));
                 graph.add(new ArrayList<>(Arrays.asList(5,6)));
                 graph.add(new ArrayList<>(Arrays.asList(5,7)));
+                break;
+
+            // Weighted Undirected Graph
+            case 9:
+                graph.add(new ArrayList<>(Arrays.asList(1,2,1)));
+                graph.add(new ArrayList<>(Arrays.asList(2,3,4)));
+                graph.add(new ArrayList<>(Arrays.asList(1,4,3)));
+                graph.add(new ArrayList<>(Arrays.asList(4,3,2)));
+                graph.add(new ArrayList<>(Arrays.asList(1,3,10)));
+                break;
+
+            case 10:
+                graph.add(new ArrayList<>(Arrays.asList(1,2,1)));
+                graph.add(new ArrayList<>(Arrays.asList(2,3,2)));
+                graph.add(new ArrayList<>(Arrays.asList(3,4,4)));
+                graph.add(new ArrayList<>(Arrays.asList(1,4,3)));
                 break;
         }
 
@@ -496,6 +525,124 @@ public class Graphs {
         return count;
     }
 
+    public static int findRoot(int[] treeArr, int node) {
+        if(treeArr[node] == node)
+            return node;
+        int temp = findRoot(treeArr, treeArr[node]);
+        treeArr[node] = temp;
+        return temp;
+    }
+    public static int commutableIslands(int A, ArrayList<ArrayList<Integer>> B) {
+
+        PriorityQueue<GraphEdge> edgesQueue = new PriorityQueue<>(new Comparator<GraphEdge>() {
+            @Override
+            public int compare(GraphEdge o1, GraphEdge o2) {
+                return o1.weight.compareTo(o2.weight);
+            }
+        });
+
+        HashMap<Integer, List<Integer>> graph = new HashMap<>();
+        // Build Graph
+        for(int i=0; i<B.size(); i++) {
+            int node1 = B.get(i).get(0);
+            int node2 = B.get(i).get(1);
+            int weight = B.get(i).get(2);
+
+            // Node 1
+            if(graph.containsKey(node1)) {
+                graph.get(node1).add(node2);
+            }
+            else {
+                List<Integer> connections = new ArrayList<>();
+                connections.add(node2);
+                graph.put(node1, connections);
+            }
+
+            // Node 2
+            if(graph.containsKey(node2)) {
+                graph.get(node2).add(node1);
+            }
+            else {
+                List<Integer> connections = new ArrayList<>();
+                connections.add(node1);
+                graph.put(node2, connections);
+            }
+
+            edgesQueue.add(new GraphEdge(node1, node2, weight));
+        }
+
+        int[] kings = new int[A+1];
+        for(int i=0; i<=A; i++) {
+            kings[i] = i;
+        }
+
+        int cost = 0;
+
+        // Minimum Spanning Tree
+        // Find least cost for building minimum spanning tree
+        while (!edgesQueue.isEmpty()){
+            GraphEdge edge = edgesQueue.poll();
+            int nodeRoot1 = findRoot(kings, edge.node1);
+            int nodeRoot2 = findRoot(kings, edge.node2);
+
+            // Separate components
+            if (nodeRoot1 != nodeRoot2) {
+                kings[nodeRoot2] = nodeRoot1;
+                cost+=edge.weight;
+            }
+        }
+
+        return cost;
+    }
+
+    public static int getHashValue(int row, int col, int rows, int cols) {
+        // Max row size is 500 so multiplying it by 501 will always make
+        // this hash-value unique for every point
+        return ( ((row)*501) + (col+1) );
+    }
+
+    public static int knight(int A, int B, int C, int D, int E, int F) {
+
+        // Edge Case
+        if(C == E && D == F) {
+            return 0;
+        }
+
+        int [] rowPoints = new int[]{-2, -2, 1, -1, 2, 2, 1, -1};
+        int [] colPoints = new int[]{-1, 1, 2, 2, -1, 1, -2, -2};
+
+        Queue<Pair> queue = new LinkedList<>();
+        HashSet<Integer> visited = new HashSet<>();
+        queue.add(new Pair(C,D));
+        visited.add(getHashValue(C, D, A, B));
+        int levels = 0;
+        while(!queue.isEmpty()) {
+            int qSize = queue.size();
+            levels++;
+            for(int j=0; j<qSize; j++) {
+                Pair p = queue.remove();
+                for(int i=0; i<rowPoints.length; i++) {
+                    int rowNew = p.key + rowPoints[i];
+                    int colNew = p.val + colPoints[i];
+                    int hashValue = getHashValue(rowNew, colNew, A, B);
+                    // If destination found
+                    if(rowNew == E && colNew == F) {
+                        return levels;
+                    }
+                    // If valid point & not in queue
+                    else if( (rowNew>0 && rowNew<=A && colNew>0 && colNew<=B)
+                            && !visited.contains(hashValue) ) {
+                        visited.add(hashValue);
+                        queue.add(new Pair(rowNew, colNew));
+                    }
+                }
+            }
+        }
+
+        return -1;
+
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -512,8 +659,17 @@ public class Graphs {
         /*System.out.println(detectCycle(5, getSampleGraph(6)));*/
 
         //Batches
-        System.out.println(batches(7, new ArrayList<Integer>(Arrays.asList(1,6,7,2,9,4,5))
-                , getSampleGraph(8),12));
+        /*System.out.println(batches(7, new ArrayList<Integer>(Arrays.asList(1,6,7,2,9,4,5))
+                , getSampleGraph(8),12));*/
+
+        // Krushkal's Algorithm
+        /*System.out.println(commutableIslands(4, getSampleGraph(9)));*/
+
+        // Knight's problem - Find out if knight can reach destination
+        // from a given point in a chess board
+        // System.out.println(knight(4,7,2,6,2,4));
+        System.out.println(knight(384,387,106,134,210,35));
+        System.out.println(knight(173,237,46,81,9,235));
 
     }
 }
