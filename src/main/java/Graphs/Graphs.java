@@ -26,6 +26,21 @@ public class Graphs {
         }
     }
 
+    public static class GraphEdge2 {
+        int node1;
+        int node2;
+        Integer weight;
+        int index;
+
+        public GraphEdge2(int node1, int node2, int weight, int index) {
+            this.node1 = node1;
+            this.node2 = node2;
+            this.weight = weight;
+            this.index = index;
+
+        }
+    }
+
     public static void printMatrix(ArrayList<ArrayList<Integer>> graph) {
         for(ArrayList<Integer> row : graph) {
             System.out.println(row);
@@ -253,6 +268,11 @@ public class Graphs {
                 graph.add(new ArrayList<>(Arrays.asList(3,4,4)));
                 graph.add(new ArrayList<>(Arrays.asList(1,4,3)));
                 break;
+
+            case 11:
+                graph.add(new ArrayList<>(Arrays.asList(1,2,2)));
+                graph.add(new ArrayList<>(Arrays.asList(1,3,2)));
+                graph.add(new ArrayList<>(Arrays.asList(2,3,2)));
         }
 
         return graph;
@@ -643,6 +663,85 @@ public class Graphs {
 
     }
 
+    public static ArrayList<Integer> edgeInMST(int A, ArrayList<ArrayList<Integer>> B) {
+
+        PriorityQueue<GraphEdge2> edgesQueue = new PriorityQueue<>(new Comparator<GraphEdge2>() {
+            @Override
+            public int compare(GraphEdge2 o1, GraphEdge2 o2) {
+                return o1.weight.compareTo(o2.weight);
+            }
+        });
+
+        HashMap<Integer, List<Integer>> graph = new HashMap<>();
+        // Build Graph
+        for(int i=0; i<B.size(); i++) {
+            int node1 = B.get(i).get(0);
+            int node2 = B.get(i).get(1);
+            int weight = B.get(i).get(2);
+
+            // Node 1
+            if(graph.containsKey(node1)) {
+                graph.get(node1).add(node2);
+            }
+            else {
+                List<Integer> connections = new ArrayList<>();
+                connections.add(node2);
+                graph.put(node1, connections);
+            }
+
+            // Node 2
+            if(graph.containsKey(node2)) {
+                graph.get(node2).add(node1);
+            }
+            else {
+                List<Integer> connections = new ArrayList<>();
+                connections.add(node1);
+                graph.put(node2, connections);
+            }
+
+            edgesQueue.add(new GraphEdge2(node1, node2, weight,i));
+        }
+
+        int[] kings = new int[A+1];
+        for(int i=0; i<=A; i++) {
+            kings[i] = i;
+        }
+
+        ArrayList<Integer> ans = new ArrayList<Integer>(Collections.nCopies(B.size(), 0));
+
+        // Minimum Spanning Tree
+        // Find least cost for building minimum spanning tree
+        while (!edgesQueue.isEmpty()){
+            int currWeight = edgesQueue.peek().weight;
+            List<GraphEdge2> edgeList = new ArrayList<>();
+
+            // Check for same weight edges
+            while(!edgesQueue.isEmpty() && edgesQueue.peek().weight == currWeight) {
+                GraphEdge2 edge = edgesQueue.poll();
+                int nodeRoot1 = findRoot(kings, edge.node1);
+                int nodeRoot2 = findRoot(kings, edge.node2);
+
+                // Separate components - Set true for MST
+                if (nodeRoot1 != nodeRoot2) {
+                    ans.set(edge.index, 1);
+                    edgeList.add(edge);
+                }
+            }
+
+            // Merge Edges
+            for(int i=0; i<edgeList.size(); i++) {
+                int nodeRoot1 = findRoot(kings, edgeList.get(i).node1);
+                int nodeRoot2 = findRoot(kings, edgeList.get(i).node2);
+                if (nodeRoot1 != nodeRoot2) {
+                    kings[nodeRoot2] = nodeRoot1;
+                }
+            }
+
+        }
+
+        return ans;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -668,8 +767,13 @@ public class Graphs {
         // Knight's problem - Find out if knight can reach destination
         // from a given point in a chess board
         // System.out.println(knight(4,7,2,6,2,4));
-        System.out.println(knight(384,387,106,134,210,35));
-        System.out.println(knight(173,237,46,81,9,235));
+        /*System.out.println(knight(384,387,106,134,210,35));
+        System.out.println(knight(173,237,46,81,9,235));*/
 
+        // Edges in MST
+        ArrayList<Integer> ans = edgeInMST(3, getSampleGraph(11));
+        ans.forEach(integer -> {
+            System.out.print(integer+", ");
+        });
     }
 }
