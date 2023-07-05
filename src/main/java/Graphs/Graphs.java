@@ -665,42 +665,40 @@ public class Graphs {
 
     public static ArrayList<Integer> edgeInMST(int A, ArrayList<ArrayList<Integer>> B) {
 
-        PriorityQueue<GraphEdge2> edgesQueue = new PriorityQueue<>(new Comparator<GraphEdge2>() {
+        /*PriorityQueue<GraphEdge2> edgesQueue = new PriorityQueue<>(new Comparator<GraphEdge2>() {
             @Override
             public int compare(GraphEdge2 o1, GraphEdge2 o2) {
                 return o1.weight.compareTo(o2.weight);
             }
         });
 
-        HashMap<Integer, List<Integer>> graph = new HashMap<>();
-        // Build Graph
+        // Build Edges Priority Queue
         for(int i=0; i<B.size(); i++) {
             int node1 = B.get(i).get(0);
             int node2 = B.get(i).get(1);
             int weight = B.get(i).get(2);
 
-            // Node 1
-            if(graph.containsKey(node1)) {
-                graph.get(node1).add(node2);
-            }
-            else {
-                List<Integer> connections = new ArrayList<>();
-                connections.add(node2);
-                graph.put(node1, connections);
-            }
-
-            // Node 2
-            if(graph.containsKey(node2)) {
-                graph.get(node2).add(node1);
-            }
-            else {
-                List<Integer> connections = new ArrayList<>();
-                connections.add(node1);
-                graph.put(node2, connections);
-            }
-
             edgesQueue.add(new GraphEdge2(node1, node2, weight,i));
+        }*/
+
+        // Build 2d matrix to store the edges
+        int[][] edges = new int[B.size()][4];
+        for(int i=0; i<B.size(); i++) {
+            edges[i][0] = B.get(i).get(0);
+            edges[i][1] = B.get(i).get(1);
+            edges[i][2] = B.get(i).get(2);
+            edges[i][3] = i;
         }
+
+        // Sort array based on weight
+        Arrays.sort(edges, new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                Integer data1 = o1[2];
+                Integer data2 = o2[2];
+                return data1.compareTo(data2);
+            }
+        });
 
         int[] kings = new int[A+1];
         for(int i=0; i<=A; i++) {
@@ -711,7 +709,34 @@ public class Graphs {
 
         // Minimum Spanning Tree
         // Find least cost for building minimum spanning tree
-        while (!edgesQueue.isEmpty()){
+        int i=0;
+        while(i<edges.length) {
+            int j=i;
+            ArrayList<Integer> edgeList = new ArrayList<>();
+            // Same weight edges
+            while(j<edges.length && edges[i][2] == edges[j][2]) {
+
+                int nodeRoot1 = findRoot(kings, edges[j][0]);
+                int nodeRoot2 = findRoot(kings, edges[j][1]);
+                if (nodeRoot1 != nodeRoot2) {
+                    ans.set(edges[j][3], 1);
+                    edgeList.add(j);
+                }
+                j++;
+            }
+
+
+            // Merge Edges
+            for(int index : edgeList) {
+                int nodeRoot1 = findRoot(kings, edges[index][0]);
+                int nodeRoot2 = findRoot(kings, edges[index][1]);
+                if (nodeRoot1 != nodeRoot2) {
+                    kings[nodeRoot2] = nodeRoot1;
+                }
+            }
+            i=j;
+        }
+        /*while (!edgesQueue.isEmpty()){
             int currWeight = edgesQueue.peek().weight;
             List<GraphEdge2> edgeList = new ArrayList<>();
 
@@ -737,7 +762,7 @@ public class Graphs {
                 }
             }
 
-        }
+        }*/
 
         return ans;
     }
@@ -773,7 +798,7 @@ public class Graphs {
         // Edges in MST
         ArrayList<Integer> ans = edgeInMST(3, getSampleGraph(11));
         ans.forEach(integer -> {
-            System.out.print(integer+", ");
+            System.out.print(integer+" ");
         });
     }
 }
