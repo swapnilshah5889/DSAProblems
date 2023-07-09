@@ -80,6 +80,15 @@ public class DynamicProgramming {
         return arr[arr.length-1];
     }
 
+    public static int numberOfWaysToClimbStairs(int n, int[] arr) {
+        if(arr[n] != -1) {
+            return arr[n];
+        }
+
+        int ans = numberOfWaysToClimbStairs(n-1, arr) + numberOfWaysToClimbStairs(n-2,arr);
+        arr[n] = ans;
+        return ans;
+    }
 
     public static void main(String[] args) {
 
@@ -95,7 +104,7 @@ public class DynamicProgramming {
 
 
         // Find Minimum Number of Steps to reach Nth Stair
-        int n = 11;
+        /*int n = 11;
         int arr[] = new int[n+1];
         Arrays.fill(arr,-1);
         //Initial step cost
@@ -103,6 +112,14 @@ public class DynamicProgramming {
         arr[2] = 1;
         arr[3] = 1;
         System.out.println("Minimum Steps to Reach Stair " +n+ ": " + findMinimumStepsRecursive(n, arr, 3));
-        System.out.println("Minimum Steps to Reach Stair " +n+ ": " + findMinimumStepsIterative(n, 3));
+        System.out.println("Minimum Steps to Reach Stair " +n+ ": " + findMinimumStepsIterative(n, 3));*/
+
+        // Find total number of ways to climb n steps
+        int n = 10;
+        int arr[] = new int[n+1];
+        Arrays.fill(arr, -1);
+        arr[1] = 1;
+        arr[2] = 2;
+        System.out.println("Total ways to climb "+n+" steps: "+numberOfWaysToClimbStairs(n, arr));
     }
 }
