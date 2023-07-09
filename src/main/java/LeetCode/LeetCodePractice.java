@@ -1,8 +1,8 @@
 package LeetCode;
 
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Stack;
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.stream.Stream;
 
 class RecentCounter {
     Queue<Integer> queue;
@@ -95,6 +95,36 @@ public class LeetCodePractice {
         return ans.toString();
     }
 
+    public static int distinctElements(Integer[] arr, int k) {
+        HashMap<Integer,Integer> map = new HashMap<>();
+        for(int i=0; i<arr.length; i++) {
+            map.put(arr[i], map.getOrDefault(arr[i],0)+1);
+        }
+
+        Stream<Map.Entry<Integer,Integer>> sorted = map.entrySet().stream().sorted((o1, o2) -> {
+            return o2.getValue().compareTo(o1.getValue());
+        });
+
+        HashSet<Integer> distinctElements = new HashSet<>();
+        sorted.forEach(entry -> {
+            int val = entry.getKey();
+            int freq = entry.getValue();
+            if(!distinctElements.contains(val) && freq>0) {
+                distinctElements.add(val);
+                freq--;
+            }
+            if(!distinctElements.contains(val+k) && freq>0) {
+                distinctElements.add(val+k);
+                freq--;
+            }
+            if(!distinctElements.contains(val-k) && freq>0) {
+                distinctElements.add(val-k);
+            }
+        });
+
+        return distinctElements.size();
+    }
+
     public static void main(String[] args) {
 
         // Find first occurrence of a substring
@@ -104,12 +134,16 @@ public class LeetCodePractice {
         /*System.out.println(decodeString("3[a]2[bc]"));*/
 
         // Queue
-        RecentCounter rc = new RecentCounter();
+        /*RecentCounter rc = new RecentCounter();
         System.out.println(rc.ping(2196));
         System.out.println(rc.ping(3938));
         System.out.println(rc.ping(4723));
         System.out.println(rc.ping(4775));
-        System.out.println(rc.ping(5952));
+        System.out.println(rc.ping(5952));*/
+
+        // Distinct Elements
+        System.out.println(distinctElements(new Integer[]{5,5,5,5,1,7}, 2));
+        System.out.println(distinctElements(new Integer[]{1,5,9}, 2));
 
     }
 
