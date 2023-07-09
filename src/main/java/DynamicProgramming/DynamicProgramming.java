@@ -80,6 +80,19 @@ public class DynamicProgramming {
         return arr[arr.length-1];
     }
 
+    // Find minimum number of squares
+    public static int findMinimumSquaresToTotal(int n, int arr[]) {
+        if(arr[n] != -1) {
+            return arr[n];
+        }
+        int index = (int) Math.sqrt(n);
+        int ans = Integer.MAX_VALUE;
+        for(int i = index; i>=1; i--) {
+            ans = Math.min(ans, findMinimumSquaresToTotal(n-(i*i), arr)+1);
+        }
+        arr[n] = ans;
+        return ans;
+    }
     public static int numberOfWaysToClimbStairs(int n, int[] arr) {
         if(arr[n] != -1) {
             return arr[n];
@@ -115,11 +128,19 @@ public class DynamicProgramming {
         System.out.println("Minimum Steps to Reach Stair " +n+ ": " + findMinimumStepsIterative(n, 3));*/
 
         // Find total number of ways to climb n steps
-        int n = 10;
+        /*int n = 10;
         int arr[] = new int[n+1];
         Arrays.fill(arr, -1);
         arr[1] = 1;
         arr[2] = 2;
-        System.out.println("Total ways to climb "+n+" steps: "+numberOfWaysToClimbStairs(n, arr));
+        System.out.println("Total ways to climb "+n+" steps: "+numberOfWaysToClimbStairs(n, arr));*/
+
+        // Find minimum perfect squares that sum to N
+        int n=6;
+        int arr[] = new int[n+1];
+        Arrays.fill(arr,-1);
+        arr[0] = 0;
+        System.out.println("Minimum perfect squares required for "+n+": "+findMinimumSquaresToTotal(n,arr));
+
     }
 }
