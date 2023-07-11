@@ -1,5 +1,6 @@
 package DynamicProgramming;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class DynamicProgramming {
@@ -80,7 +81,7 @@ public class DynamicProgramming {
         return arr[arr.length-1];
     }
 
-    // Find minimum number of squares
+    // Get minimum number of perfect squares that sum to N
     public static int findMinimumSquaresToTotal(int n, int arr[]) {
         if(arr[n] != -1) {
             return arr[n];
@@ -101,6 +102,45 @@ public class DynamicProgramming {
         int ans = numberOfWaysToClimbStairs(n-1, arr) + numberOfWaysToClimbStairs(n-2,arr);
         arr[n] = ans;
         return ans;
+    }
+
+    // Max Subarray product
+    public static int maxSubarrayProduct(int[] arr) {
+        int dpMin[] = new int[arr.length];
+        int dpMax[] = new int[arr.length];
+        dpMin[0] = arr[0];
+        dpMax[0] = arr[0];
+        int max = dpMax[0];
+        for(int i=1; i<arr.length; i++) {
+            int curr = arr[i];
+            int currMin = dpMin[i-1]*curr;
+            int currMax = dpMax[i-1]*curr;
+            dpMin[i] = Math.min(currMin,Math.min(currMax, curr));
+            dpMax[i] = Math.max(currMin,Math.max(currMax, curr));
+            max = Math.max(max, dpMax[i]);
+        }
+        /*Arrays.stream(dpMin).forEach(value -> System.out.print(value+" "));
+        System.out.println();
+        Arrays.stream(dpMax).forEach(value -> System.out.print(value+" "));
+        System.out.println();*/
+        return max;
+    }
+
+    public static int maxSumValue(ArrayList<Integer> A, int B, int C, int D) {
+        int [][] matrix = new int[3][A.size()];
+        matrix[0][0] = A.get(0)*B;
+        for(int i=1; i<A.size(); i++) {
+            matrix[0][i] = Math.max(A.get(i)*B, matrix[0][i-1]);
+        }
+        matrix[1][0] = matrix[0][0] + A.get(0)*C;
+        for(int i=1; i<A.size(); i++) {
+            matrix[1][i] = Math.max(A.get(i)*C + matrix[0][i], matrix[1][i-1]);
+        }
+        matrix[2][0] = matrix[1][0] + A.get(0)*D;
+        for(int i=1; i<A.size(); i++) {
+            matrix[2][i] = Math.max(A.get(i)*D + matrix[1][i], matrix[2][i-1]);
+        }
+        return matrix[2][A.size()-1];
     }
 
     public static void main(String[] args) {
@@ -136,11 +176,14 @@ public class DynamicProgramming {
         System.out.println("Total ways to climb "+n+" steps: "+numberOfWaysToClimbStairs(n, arr));*/
 
         // Find minimum perfect squares that sum to N
-        int n=6;
+        /*int n=6;
         int arr[] = new int[n+1];
         Arrays.fill(arr,-1);
         arr[0] = 0;
-        System.out.println("Minimum perfect squares required for "+n+": "+findMinimumSquaresToTotal(n,arr));
+        System.out.println("Minimum perfect squares required for "+n+": "+findMinimumSquaresToTotal(n,arr));*/
 
+        // Max Subarray product
+        /*int[] arr = new int[]{-2,-2,-2,-2, 0};
+        System.out.println("Max subarray product: "+maxSubarrayProduct(arr));*/
     }
 }
