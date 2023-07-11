@@ -79,4 +79,67 @@ public class DynamicProgrammingTests {
         assertEquals(-4, ans);
 
     }
+
+    @Test
+    public void TestDecodeString() {
+        // Test case 1
+        int ans = DynamicProgramming.decodeString("01");
+        assertEquals(0,ans);
+
+        // Test case 2
+        ans = DynamicProgramming.decodeString("10");
+        assertEquals(1,ans);
+
+        // Test case 3
+        ans = DynamicProgramming.decodeString("21");
+        assertEquals(2,ans);
+
+        // Test case 4
+        ans = DynamicProgramming.decodeString("20");
+        assertEquals(1,ans);
+
+        // Test case 5
+        ans = DynamicProgramming.decodeString("00");
+        assertEquals(0,ans);
+
+        // Test case 6
+        ans = DynamicProgramming.decodeString("51");
+        assertEquals(1,ans);
+
+        // Test case 7
+        ans = DynamicProgramming.decodeString("27");
+        assertEquals(1,ans);
+
+        // Test case 8
+        ans = DynamicProgramming.decodeString("90");
+        assertEquals(0,ans);
+
+        // Test case 9
+        ans = DynamicProgramming.decodeString("13");
+        assertEquals(2,ans);
+
+        // Test case 10
+        ans = DynamicProgramming.decodeString("25");
+        assertEquals(2,ans);
+
+        // Test case 11
+        ans = DynamicProgramming.decodeString("19");
+        assertEquals(2,ans);
+
+        // Test case 12
+        ans = DynamicProgramming.decodeString("35");
+        assertEquals(1,ans);
+
+        // Test case 13
+        ans = DynamicProgramming.decodeString("43");
+        assertEquals(1,ans);
+
+        // Test case 14
+        ans = DynamicProgramming.decodeString("0");
+        assertEquals(0,ans);
+
+        // Test case 15
+        ans = DynamicProgramming.decodeString("7");
+        assertEquals(1,ans);
+    }
 }
