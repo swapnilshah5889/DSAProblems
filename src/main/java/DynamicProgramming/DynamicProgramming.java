@@ -314,6 +314,55 @@ public class DynamicProgramming {
         return dp[dp.length-1];
     }
 
+    public static int uniquePathsInGrid(ArrayList<ArrayList<Integer>> A) {
+        int[][] dp = new int[A.size()][A.get(0).size()];
+
+        if(A.get(0).get(0) == 1) {
+            return 0;
+        }
+        dp[0][0] = 1;
+        for(int i=1; i<dp[0].length; i++) {
+            // Empty Space
+            if(A.get(0).get(i)==0) {
+                dp[0][i] = Math.min(1, dp[0][i-1]);
+            }
+            // Blocked
+            else {
+                dp[0][i] = 0;
+            }
+        }
+
+        for(int i=1; i<dp.length; i++) {
+            // Empty Space
+            if(A.get(i).get(0)==0) {
+                dp[i][0] = Math.min(1, dp[i-1][0]);
+            }
+            // Blocked
+            else {
+                dp[i][0] = 0;
+            }
+        }
+
+        for(int i=1; i<dp.length; i++) {
+            for(int j=1; j<dp[0].length; j++) {
+                if(A.get(i).get(j)==0) {
+                    dp[i][j] = dp[i][j - 1] + dp[i - 1][j];
+                }
+                else {
+                    dp[i][j]=0;
+                }
+            }
+        }
+
+        Arrays.stream(dp).forEach(ints -> {
+            Arrays.stream(ints).forEach(val -> {
+                System.out.print(val+" ");
+            });
+            System.out.println();
+        });
+        return dp[dp.length-1][dp[0].length-1];
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -364,10 +413,16 @@ public class DynamicProgramming {
         });*/
 
         // Max sum without adjustment elements
-        ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        /*ArrayList<ArrayList<Integer>> A = new ArrayList<>();
         A.add(new ArrayList(Arrays.asList(16,5,54,55,36,82,61,77,66,61)));
         A.add(new ArrayList(Arrays.asList(31,30,36,70,9,37,1,11,68,14)));
-        System.out.println(maxSumWithoutAdjacentElements(A));
+        System.out.println(maxSumWithoutAdjacentElements(A));*/
 
+        // Unique Paths in a Grid
+        ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        A.add(new ArrayList(Arrays.asList(0,0,0)));
+        A.add(new ArrayList(Arrays.asList(1,1,1)));
+        A.add(new ArrayList(Arrays.asList(0,0,0)));
+        System.out.println(uniquePathsInGrid(A));
     }
 }
