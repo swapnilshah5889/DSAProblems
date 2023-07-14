@@ -314,6 +314,60 @@ public class DynamicProgramming {
         return dp[dp.length-1];
     }
 
+    public static int dungeonPrincess( ArrayList<ArrayList<Integer>> A ) {
+
+        int rows = A.size();
+        int cols = A.get(0).size();
+        int dp[][] = new int[rows][cols];
+
+        if(A.get(rows-1).get(cols-1) > 0) {
+            dp[rows-1][cols-1] = 0;
+        }
+        else {
+            dp[rows-1][cols-1] = 1 - A.get(rows-1).get(cols-1);
+        }
+
+        // Set last row
+        for(int i=cols-2; i>=0; i--) {
+            int val = dp[rows-1][i+1] - A.get(rows-1).get(i);
+            if(val == 0 || (dp[rows-1][i+1]==0  && A.get(rows-1).get(i)<=0)) {
+                val+=1;
+            }
+            dp[rows-1][i] = Math.max(0, val);
+        }
+
+        // Set last column
+        for(int i=rows-2; i>=0; i--) {
+            int val = dp[i+1][cols-1] - A.get(i).get(cols-1);
+            if(val == 0 || (dp[i+1][cols-1]==0  && A.get(i).get(cols-1)<=0)) {
+                val+=1;
+            }
+            dp[i][cols-1] = Math.max(0, val);
+        }
+
+        // DP
+        for(int i=rows-2; i>=0; i--) {
+            for(int j=cols-2; j>=0; j--) {
+
+                int minVal = Math.min(dp[i+1][j],dp[i][j+1]);
+                if(minVal<=0) {
+                    minVal+=1;
+                }
+
+                dp[i][j] = Math.max(1, minVal - A.get(i).get(j));
+
+            }
+        }
+
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val + " ");
+            });
+            System.out.println();
+        });
+        return dp[0][0];
+    }
+
     public static int uniquePathsInGrid(ArrayList<ArrayList<Integer>> A) {
         int[][] dp = new int[A.size()][A.get(0).size()];
 
@@ -361,6 +415,63 @@ public class DynamicProgramming {
             System.out.println();
         });
         return dp[dp.length-1][dp[0].length-1];
+    }
+
+    public static long findTotalNDigitNumbers(int A, int B, long[][]dp, int mod) {
+        if(B == 0) {
+            return 1;
+        }
+        if(A==0) {
+            return 0;
+        }
+//        System.out.println("Call to ("+A+","+B+")");
+        if(dp[A][B]==-1) {
+            int nextDigit = Math.min(9, B);
+            long sum = 0;
+            for (int i = nextDigit; i >= 0; i--) {
+                long tempSum = findTotalNDigitNumbers(A - 1, B - i, dp, mod);
+//                System.out.println((A-1)+" - "+(B-i)+ " -> "+tempSum );
+                dp[A - 1][B - i] = tempSum;
+                sum = (tempSum+sum)%mod;
+            }
+            dp[A][B] = sum;
+            return sum;
+        }
+        else {
+            return dp[A][B];
+        }
+    }
+    public static int NDigitNumbers(int A, int B) {
+        // Edge case
+        if(B == 0) {
+            return 0;
+        }
+
+        long dp[][] = new long[A][B];
+        for(int i=0; i<dp.length; i++) {
+            Arrays.fill(dp[i],-1);
+        }
+        for(int i=0; i<dp.length; i++) {
+            dp[i][0] = 1;
+        }
+
+        int totalSum = 0;
+        int mod = (int)Math.pow(10, 9) + 7 ;
+        int firstDigit = Math.min(9, B);
+        for(int i=firstDigit; i>0; i--) {
+            long tempSum = findTotalNDigitNumbers(A-1, B-i, dp, mod);
+            System.out.println("("+(A-1)+","+(B-i)+") -> " + tempSum);
+            dp[A-1][B-i] = tempSum;
+            totalSum = (int)((totalSum+tempSum)%mod);
+        }
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val+" ");
+            });
+            System.out.println();
+        });
+        return totalSum;
+
     }
 
     public static void main(String[] args) {
@@ -419,10 +530,37 @@ public class DynamicProgramming {
         System.out.println(maxSumWithoutAdjacentElements(A));*/
 
         // Unique Paths in a Grid
-        ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        /*ArrayList<ArrayList<Integer>> A = new ArrayList<>();
         A.add(new ArrayList(Arrays.asList(0,0,0)));
         A.add(new ArrayList(Arrays.asList(1,1,1)));
         A.add(new ArrayList(Arrays.asList(0,0,0)));
-        System.out.println(uniquePathsInGrid(A));
+        System.out.println(uniquePathsInGrid(A));*/
+
+        // Dungeon Princess
+        /*ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        A.add(new ArrayList(Arrays.asList(-39,-65,-93,-51,-97,-46,-32,-89,-70,-56,-14,-95,2,-3,-32,-7,8,-10,-16,-92)));
+        A.add(new ArrayList(Arrays.asList(-95,-55,-99,-51,-7,-82,-93,-6,-8,-54,-76,-20,-80,-2,9,-100,-81,-78,-58,-27)));
+        A.add(new ArrayList(Arrays.asList(-76,-44,-40,-47,-50,-82,-21,-98,-28,0,-10,2,-90,-6,-12,-91,-28,-98,1,-49)));
+        A.add(new ArrayList(Arrays.asList(-18,-54,-95,-51,8,-18,-33,-18,-44,2,3,-11,-81,-35,7,-19,-82,-42,-21,-45)));
+        A.add(new ArrayList(Arrays.asList(-57,-63,-42,-70,-66,-65,-52,-81,-17,-23,-91,1,-68,-52,-42,1,-65,-43,-69,-18)));
+        A.add(new ArrayList(Arrays.asList(-57,-49,-35,-56,-20,-36,-42,-47,-70,-26,-53,-41,-9,-98,2,-25,8,-6,-99,-47)));
+        A.add(new ArrayList(Arrays.asList(-76,-64,-8,-18,-3,9,-23,-6,-93,-43,-82,-82,-47,-30,-48,-2,-54,-6,-19,-47)));
+        A.add(new ArrayList(Arrays.asList(-4,-96,-28,10,-95,-25,-29,-37,4,-87,-58,-68,-7,-92,-34,-48,-21,-17,-55,-91)));
+        A.add(new ArrayList(Arrays.asList(-28,-8,5,-96,-17,-56,-54,-79,-17,8,-92,-20,-65,-96,-88,-87,6,-68,-46,-1)));
+        A.add(new ArrayList(Arrays.asList(-25,-79,-27,-77,-88,7,-70,3,-10,-58,10,6,5,-55,-94,-41,-26,-19,-39,-12)));
+        A.add(new ArrayList(Arrays.asList(-46,-92,9,-90,-31,-86,-1,4,-40,-41,-95,1,-60,-69,-42,-67,-45,-65,-47,-91)));
+        A.add(new ArrayList(Arrays.asList(-32,-99,4,-65,-10,-83,-67,-96,-69,-63,4,-43,-48,-98,-16,-73,-21,1,-81,-56)));
+        A.add(new ArrayList(Arrays.asList(0,-1,-86,-71,-75,-1,-95,-22,-12,-38,-39,10,-98,-53,-84,-60,-42,-85,-21,-98)));
+        A.add(new ArrayList(Arrays.asList(-33,-6,-31,-66,-70,-27,-25,-99,-26,8,-86,-68,-92,-63,-62,-95,-8,-65,-13,-31)));
+        A.add(new ArrayList(Arrays.asList(-7,-84,-17,-66,-84,-13,2,-34,-22,-96,-81,-89,-61,-34,10,-23,-96,3,-2,-82)));
+        A.add(new ArrayList(Arrays.asList(-30,-48,1,-40,-84,-7,-8,-90,-32,-5,7,-53,-64,-25,-73,-82,-85,-40,1,-35)));
+        A.add(new ArrayList(Arrays.asList(-80,-83,-91,-90,-73,2,-18,-25,-76,-72,-6,-28,-49,-86,3,-80,-63,4,-85,3)));
+        A.add(new ArrayList(Arrays.asList(6,-8,-52,1,-57,-72,-73,-28,-88,-74,-25,-46,-93,-76,-10,-44,-92,-38,-70,-74)));
+        A.add(new ArrayList(Arrays.asList(-43,-24,-98,-36,-77,-81,-2,-90,1,-42,3,-82,-2,-32,-80,-32,-12,-60,-79,-32)));
+        A.add(new ArrayList(Arrays.asList(-91,-82,-65,8,-12,-64,-42,-82,-66,-16,-97,-96,-79,-29,-79,-6,-6,-19,3,4)));
+        System.out.println(dungeonPrincess(A));*/
+
+        // A Digit N numbers that whose digits adds up to sum B
+        System.out.println(NDigitNumbers(3,15));
     }
 }
