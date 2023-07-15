@@ -441,6 +441,7 @@ public class DynamicProgramming {
             return dp[A][B];
         }
     }
+
     public static int NDigitNumbers(int A, int B) {
         // Edge case
         if(B == 0) {
@@ -472,6 +473,47 @@ public class DynamicProgramming {
         });
         return totalSum;
 
+    }
+
+    public static int trianglePathSum(ArrayList<ArrayList<Integer>> A) {
+        int dp[][] = new int[A.size()][A.size()];
+        for(int i=0; i<dp.length; i++) {
+            Arrays.fill(dp[i],Integer.MAX_VALUE);
+        }
+
+        dp[0][0] = A.get(0).get(0);
+        for(int i=1; i<dp.length; i++) {
+            dp[i][0] = dp[i-1][0] + A.get(i).get(0);
+        }
+
+
+        for(int i=1; i<dp.length; i++) {
+
+            for(int j=1; j<=i; j++) {
+                if(j==i) {
+                    dp[i][j] = A.get(i).get(j) + dp[i-1][j-1];
+                }
+                else {
+                    dp[i][j] = A.get(i).get(j) + Math.min(dp[i-1][j-1], dp[i-1][j]);
+                }
+            }
+
+        }
+
+        int min = dp[dp.length-1][0];
+
+        for(int i=1; i<dp.length; i++) {
+            min = Math.min(min, dp[dp.length-1][i]);
+        }
+
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val +" ");
+            });
+            System.out.println();
+        });
+
+        return min;
     }
 
     public static void main(String[] args) {
@@ -561,6 +603,14 @@ public class DynamicProgramming {
         System.out.println(dungeonPrincess(A));*/
 
         // A Digit N numbers that whose digits adds up to sum B
-        System.out.println(NDigitNumbers(3,15));
+        /*System.out.println(NDigitNumbers(3,15));*/
+
+        // Triangle path sum
+        ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        A.add(new ArrayList(Arrays.asList(2)));
+        A.add(new ArrayList(Arrays.asList(3,4)));
+        A.add(new ArrayList(Arrays.asList(6,5,7)));
+        A.add(new ArrayList(Arrays.asList(4,1,8,3)));
+        System.out.println(trianglePathSum(A));
     }
 }
