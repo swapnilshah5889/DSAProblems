@@ -8,6 +8,15 @@ import java.util.Arrays;
 
 public class DynamicProgramming {
 
+    static class Pair {
+        int key;
+        int val;
+        Pair(int key, int val) {
+            this.key = key;
+            this.val = val;
+        }
+    }
+
     // Find Nth Fibonacci Number (Recursive - Top Down Approach)
     public static int findFibTopDown(int n, int[] arr) {
         if(n == 1 || n == 2) {
@@ -621,13 +630,99 @@ public class DynamicProgramming {
                 }
             }
         }
-        Arrays.stream(dp).forEach(arr -> {
+        /*Arrays.stream(dp).forEach(arr -> {
             Arrays.stream(arr).forEach(val -> {
                 System.out.print(val+" ");
             });
             System.out.println();
-        });
+        });*/
         return dp[dp.length-1][dp[0].length-1];
+    }
+
+    public static int knapsackUnbounded(ArrayList<Integer> A, ArrayList<Integer> B, int C) {
+        int dp[][] = new int[A.size()+1][C+1];
+        // First column
+        for(int i=0; i<dp.length; i++) {
+            dp[i][0] = 0;
+        }
+        // First column
+        for(int i=0; i<dp[0].length; i++) {
+            dp[0][i] = 0;
+        }
+
+        for(int i=1; i<dp.length; i++) {
+            int currVal = A.get(i-1);
+            int currWeight = B.get(i-1);
+            for(int j=1; j<dp[0].length; j++) {
+                if(currWeight <= j) {
+                    // We use current row as we are now allowed to
+                    // repeat the same item so we do not need to decrement
+                    // the total number of items remaining
+                    dp[i][j] = Math.max(currVal+dp[i][j-currWeight], dp[i-1][j]);
+                }
+                else {
+                    dp[i][j] = dp[i-1][j];
+                }
+            }
+        }
+
+        return dp[dp.length-1][dp[0].length-1];
+    }
+
+    public static Pair flipArrayCompare(Pair p1, Pair p2) {
+
+        // Same weight - compare items
+        if(p1.key==p2.key) {
+            return p1.val<p2.val? p1 : p2;
+        }
+        // Different weights - return maximum
+        else {
+            return p1.key>p2.key? p1 : p2;
+        }
+    }
+    public static int flipArray(ArrayList<Integer> A) {
+
+        int sum = A.stream().reduce(0, (acc, val) -> {
+           return acc+val;
+        });
+        sum/=2;
+
+        Pair[][] dp = new Pair[A.size()+1][sum+1];
+        // First Column
+        for(int i=0; i<dp.length; i++) {
+            dp[i][0] = new Pair(0,0);
+        }
+        // First Row
+        for(int j=0; j<dp[0].length; j++) {
+            dp[0][j] = new Pair(0,0);
+        }
+
+        // DP
+        // Iterate over array
+        for(int i=1; i<dp.length; i++) {
+            int currVal = A.get(i-1);
+            // Iterate over sum/2
+            for(int j=1; j<dp[0].length; j++) {
+                if(currVal<=j) {
+                    Pair tempPair = new Pair(dp[i-1][j-currVal].key, dp[i-1][j-currVal].val);
+                    tempPair.key+=currVal;
+                    tempPair.val+=1;
+                    dp[i][j] = flipArrayCompare(tempPair, dp[i-1][j]);
+//                    dp[i][j] = Math.max(currVal+dp[i-1][j-currVal], dp[i-1][j]);
+                }
+                else {
+                    dp[i][j] = dp[i-1][j];
+                }
+            }
+        }
+
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print("("+val.key+","+val.val+") ");
+            });
+            System.out.println();
+        });
+        return dp[dp.length-1][dp[0].length-1].val;
     }
 
     public static void main(String[] args) {
@@ -754,10 +849,16 @@ public class DynamicProgramming {
         System.out.println(maximumRectangles(A));*/
 
         // 0 1 Knapsack
-        ArrayList<Integer> values = new ArrayList(Arrays.asList(60, 100, 120));
+        /*ArrayList<Integer> values = new ArrayList(Arrays.asList(60, 100, 120));
         ArrayList<Integer> weights = new ArrayList(Arrays.asList(10, 20, 30));
-        System.out.println(knapsackZeroOne(values, weights, 50));
+        System.out.println(knapsackZeroOne(values, weights, 50));*/
 
+        // Unbounded Knapsack
+        /*System.out.println(knapsackUnbounded(values, weights, 50));*/
+
+        // Flip Array
+        /*ArrayList<Integer> A = new ArrayList<>(Arrays.asList(3,2,4,5));
+        System.out.println(flipArray(A));*/
     }
 
 }
