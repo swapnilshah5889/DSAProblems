@@ -2,6 +2,7 @@ package DynamicProgramming;
 
 import org.checkerframework.checker.units.qual.A;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -515,6 +516,119 @@ public class DynamicProgramming {
 
         return min;
     }
+    private static int minimumPathSum(ArrayList<ArrayList<Integer>> A) {
+        int dp[][] = new int[A.size()][A.get(0).size()];
+
+        dp[0][0] = A.get(0).get(0);
+        // Set first row
+        for(int i=1; i<dp.length; i++) {
+            dp[i][0] = dp[i-1][0] + A.get(i).get(0);
+        }
+
+        // Set first column
+        for(int i=1; i<dp[0].length; i++) {
+            dp[0][i] = dp[0][i-1] + A.get(0).get(i);
+        }
+
+        // DP
+        for(int i=1; i<dp.length; i++) {
+            for(int j=1; j<dp[0].length; j++) {
+                dp[i][j] = Math.min(dp[i-1][j],dp[i][j-1]) + A.get(i).get(j);
+            }
+        }
+
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val +" ");
+            });
+            System.out.println();
+        });
+
+        return dp[dp.length-1][dp[0].length-1];
+
+    }
+
+    private static int maximumRectangles(ArrayList<ArrayList<Integer>> A) {
+        int maxArea = 0;
+
+        for(int i=0; i<A.size(); i++) {
+            for(int j=1; j<A.get(0).size(); j++) {
+                if(A.get(i).get(j) != 0) {
+                    A.get(i).set(j, A.get(i).get(j)+A.get(i).get(j-1));
+                }
+            }
+        }
+
+        for(int i=0; i<A.size(); i++) {
+            for(int j=0; j<A.get(0).size(); j++) {
+
+                int width=A.get(i).get(j);
+                int height=1;
+                // If current element not 0
+                if(A.get(i).get(j)!=0) {
+                    int rowIndex = i;
+                    while(rowIndex>=0) {
+                        // Take minimum of row's width
+                        width = Math.min(width, A.get(rowIndex).get(j));
+                        // Break if width of previous row is not more than 0
+                        if(width==0) {
+                            break;
+                        }
+                        int area = height * width;
+                        maxArea = Math.max(maxArea, area);
+                        height++;
+                        rowIndex--;
+                    }
+                }
+
+            }
+        }
+
+        A.stream().forEach(list -> {
+            list.stream().forEach(val -> {
+                System.out.print(val+ " ");
+            });
+            System.out.println();
+        });
+
+        return maxArea;
+    }
+
+    private static int knapsackZeroOne(ArrayList<Integer> A, ArrayList<Integer> B, int C) {
+        int dp[][] = new int[A.size()+1][C+1];
+        // First column
+        for(int i=0; i<dp.length; i++) {
+            dp[i][0] = 0;
+        }
+        // First column
+        for(int i=0; i<dp[0].length; i++) {
+            dp[0][i] = 0;
+        }
+
+        for(int i=1; i<dp.length; i++) {
+            int currVal = A.get(i-1);
+            int currWeight = B.get(i-1);
+            for(int j=1; j<dp[0].length; j++) {
+                if(currWeight <= j) {
+                    // We add current value with previous row's j-currWeight index
+                    // Because as we add current value so we are picking one item
+                    // So we need to choose decrease one item which is why
+                    // we choose previous row for j-currWeight column
+                    dp[i][j] = Math.max(currVal+dp[i-1][j-currWeight], dp[i-1][j]);
+                }
+                else {
+                    dp[i][j] = dp[i-1][j];
+                }
+            }
+        }
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val+" ");
+            });
+            System.out.println();
+        });
+        return dp[dp.length-1][dp[0].length-1];
+    }
 
     public static void main(String[] args) {
 
@@ -606,11 +720,44 @@ public class DynamicProgramming {
         /*System.out.println(NDigitNumbers(3,15));*/
 
         // Triangle path sum
-        ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        /*ArrayList<ArrayList<Integer>> A = new ArrayList<>();
         A.add(new ArrayList(Arrays.asList(2)));
         A.add(new ArrayList(Arrays.asList(3,4)));
         A.add(new ArrayList(Arrays.asList(6,5,7)));
         A.add(new ArrayList(Arrays.asList(4,1,8,3)));
-        System.out.println(trianglePathSum(A));
+        System.out.println(trianglePathSum(A));*/
+
+        // Minimum path sum
+        /*ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        A.add(new ArrayList(Arrays.asList(1, -3, 2)));
+        A.add(new ArrayList(Arrays.asList(2, 5, 10)));
+        A.add(new ArrayList(Arrays.asList(5, -5, 1)));
+        System.out.println("Minimum path sum: "+minimumPathSum(A));*/
+
+        // Maximum Rectangle
+        /*ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        A.add(new ArrayList(Arrays.asList(1,1,1,1,1,1,0,1,1,1,1,1,1,1,1)));
+        A.add(new ArrayList(Arrays.asList(1,0,1,1,0,1,1,1,1,1,1,1,1,1,1)));
+        A.add(new ArrayList(Arrays.asList(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)));
+        A.add(new ArrayList(Arrays.asList(0,1,1,1,1,1,1,0,1,1,1,0,1,1,1)));
+        A.add(new ArrayList(Arrays.asList(1,0,0,1,1,1,1,1,1,1,1,0,1,1,1)));
+        A.add(new ArrayList(Arrays.asList(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)));
+        A.add(new ArrayList(Arrays.asList(1,1,1,0,1,1,1,1,1,1,1,0,1,1,1)));
+        A.add(new ArrayList(Arrays.asList(1,1,1,1,0,0,0,1,1,1,1,1,0,1,0)));
+        A.add(new ArrayList(Arrays.asList(1,0,1,1,0,0,0,1,1,1,1,0,1,0,1)));
+        A.add(new ArrayList(Arrays.asList(1,0,1,1,1,1,1,1,0,1,1,1,0,1,1)));
+        A.add(new ArrayList(Arrays.asList(1,0,1,1,1,1,1,1,1,1,1,1,1,1,1)));
+        A.add(new ArrayList(Arrays.asList(1,1,1,0,1,1,1,1,1,1,1,1,1,1,1)));
+        A.add(new ArrayList(Arrays.asList(1,1,1,0,0,0,1,0,1,1,1,1,1,1,1)));
+        A.add(new ArrayList(Arrays.asList(1,1,1,1,1,1,0,1,1,1,1,1,1,1,1)));
+        A.add(new ArrayList(Arrays.asList(1,1,1,1,1,1,1,0,1,1,1,1,1,0,1)));
+        System.out.println(maximumRectangles(A));*/
+
+        // 0 1 Knapsack
+        ArrayList<Integer> values = new ArrayList(Arrays.asList(60, 100, 120));
+        ArrayList<Integer> weights = new ArrayList(Arrays.asList(10, 20, 30));
+        System.out.println(knapsackZeroOne(values, weights, 50));
+
     }
+
 }
