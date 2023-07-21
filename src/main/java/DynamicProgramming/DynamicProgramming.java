@@ -725,6 +725,68 @@ public class DynamicProgramming {
         return dp[dp.length-1][dp[0].length-1].val;
     }
 
+    public static Pair compareFood(Pair p1, Pair p2) {
+
+        // Weights different
+        if(p2.key != p1.key) {
+            return p1.key > p2.key ? p1 : p2;
+        }
+        // Same weights - return minimum cost
+        else {
+            return p1.val < p2.val ? p1 : p2;
+        }
+    }
+    public static int partyMinimumCost(ArrayList<Integer> A, ArrayList<Integer> B, ArrayList<Integer> C) {
+        int maxCapacity = A.stream().reduce(0, (acc, val) -> {
+            return Math.max(acc,val);
+        });
+
+        System.out.println("Max: "+maxCapacity);
+        Pair dp[][] = new Pair[B.size()+1][maxCapacity+1];
+
+        // First column
+        for(int i=0; i<dp.length; i++) {
+            dp[i][0] = new Pair(0,0);
+        }
+
+        // First row
+        for(int i=0; i<dp[0].length; i++) {
+            dp[0][i] = new Pair(0,0);
+        }
+
+        for(int i=1;i<dp.length;i++) {
+            int currWeight = B.get(i-1);
+            int currCost = C.get(i-1);
+            for(int j=1;j<dp[0].length;j++) {
+
+                // If food weight is less than or equal to available capacity
+                if(currWeight<=j) {
+                    Pair temp = new Pair(currWeight, currCost);
+                    temp.key += dp[i][j-currWeight].key;
+                    temp.val += dp[i][j-currWeight].val;
+                    dp[i][j] = compareFood(temp, dp[i-1][j]);
+                }
+                else {
+                    dp[i][j] = dp[i-1][j];
+                }
+
+            }
+        }
+
+        int partyCost  = A.stream().reduce(0 , (acc, capacity) -> {
+            return acc + dp[dp.length-1][capacity].val;
+        });
+
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(pair -> {
+                System.out.print("("+pair.key+", "+pair.val+") ");
+            });
+            System.out.println();
+        });
+
+        return partyCost;
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -856,9 +918,15 @@ public class DynamicProgramming {
         // Unbounded Knapsack
         /*System.out.println(knapsackUnbounded(values, weights, 50));*/
 
-        // Flip Array
+        // Flip Array - minimum flips in array to make sum closest to 0
         /*ArrayList<Integer> A = new ArrayList<>(Arrays.asList(3,2,4,5));
         System.out.println(flipArray(A));*/
+
+        // Minimum cost of party
+        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(2, 4, 6));
+        ArrayList<Integer> B = new ArrayList<>(Arrays.asList(2, 1, 3));
+        ArrayList<Integer> C = new ArrayList<>(Arrays.asList(2, 5, 3));
+        System.out.println(partyMinimumCost(A,B,C));
     }
 
 }
