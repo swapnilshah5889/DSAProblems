@@ -787,6 +787,45 @@ public class DynamicProgramming {
         return partyCost;
     }
 
+    public static int buyingCandies(ArrayList<Integer> A, ArrayList<Integer> B, ArrayList<Integer> C, int D) {
+
+        // Set sweetness
+        for(int i=0; i<B.size(); i++) {
+            B.set(i, A.get(i)*B.get(i));
+        }
+        // First Column
+        int dp[][] = new int[B.size()+1][D+1];
+        for(int i=0; i<dp.length; i++) {
+            dp[i][0] = 0;
+        }
+        // First Row
+        for(int i=0; i<dp[0].length; i++) {
+            dp[0][i] = 0;
+        }
+
+        // DP
+        for(int i=1; i<dp.length; i++) {
+            int currCost = C.get(i-1);
+            int currSweetness = B.get(i-1);
+            for(int j=1; j<dp[0].length; j++) {
+                if(currCost<=j) {
+                    dp[i][j] = Math.max(dp[i-1][j], currSweetness + dp[i][j-currCost]);
+                }
+                else {
+                    dp[i][j] = dp[i-1][j];
+                }
+            }
+        }
+
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val+" ");
+            });
+            System.out.println();
+        });
+        return dp[dp.length-1][dp[0].length-1];
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -923,10 +962,17 @@ public class DynamicProgramming {
         System.out.println(flipArray(A));*/
 
         // Minimum cost of party
-        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(2, 4, 6));
+        /*ArrayList<Integer> A = new ArrayList<>(Arrays.asList(2, 4, 6));
         ArrayList<Integer> B = new ArrayList<>(Arrays.asList(2, 1, 3));
         ArrayList<Integer> C = new ArrayList<>(Arrays.asList(2, 5, 3));
-        System.out.println(partyMinimumCost(A,B,C));
+        System.out.println(partyMinimumCost(A,B,C));*/
+
+        // Buying candies
+        ArrayList<Integer> candiesInPacket = new ArrayList<>(Arrays.asList(1, 2, 3));
+        ArrayList<Integer> sweetnessOfCandies = new ArrayList<>(Arrays.asList(2, 2, 10));
+        ArrayList<Integer> costOfCandies = new ArrayList<>(Arrays.asList(2, 3, 9));
+        int budget = 8;
+        System.out.println(buyingCandies(candiesInPacket,sweetnessOfCandies,costOfCandies, budget));
     }
 
 }
