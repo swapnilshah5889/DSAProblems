@@ -5,6 +5,8 @@ import org.checkerframework.checker.units.qual.A;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DynamicProgramming {
 
@@ -826,6 +828,203 @@ public class DynamicProgramming {
         return dp[dp.length-1][dp[0].length-1];
     }
 
+    public static int distinctSubsequences(String s, String t) {
+
+        int dp[][] = new int[t.length()][s.length()+1];
+
+        for(int i=0; i<t.length(); i++) {
+            dp[i][0] = 0;
+        }
+
+        char firstChar = t.charAt(0);
+        for(int i=1; i<=s.length(); i++) {
+            if(firstChar == s.charAt(i-1)){
+                dp[0][i] = dp[0][i-1]+1;
+            }
+            else {
+                dp[0][i] = dp[0][i-1];
+            }
+        }
+
+        for(int i=1; i<t.length(); i++) {
+            int currChar = t.charAt(i);
+            for(int j=1; j<=s.length(); j++) {
+                if(currChar == s.charAt(j-1)) {
+                    dp[i][j] = dp[i-1][j-1] + dp[i][j-1];
+                }
+                else {
+                    dp[i][j] = dp[i][j-1];
+                }
+            }
+        }
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val+" ");
+            });
+            System.out.println();
+        });
+        return dp[t.length()-1][s.length()];
+    }
+
+    public static int minCostClimbingStairs(int[] cost) {
+        int dp[] = new int[cost.length];
+        dp[0] = cost[0];
+        dp[1] = cost[1];
+
+        for(int i=2; i<cost.length; i++) {
+            dp[i] = cost[i] + Math.min(dp[i-1],dp[i-2]);
+        }
+        Arrays.stream(dp).forEach(val -> {
+            System.out.print(val+" ");
+        });
+        System.out.println();
+        return Math.min(dp[dp.length-1], dp[dp.length-2]);
+    }
+
+    public static int knapsackII(ArrayList<Integer> A, ArrayList<Integer> B, int C) {
+
+        int dp[][] = new int[2][C+1];
+        // First column
+        for(int i=0; i<dp.length; i++) {
+            dp[i][0] = 0;
+        }
+        // First column
+        for(int i=0; i<dp[0].length; i++) {
+            dp[0][i] = 0;
+        }
+
+        for(int i=0; i<A.size(); i++) {
+            int currVal = A.get(i);
+            int currWeight = B.get(i);
+            for(int j=1; j<dp[0].length; j++) {
+                if(currWeight <= j) {
+                    // We add current value with previous row's j-currWeight index
+                    // Because as we add current value so we are picking one item
+                    // So we need to choose decrease one item which is why
+                    // we choose previous row for j-currWeight column
+                    dp[1][j] = Math.max(currVal+dp[0][j-currWeight], dp[0][j]);
+                }
+                else {
+                    dp[1][j] = dp[0][j];
+                }
+            }
+            for(int k=0; k<dp[0].length; k++) {
+                dp[0][k] = dp[1][k];
+            }
+        }
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val+" ");
+            });
+            System.out.println();
+        });
+        return dp[dp.length-1][dp[0].length-1];
+
+    }
+
+    public static int coinChange(ArrayList<Integer> A, int B) {
+        int dp[][] = new int[2][B+1];
+        for(int i=0; i<dp.length; i++) {
+            dp[i][0] = 1;
+        }
+        for(int i=0; i<dp[0].length; i++) {
+            dp[0][i] = 0;
+        }
+
+        for(int i=0; i<A.size(); i++) {
+            int currVal = A.get(i);
+            for(int j=1; j<dp[0].length; j++) {
+                if(currVal <= j) {
+                    if(dp[1][j-currVal]>0) {
+                        if(currVal==j) {
+                            dp[1][j] = 1;
+                        }
+                        else {
+                            if(dp[0][j]>0) {
+                                dp[1][j] = Math.min(dp[1][j-currVal] + 1, dp[0][j]);
+                            }
+                            else{
+                                dp[1][j] = dp[1][j-currVal] + 1;
+                            }
+                        }
+                    }
+                    else {
+
+                    }
+                }
+                else {
+                    dp[1][j] = dp[0][j];
+                }
+
+            }
+            for(int k=0; k<dp[0].length; k++) {
+                dp[0][k] = dp[1][k];
+            }
+        }
+
+        if(dp[dp.length-1][dp[0].length-1] == 0)
+            return -1;
+        return dp[dp.length-1][dp[0].length-1];
+    }
+
+    // Find total combinations of coins to make change for a given sum
+    public static int coinChangeWays(ArrayList<Integer> A, int B) {
+        int dp[][] = new int[2][B+1];
+        for(int i=0; i<dp.length; i++) {
+            dp[i][0] = 1;
+        }
+        for(int i=0; i<dp[0].length; i++) {
+            dp[0][i] = 0;
+        }
+
+        for(int i=0; i<A.size(); i++) {
+            int currVal = A.get(i);
+            for(int j=1; j<dp[0].length; j++) {
+                if(currVal <= j) {
+                    dp[1][j] = dp[1][j-currVal] + dp[0][j];
+                }
+                else {
+                    dp[1][j] = dp[0][j];
+                }
+
+            }
+            for(int k=0; k<dp[0].length; k++) {
+                dp[0][k] = dp[1][k];
+            }
+        }
+
+        return dp[dp.length-1][dp[0].length-1];
+    }
+
+    public static int longestFibonacciSequence(ArrayList<Integer> A) {
+
+        Map<Integer, Integer> mp = new HashMap<>();
+        for(int i=0; i<A.size(); i++) {
+            mp.put(A.get(i), i);
+        }
+
+        int dp[][] = new int[A.size()+1][A.size()+1];
+        for(int i=0;i<dp.length; i++) {
+            for(int j=i; j<dp.length;j++) {
+                dp[i][j] = 2;
+            }
+        }
+
+        int max = 0;
+        // DP
+        for(int i=0; i<A.size(); i++) {
+            for(int j=i+1; j<A.size(); j++) {
+                if(mp.containsKey(A.get(i)+A.get(j))) {
+                    int k = mp.get(A.get(i)+A.get(j));
+                    dp[j][k] = 1 + dp[i][j];
+                    max = Math.max(max, dp[j][k]);
+                }
+            }
+        }
+
+        return max;
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -968,11 +1167,30 @@ public class DynamicProgramming {
         System.out.println(partyMinimumCost(A,B,C));*/
 
         // Buying candies
-        ArrayList<Integer> candiesInPacket = new ArrayList<>(Arrays.asList(1, 2, 3));
+        /*ArrayList<Integer> candiesInPacket = new ArrayList<>(Arrays.asList(1, 2, 3));
         ArrayList<Integer> sweetnessOfCandies = new ArrayList<>(Arrays.asList(2, 2, 10));
         ArrayList<Integer> costOfCandies = new ArrayList<>(Arrays.asList(2, 3, 9));
         int budget = 8;
-        System.out.println(buyingCandies(candiesInPacket,sweetnessOfCandies,costOfCandies, budget));
+        System.out.println(buyingCandies(candiesInPacket,sweetnessOfCandies,costOfCandies, budget));*/
+
+        // Total Distinct Subsequences
+        /*System.out.println(distinctSubsequences("rabbbit","rabbit"));*/
+
+        // Min cost to climb stairs
+        /*System.out.println(minCostClimbingStairs(new int[]{10,15,20}));*/
+
+        // Knapsack II
+        /*ArrayList<Integer> values = new ArrayList(Arrays.asList(6, 10, 12));
+        ArrayList<Integer> weights = new ArrayList(Arrays.asList(10, 20, 30));
+        System.out.println(knapsackII(values, weights, 50));*/
+
+        // Ways for coin change
+        /*ArrayList<Integer> coins = new ArrayList<>(Arrays.asList(2,5));
+        System.out.println(coinChange(coins, 3));*/
+
+        // Longest Fibonacci Sequence
+        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8));
+        System.out.println(longestFibonacciSequence(A));
     }
 
 }

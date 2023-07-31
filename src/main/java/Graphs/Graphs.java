@@ -767,6 +767,55 @@ public class Graphs {
         return ans;
     }
 
+
+    // LC 1926 - Find nearest exit in a maze
+    public static int nearestExit(char[][] maze, int[] entrance) {
+        int rows = maze.length;
+        int cols = maze[0].length;
+
+        Queue<Integer[]> queue = new LinkedList<>();
+        Integer[] start = new Integer[]{entrance[0],entrance[1]};
+        queue.add(start);
+        queue.add(null);
+        maze[start[0]][start[1]] = '+';
+
+        int[] dx = new int[]{0,0,-1,1};
+        int[] dy = new int[]{-1,1,0,0};
+
+        int level = 0;
+        boolean exitFound = false;
+        while(queue.peek()!=null) {
+            level++;
+            while(queue.peek()!=null) {
+                Integer[] point = queue.remove();
+                for(int k=0; k<dx.length; k++) {
+                    int newX = point[0]+dx[k];
+                    int newY = point[1]+dy[k];
+
+                    // Valid point
+                    if(newX>=0 && newX<rows && newY>=0 && newY<cols) {
+                        if(maze[newX][newY] == '.') {
+                            maze[newX][newY] = '+';
+                            queue.add(new Integer[]{newX,newY});
+                            if(newX == 0 || newY==0 || newX == rows-1 || newY == cols-1) {
+                                exitFound = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            // Mark end of current level
+            queue.remove();
+            queue.add(null);
+            if(exitFound) {
+                break;
+            }
+        }
+
+        return exitFound ? level : -1;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -796,9 +845,15 @@ public class Graphs {
         System.out.println(knight(173,237,46,81,9,235));*/
 
         // Edges in MST
-        ArrayList<Integer> ans = edgeInMST(3, getSampleGraph(11));
+        /*ArrayList<Integer> ans = edgeInMST(3, getSampleGraph(11));
         ans.forEach(integer -> {
             System.out.print(integer+" ");
-        });
+        });*/
+
+        // Nearest Exit in a Maze
+        /*char[][] maze = new char[][]{{'+','+','.','+'},{'.','.','.','+'},{'+','+','+','.'}};
+        System.out.println(nearestExit(maze, new int[]{1,2}));*/
+        char[][] maze = new char[][]{{'+','+','+'},{'.','.','.'},{'+','+','+'}};
+        System.out.println(nearestExit(maze, new int[]{1,0}));
     }
 }
