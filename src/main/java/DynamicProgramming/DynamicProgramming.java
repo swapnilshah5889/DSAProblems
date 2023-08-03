@@ -1025,6 +1025,67 @@ public class DynamicProgramming {
         return max;
     }
 
+    public static int minEditDistRecur(String A, int indexA, String B, int indexB, int[][] dp,
+                                       int ic, int dc, int rc) {
+        if(indexA == -1 && indexB == -1) {
+            return dp[0][0];
+        }
+        // Input string reached end - Insert remaining characters of target string
+        if(indexA == -1) {
+            if(dp[indexA+1][indexB+1] == -1){
+                dp[indexA+1][indexB+1] = ic * (indexB+1);
+            }
+        }
+        // Target string reached end - Delete remaining characters of input string
+        if(indexB == -1) {
+            if(dp[indexA+1][indexB+1] == -1){
+                dp[indexA+1][indexB+1] = dc * (indexA+1);
+            }
+        }
+
+        if(dp[indexA+1][indexB+1] == -1) {
+
+            // If character at the end is equal - go to next character
+            if(A.charAt(indexA) == B.charAt(indexB)) {
+                return minEditDistRecur(A, indexA-1, B, indexB-1, dp, ic, dc,  rc);
+            }
+
+            // Characters not same - return minimum of replace, insert and delete
+            int min =  Math.min (Math.min (
+                    rc + minEditDistRecur(A, indexA-1, B, indexB-1, dp, ic, dc,  rc),
+                    ic + minEditDistRecur(A, indexA, B, indexB-1, dp, ic, dc,  rc)),
+                    dc + minEditDistRecur(A, indexA-1, B, indexB, dp, ic, dc,  rc));
+
+            dp[indexA+1][indexB+1] = min;
+
+        }
+
+        return dp[indexA+1][indexB+1];
+    }
+    public static int minimumEditDistance(String inputString, String targetString) {
+        int insertCost = 2;
+        int deleteCost = 2;
+        int replaceCost = 3;
+        int dp[][] = new int[inputString.length()+1][targetString.length()+1];
+        for(int i=0; i<dp.length; i++) {
+            for(int j=0; j<dp[0].length; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        dp[0][0] = 0;
+        int editDist = minEditDistRecur(inputString, inputString.length()-1,
+                targetString, targetString.length()-1, dp,
+                insertCost, deleteCost, replaceCost);
+
+        for(int i=0; i<dp.length; i++) {
+            for(int j=0; j<dp[0].length; j++) {
+                System.out.print(dp[i][j]+" ");
+            }
+            System.out.println();
+        }
+        return editDist;
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -1189,8 +1250,11 @@ public class DynamicProgramming {
         System.out.println(coinChange(coins, 3));*/
 
         // Longest Fibonacci Sequence
-        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8));
-        System.out.println(longestFibonacciSequence(A));
+        /*ArrayList<Integer> A = new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8));
+        System.out.println(longestFibonacciSequence(A));*/
+
+        // Minimum edit distance
+        System.out.println(minimumEditDistance("acdxy", "abcgx"));
     }
 
 }
