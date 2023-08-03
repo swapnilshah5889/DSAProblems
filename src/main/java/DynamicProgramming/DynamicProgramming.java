@@ -1086,6 +1086,130 @@ public class DynamicProgramming {
         return editDist;
     }
 
+    public static boolean patternMatchRecur(String inputString, String pattern,
+                                                int indexI, int indexP, Boolean[][] dp) {
+
+        // If both end reached
+        if(indexI == -1 && indexP == -1) {
+            return dp[0][0];
+        }
+
+        // If any one reached the end
+        if(indexI == -1 || indexP == -1) {
+            if(dp[indexI+1][indexP+1] == null) {
+                // Input String reached end
+                if(indexI == -1) {
+                    if(pattern.charAt(indexP) == '*') {
+                        dp[indexI + 1][indexP + 1] = patternMatchRecur(inputString,
+                                pattern, indexI, indexP - 1, dp);
+                    }
+                    else {
+                        dp[indexI + 1][indexP + 1] = false;
+                    }
+                }
+                // Pattern reached end
+                else {
+                    dp[indexI+1][indexP+1] = false;
+                }
+            }
+        }
+
+
+        if(dp[indexI+1][indexP+1] == null) {
+            // Characters Match
+            if(inputString.charAt(indexI) == pattern.charAt(indexP)) {
+                dp[indexI+1][indexP+1] = patternMatchRecur(inputString,
+                                        pattern, indexI-1, indexP-1, dp);
+            }
+            // Characters do not match
+            else {
+                if(pattern.charAt(indexP) == '?') {
+                    // Matches exactly 1 character matched
+                    dp[indexI+1][indexP+1] = patternMatchRecur(inputString,
+                                                pattern, indexI-1, indexP-1, dp);
+                }
+                else if(pattern.charAt(indexP) == '*') {
+                    // Check for 0 to n characters matched
+                    dp[indexI+1][indexP+1] = patternMatchRecur(inputString,
+                            pattern, indexI, indexP-1, dp)
+                            ||
+                            patternMatchRecur(inputString,
+                                    pattern, indexI-1, indexP, dp);
+                }
+                else {
+                    dp[indexI+1][indexP+1] = false;
+                }
+            }
+        }
+
+        return dp[indexI+1][indexP+1];
+    }
+    public static boolean wildcardPatternMatchRecurssive(String inputString, String pattern) {
+        Boolean dp[][] = new Boolean[inputString.length()+1][pattern.length()+1];
+
+        for(int i=0; i<dp.length; i++) {
+            for(int j=0; j<dp[0].length; j++) {
+                dp[i][j] = null;
+            }
+        }
+        dp[0][0] = true;
+        boolean ans = patternMatchRecur(inputString, pattern, inputString.length()-1,
+                    pattern.length()-1, dp);
+        for(int i=0; i<dp.length; i++) {
+            for(int j=0; j<dp[0].length; j++) {
+                System.out.print(dp[i][j] + " ");
+            }
+            System.out.println();
+        }
+        return ans;
+    }
+
+    private static boolean wildcardPatternMatchIterative(String inputString, String pattern) {
+        Boolean prev[] = new Boolean[inputString.length()+1];
+        Boolean curr[] = new Boolean[inputString.length()+1];
+        prev[0] = true;
+
+        // First Column
+        for(int j=1; j<prev.length; j++) {
+            prev[j] = false;
+        }
+
+        for(int i=0; i<pattern.length(); i++) {
+            char patternChar = pattern.charAt(i);
+
+            if(pattern.charAt(i) == '*')
+                curr[0] = prev[0];
+            else
+                curr[0] = false;
+
+            for(int j=1; j<prev.length; j++) {
+                char inputChar = inputString.charAt(j-1);
+
+                // Characters match or ? character
+                if(inputChar == patternChar || patternChar == '?') {
+                    curr[j] = prev[j-1];
+                }
+                // Star Character
+                else if(patternChar == '*') {
+                    curr[j] = prev[j] || curr[j-1];
+                }
+                // Characters do not match
+                else {
+                    curr[j] = false;
+                }
+            }
+            prev = curr;
+            Arrays.stream(prev).forEach(val -> {
+                System.out.print(val + " ");
+            });
+            System.out.println();
+            curr = new Boolean[inputString.length()+1];
+        }
+
+
+        return prev[prev.length-1];
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -1254,7 +1378,13 @@ public class DynamicProgramming {
         System.out.println(longestFibonacciSequence(A));*/
 
         // Minimum edit distance
-        System.out.println(minimumEditDistance("acdxy", "abcgx"));
+        /*System.out.println(minimumEditDistance("acdxy", "abcgx"));*/
+
+        // Wild Character Match / String pattern Match
+        // System.out.println(wildcardPatternMatchRecurssive("bcabbbbcb", "?b*?b*b"));
+//        System.out.println(wildcardPatternMatchIterative("bcabbbbcb","?b*?b*b"));
+        System.out.println(wildcardPatternMatchIterative("bbbcbcb","**b"));
     }
+
 
 }
