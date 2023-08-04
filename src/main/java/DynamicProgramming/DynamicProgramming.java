@@ -1210,6 +1210,58 @@ public class DynamicProgramming {
         return prev[prev.length-1];
     }
 
+    private static boolean interleaveStringsHelper(String A, String B, String C,
+                                                   int aIndex, int bIndex, int cIndex,
+                                                   Boolean[][] dp) {
+        // Inputs traversed
+        if(aIndex == -1 && bIndex == -1) {
+            // return if target traversed or not
+            return cIndex == -1;
+        }
+        // Target traversed
+        if(cIndex == -1) {
+            return false;
+        }
+
+        if(dp[aIndex+1][bIndex+1] == null) {
+            boolean isValid = false;
+            if (aIndex != -1 && A.charAt(aIndex) == C.charAt(cIndex)) {
+                isValid = interleaveStringsHelper(A, B, C, aIndex - 1, bIndex, cIndex - 1, dp);
+            }
+
+            if (bIndex != -1 && B.charAt(bIndex) == C.charAt(cIndex)) {
+                isValid = isValid || interleaveStringsHelper(A, B, C, aIndex, bIndex - 1, cIndex - 1, dp);
+            }
+            dp[aIndex+1][bIndex+1] = isValid;
+        }
+
+
+        return dp[aIndex+1][bIndex+1];
+    }
+
+    private static boolean interleaveStrings(String A, String B, String C) {
+        Boolean dp[][] = new Boolean[A.length()+1][B.length()+1];
+        dp[0][0] = true;
+        for(int i=0; i<A.length(); i++) {
+            dp[i+1][0] = A.charAt(i) == C.charAt(i);
+        }
+
+        for(int i=0; i<B.length(); i++) {
+            dp[0][i+1] = B.charAt(i) == C.charAt(i);
+        }
+
+        Boolean ans = interleaveStringsHelper(A, B, C, A.length()-1,
+                                B.length()-1, C.length()-1, dp);
+
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val+" ");
+            });
+            System.out.println();
+        });
+        return ans;
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -1383,7 +1435,10 @@ public class DynamicProgramming {
         // Wild Character Match / String pattern Match
         // System.out.println(wildcardPatternMatchRecurssive("bcabbbbcb", "?b*?b*b"));
 //        System.out.println(wildcardPatternMatchIterative("bcabbbbcb","?b*?b*b"));
-        System.out.println(wildcardPatternMatchIterative("bbbcbcb","**b"));
+        /*System.out.println(wildcardPatternMatchIterative("bbbcbcb","**b"));*/
+
+        // Interleave Strings
+        System.out.println(interleaveStrings("aabcc", "dbbca","aadbbcbcac"));
     }
 
 
