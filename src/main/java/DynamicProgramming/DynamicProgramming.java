@@ -1262,6 +1262,71 @@ public class DynamicProgramming {
         return ans;
     }
 
+    private static boolean regularExpressionRecur(String input, String pattern,
+                                                  int iIndex, int pIndex, Boolean[][] dp) {
+        // If both traversed
+        if(pIndex == -1 && iIndex == -1) {
+            return dp[iIndex+1][pIndex+1];
+        }
+        // Input traversed
+        if(iIndex == -1) {
+            // If pattern left with * characters
+            if(pattern.charAt(pIndex) == '*') {
+                dp[iIndex+1][pIndex+1] = regularExpressionRecur(input, pattern, iIndex, pIndex-2, dp);
+            }
+            // If pattern left with other characters
+            else {
+                if(dp[iIndex+1][pIndex+1] == null)
+                    dp[iIndex+1][pIndex+1] = false;
+            }
+        }
+        // Pattern traversed
+        if(pIndex == -1) {
+            if(dp[iIndex+1][pIndex+1] == null)
+                dp[iIndex+1][pIndex+1] = false;
+        }
+
+        if(dp[iIndex+1][pIndex+1] == null) {
+            if(input.charAt(iIndex) == pattern.charAt(pIndex) || pattern.charAt(pIndex) == '.') {
+                dp[iIndex+1][pIndex+1] = regularExpressionRecur(input, pattern, iIndex-1, pIndex-1, dp);
+            }
+            else if(pattern.charAt(pIndex) == '*') {
+                // If character match or previous character '.'
+                // Consider both, consuming input character and discarding '*'
+                if(pattern.charAt(pIndex-1) == input.charAt(iIndex) || pattern.charAt(pIndex-1) == '.') {
+                    dp[iIndex + 1][pIndex + 1] = regularExpressionRecur(input, pattern, iIndex, pIndex - 2, dp) ||
+                            regularExpressionRecur(input, pattern, iIndex - 1, pIndex, dp);
+                }
+                // Discard the '*'
+                else {
+                    dp[iIndex + 1][pIndex + 1] = regularExpressionRecur(input, pattern, iIndex, pIndex - 2, dp);
+                }
+            }
+            else {
+                dp[iIndex+1][pIndex+1] = false;
+            }
+        }
+
+        return dp[iIndex+1][pIndex+1];
+
+    }
+    private static boolean regularExpression(String input, String pattern) {
+
+        Boolean dp[][] = new Boolean[input.length()+1][pattern.length()+1];
+        Arrays.stream(dp).map(arr->{
+            return Arrays.stream(arr).map(val -> {return null;});
+        });
+        dp[0][0] = true;
+        boolean ans = regularExpressionRecur(input, pattern, input.length()-1, pattern.length()-1, dp);
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val+" ");
+            });
+            System.out.println();
+        });
+        return ans;
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -1438,7 +1503,12 @@ public class DynamicProgramming {
         /*System.out.println(wildcardPatternMatchIterative("bbbcbcb","**b"));*/
 
         // Interleave Strings
-        System.out.println(interleaveStrings("aabcc", "dbbca","aadbbcbcac"));
+        /*System.out.println(interleaveStrings("aabcc", "dbbca","aadbbcbcac"));*/
+
+        // Regular Expression II
+        //System.out.println(regularExpression("aab", "c*a*b"));
+//        System.out.println(regularExpression("baaaaaabaaaabaaaaababababbaab", "..a*aa*a.aba*a*bab*"));
+        System.out.println(regularExpression("ccc", "a*"));
     }
 
 
