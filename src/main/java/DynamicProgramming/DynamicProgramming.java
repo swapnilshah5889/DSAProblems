@@ -1390,6 +1390,44 @@ public class DynamicProgramming {
         return max;
     }
 
+    public static int matrixChainMultiplication(ArrayList<Integer> A) {
+        int dp[][] = new int[A.size()-2][A.size()-2];
+
+
+        for(int i=0; i<A.size()-2; i++) {
+            dp[i][i] = A.get(i)*A.get(i+1)*A.get(i+2);
+        }
+
+        int k=2;
+        for(int i=1; i<dp.length; i++) {
+            int index = 0;
+            for(int j=i; j<dp.length; j++) {
+                dp[index][j] = Math.min(
+                        dp[index][j-1] + A.get(index)* A.get(index+k)*A.get(index+k+1),
+                        dp[index+1][j] + A.get(index)* A.get(index+1)*A.get(index+k+1));
+
+                System.out.print("("+index+", "+j+") ");
+                System.out.println();
+                System.out.println("Choice 1: " + dp[index][j-1] +" "+ A.get(index)* A.get(index+k)*A.get(index+k+1)
+                 + " = " + (dp[index][j-1] + A.get(index)* A.get(index+k)*A.get(index+k+1)));
+                System.out.println("Choice 2: " + dp[index+1][j] +" "+ A.get(index)* A.get(index+1)*A.get(index+k+1)
+                 + " = "+ (dp[index+1][j] + A.get(index)* A.get(index+1)*A.get(index+k+1)));
+                index++;
+            }
+            k++;
+            System.out.println();
+        }
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val + " ");
+            });
+            System.out.println();
+        });
+        return dp[0][dp.length-1];
+    }
+
+
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -1578,13 +1616,13 @@ public class DynamicProgramming {
         System.out.println(longestPalindromicSubsequence("aedsead"));*/
 
         // Russian Doll Envelopes
-        ArrayList<ArrayList<Integer>> A = new ArrayList<>();
-        /*A.add(new ArrayList<>(Arrays.asList(5,4)));
+        /*ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        *//*A.add(new ArrayList<>(Arrays.asList(5,4)));
         A.add(new ArrayList<>(Arrays.asList(6,4)));
         A.add(new ArrayList<>(Arrays.asList(6,7)));
-        A.add(new ArrayList<>(Arrays.asList(2,3)));*/
+        A.add(new ArrayList<>(Arrays.asList(2,3)));*//*
 
-        A.add(new ArrayList<>(Arrays.asList(6,18)));
+        *//*A.add(new ArrayList<>(Arrays.asList(6,18)));
         A.add(new ArrayList<>(Arrays.asList(2,14)));
         A.add(new ArrayList<>(Arrays.asList(5,6)));
         A.add(new ArrayList<>(Arrays.asList(4,15)));
@@ -1592,7 +1630,13 @@ public class DynamicProgramming {
         A.add(new ArrayList<>(Arrays.asList(3,11)));
         A.add(new ArrayList<>(Arrays.asList(11,10)));
         A.add(new ArrayList<>(Arrays.asList(5,11)));
-        System.out.println(russianDollEnvelopes(A));
+        System.out.println(russianDollEnvelopes(A));*/
+
+        // Matrix Chain Multiplication
+
+        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(15,50,3,50,50,47)); // 18915
+//        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(5,4,6,2,7));
+        System.out.println(matrixChainMultiplication(A));
     }
 
 
