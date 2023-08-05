@@ -3,10 +3,7 @@ package DynamicProgramming;
 import org.checkerframework.checker.units.qual.A;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class DynamicProgramming {
 
@@ -1355,6 +1352,44 @@ public class DynamicProgramming {
         return prev[prev.length-1];
     }
 
+    public static int russianDollEnvelopes(ArrayList<ArrayList<Integer>> A) {
+        Collections.sort(A, new Comparator<ArrayList<Integer>>() {
+            @Override
+            public int compare(ArrayList<Integer> o1, ArrayList<Integer> o2) {
+                if(o1.get(0) != o2.get(0)) {
+                    return o1.get(0).compareTo(o2.get(0));
+                }
+                else {
+                    return o1.get(1).compareTo(o2.get(1));
+                }
+            }
+        });
+
+        int dp[] = new int[A.size()];
+        for(int i=0; i<dp.length; i++) {
+            dp[i] = 1;
+        }
+
+        int max = 1;
+        for(int i=1; i<dp.length; i++) {
+            ArrayList<Integer> ev2 = A.get(i);
+            for(int j=0; j<i; j++) {
+                ArrayList<Integer> ev1 = A.get(j);
+                if(ev1.get(0) < ev2.get(0) && ev1.get(1) < ev2.get(1)) {
+                    dp[i] = Math.max(dp[j] + 1, dp[i]);
+                    max = Math.max(dp[i], max);
+                }
+            }
+        }
+
+        A.stream().forEach(list -> {
+            System.out.print("("+list.get(0) + ", "+list.get(1)+")   ");
+        });
+        System.out.println();
+
+        return max;
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -1539,8 +1574,25 @@ public class DynamicProgramming {
         System.out.println(regularExpression("ccc", "a*"));*/
 
         // Longest Palindromic Subsequence
-        System.out.println(longestPalindromicSubsequence("bebeeed"));
-        System.out.println(longestPalindromicSubsequence("aedsead"));
+        /*System.out.println(longestPalindromicSubsequence("bebeeed"));
+        System.out.println(longestPalindromicSubsequence("aedsead"));*/
+
+        // Russian Doll Envelopes
+        ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        /*A.add(new ArrayList<>(Arrays.asList(5,4)));
+        A.add(new ArrayList<>(Arrays.asList(6,4)));
+        A.add(new ArrayList<>(Arrays.asList(6,7)));
+        A.add(new ArrayList<>(Arrays.asList(2,3)));*/
+
+        A.add(new ArrayList<>(Arrays.asList(6,18)));
+        A.add(new ArrayList<>(Arrays.asList(2,14)));
+        A.add(new ArrayList<>(Arrays.asList(5,6)));
+        A.add(new ArrayList<>(Arrays.asList(4,15)));
+        A.add(new ArrayList<>(Arrays.asList(8,11)));
+        A.add(new ArrayList<>(Arrays.asList(3,11)));
+        A.add(new ArrayList<>(Arrays.asList(11,10)));
+        A.add(new ArrayList<>(Arrays.asList(5,11)));
+        System.out.println(russianDollEnvelopes(A));
     }
 
 
