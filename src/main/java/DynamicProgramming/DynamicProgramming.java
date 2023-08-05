@@ -1327,6 +1327,34 @@ public class DynamicProgramming {
         return ans;
     }
 
+    private static int longestPalindromicSubsequence(String A) {
+        int prev[] = new int[A.length()+1];
+        int curr[] = new int[A.length()+1];
+
+        for(int i=0; i<prev.length; i++) {
+            prev[i] = 0;
+        }
+
+        for(int i=1; i<=A.length(); i++) {
+            char currChar = A.charAt(A.length()-i);
+            curr[0] = 0;
+            for(int j=1; j<prev.length; j++) {
+                char c = A.charAt(j-1);
+                if(currChar == c) {
+                    curr[j] = 1 + prev[j-1];
+                }
+                else {
+                    curr[j] = Math.max(prev[j], curr[j-1]);
+                }
+
+            }
+            prev = curr;
+            curr = new int[A.length()+1];
+        }
+
+        return prev[prev.length-1];
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -1506,9 +1534,13 @@ public class DynamicProgramming {
         /*System.out.println(interleaveStrings("aabcc", "dbbca","aadbbcbcac"));*/
 
         // Regular Expression II
-        //System.out.println(regularExpression("aab", "c*a*b"));
-//        System.out.println(regularExpression("baaaaaabaaaabaaaaababababbaab", "..a*aa*a.aba*a*bab*"));
-        System.out.println(regularExpression("ccc", "a*"));
+        /*System.out.println(regularExpression("aab", "c*a*b"));
+        System.out.println(regularExpression("baaaaaabaaaabaaaaababababbaab", "..a*aa*a.aba*a*bab*"));
+        System.out.println(regularExpression("ccc", "a*"));*/
+
+        // Longest Palindromic Subsequence
+        System.out.println(longestPalindromicSubsequence("bebeeed"));
+        System.out.println(longestPalindromicSubsequence("aedsead"));
     }
 
 
