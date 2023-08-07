@@ -1309,7 +1309,8 @@ public class DynamicProgramming {
     }
     private static boolean regularExpression(String input, String pattern) {
 
-        Boolean dp[][] = new Boolean[input.length()+1][pattern.length()+1];
+        // Recursive Solution
+        /*Boolean dp[][] = new Boolean[input.length()+1][pattern.length()+1];
         Arrays.stream(dp).map(arr->{
             return Arrays.stream(arr).map(val -> {return null;});
         });
@@ -1321,7 +1322,44 @@ public class DynamicProgramming {
             });
             System.out.println();
         });
-        return ans;
+        return ans;*/
+
+        // Iterative Approach
+        int[] prev = new int[pattern.length()+1];
+        int[] curr = new int[pattern.length()+1];
+        prev[0] = 1;
+        for(int i=1; i<prev.length; i++) {
+            if(pattern.charAt(i-1) == '*') {
+                prev[i] = prev[i-1];
+            }
+            else{
+                prev[i] = 0;
+            }
+        }
+
+        for(int i=0; i<input.length(); i++) {
+            char iChar = input.charAt(i);
+            curr[0] = 0;
+            for(int j=1; j<prev.length; j++) {
+                char pChar = pattern.charAt(j-1);
+
+                // Char match or pattern has '?'
+                if(iChar == pChar || pChar == '?') {
+                    curr[j] = prev[j-1];
+                }
+                else if(pChar == '*') {
+                    curr[j] = Math.max(prev[j],curr[j-1]);
+                }
+                else {
+                    curr[j] = 0;
+                }
+
+            }
+            prev = curr;
+            curr = new int[pattern.length()+1];
+        }
+
+        return prev[prev.length-1] == 1;
     }
 
     private static int longestPalindromicSubsequence(String A) {
@@ -1391,32 +1429,26 @@ public class DynamicProgramming {
     }
 
     public static int matrixChainMultiplication(ArrayList<Integer> A) {
-        int dp[][] = new int[A.size()-2][A.size()-2];
+        int dp[][] = new int[A.size()-1][A.size()-1];
 
 
         for(int i=0; i<A.size()-2; i++) {
-            dp[i][i] = A.get(i)*A.get(i+1)*A.get(i+2);
+            dp[i][i+1] = A.get(i)*A.get(i+1)*A.get(i+2);
         }
 
-        int k=2;
-        for(int i=1; i<dp.length; i++) {
-            int index = 0;
-            for(int j=i; j<dp.length; j++) {
-                dp[index][j] = Math.min(
-                        dp[index][j-1] + A.get(index)* A.get(index+k)*A.get(index+k+1),
-                        dp[index+1][j] + A.get(index)* A.get(index+1)*A.get(index+k+1));
+        for(int index=1; index<dp.length; index++) {
+            int i = 0;
+            for(int j=index+1; j<dp.length; j++) {
 
-                System.out.print("("+index+", "+j+") ");
-                System.out.println();
-                System.out.println("Choice 1: " + dp[index][j-1] +" "+ A.get(index)* A.get(index+k)*A.get(index+k+1)
-                 + " = " + (dp[index][j-1] + A.get(index)* A.get(index+k)*A.get(index+k+1)));
-                System.out.println("Choice 2: " + dp[index+1][j] +" "+ A.get(index)* A.get(index+1)*A.get(index+k+1)
-                 + " = "+ (dp[index+1][j] + A.get(index)* A.get(index+1)*A.get(index+k+1)));
-                index++;
+                int max = Integer.MAX_VALUE;
+                for(int k=i+1; k<=j; k++) {
+                    max = Math.min(dp[i][k-1] + dp[k][j] + (A.get(i) * A.get(k) * A.get(j+1)), max);
+                }
+                dp[i][j] = max;
+                i++;
             }
-            k++;
-            System.out.println();
         }
+
         Arrays.stream(dp).forEach(arr -> {
             Arrays.stream(arr).forEach(val -> {
                 System.out.print(val + " ");
@@ -1426,7 +1458,44 @@ public class DynamicProgramming {
         return dp[0][dp.length-1];
     }
 
+    public static int palindromePartition(String A) {
+        int dp[][] = new int[A.length()+1][A.length()+1];
 
+        for(int i=0; i<dp.length; i++) {
+            dp[0][i] = 0;
+            dp[i][0] = 0;
+        }
+
+        for(int i=1; i<dp.length; i++) {
+            char currChar = A.charAt(A.length()-i);
+            for(int j=1; j<dp.length; j++) {
+                char c = A.charAt(j-1);
+                if(currChar == c) {
+                    dp[i][j] = 1 + dp[i-1][j-1];
+                }
+                else {
+                    dp[i][j] = dp[i-1][j];
+                }
+
+            }
+        }
+
+        int levels = -1;
+        int i=dp.length-1;
+        while(i>0) {
+            i = i-dp[dp.length-1][i];
+            levels++;
+        }
+
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val + " ");
+            });
+            System.out.println();
+        });
+
+        return levels;
+    }
 
     public static void main(String[] args) {
 
@@ -1634,9 +1703,14 @@ public class DynamicProgramming {
 
         // Matrix Chain Multiplication
 
-        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(15,50,3,50,50,47)); // 18915
+        /*ArrayList<Integer> A = new ArrayList<>(Arrays.asList(15,50,3,50,50,47)); // 18915
 //        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(5,4,6,2,7));
-        System.out.println(matrixChainMultiplication(A));
+        System.out.println(matrixChainMultiplication(A));*/
+
+        // Palindrom Partition
+//        System.out.println(palindromePartition("bebeeed"));
+//        System.out.println(palindromePartition("aab"));
+//        System.out.println(palindromePartition("bebqqeeeq"));
     }
 
 

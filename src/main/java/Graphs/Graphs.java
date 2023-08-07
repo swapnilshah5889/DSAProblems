@@ -1,4 +1,6 @@
 package Graphs;
+import com.sun.source.tree.Tree;
+
 import java.util.*;
 
 public class Graphs {
@@ -767,7 +769,6 @@ public class Graphs {
         return ans;
     }
 
-
     // LC 1926 - Find nearest exit in a maze
     public static int nearestExit(char[][] maze, int[] entrance) {
         int rows = maze.length;
@@ -816,6 +817,139 @@ public class Graphs {
         return exitFound ? level : -1;
     }
 
+    public static int findPath(int[][] grid, boolean[][] visited, boolean[][] dp, int startRow, int startCol, int targetRow,
+                               int targetCol, int[] dx, int[] dy, int min, int maxMin){
+
+        if(startRow == targetRow && startCol == targetCol) {
+            totalPaths++;
+            return min;
+        }
+
+        // Better route not possible
+        if(maxMin != -1 && min <= maxMin) {
+            return maxMin;
+        }
+
+        min = Math.min(min, grid[startRow][startCol]);
+
+        visited[startRow][startCol] = true;
+        PriorityQueue<ArrayList<Integer>> points = new PriorityQueue<>(new Comparator<ArrayList<Integer>>() {
+            @Override
+            public int compare(ArrayList<Integer> o1, ArrayList<Integer> o2) {
+                if(o2.get(2) == o1.get(2)) {
+
+                    return o1.get(2).compareTo(o2.get(2));
+                }
+                else {
+                    return o2.get(2).compareTo(o1.get(2));
+                }
+            }
+        });
+        for(int i=0; i<dx.length; i++) {
+            int newX = dx[i] + startRow;
+            int newY = dy[i] + startCol;
+
+            // Valid point
+            if (newX >= 0 && newX < grid.length && newY >= 0 && newY < grid[0].length) {
+                // Not visited
+                if(!visited[newX][newY]) {
+
+                    Double diffR1 = Math.pow(targetRow - newX,2);
+                    Double diffC1 = Math.pow(targetCol - newY,2);
+                    int dist1 = (int)Math.pow(diffR1+diffC1, 0.5);
+                    points.add(new ArrayList<>(Arrays.asList(newX, newY, grid[newX][newY], dist1)));
+                }
+            }
+        }
+
+        while(!points.isEmpty()) {
+            ArrayList<Integer> point = points.remove();
+            totalRecursions++;
+            if(maxMin == -1){
+                maxMin = findPath(grid, visited, dp, point.get(0), point.get(1),
+                        targetRow, targetCol, dx, dy, min, maxMin);
+            }
+            else {
+                maxMin = Math.max(findPath(grid, visited, dp, point.get(0), point.get(1),
+                        targetRow, targetCol, dx, dy, min, maxMin), maxMin);
+            }
+        }
+        visited[startRow][startCol] = false;
+
+        return maxMin;
+
+    }
+    private static int totalPaths;
+    private static int totalRecursions;
+    public static int avoidMonsters(int m, int n, int startRow, int startCol,
+                                    int endRow, int endCol, ArrayList<Integer> monsterRows,
+                                    ArrayList<Integer> monsterCols) {
+
+        totalPaths = 0;
+        totalRecursions = 0;
+        // Init grid to -1
+        int grid[][] = new int[m][n];
+        boolean visited[][] = new boolean[m][n];
+        boolean dp[][] = new boolean[m][n];
+
+        for(int i=0; i<grid.length; i++) {
+            for(int j=0; j<grid.length; j++) {
+                grid[i][j] = -1;
+                visited[i][j] = false;
+                dp[i][j] = false;
+            }
+        }
+
+        Queue<ArrayList<Integer>> queue = new LinkedList<>();
+
+        // Init monsters in grid and queue
+        for(int i=0; i<monsterRows.size(); i++) {
+            queue.add(new ArrayList<>(Arrays.asList(
+                    monsterRows.get(i),monsterCols.get(i)
+            )));
+            grid[monsterRows.get(i)][monsterCols.get(i)] = 0;
+        }
+        queue.add(null);
+
+        int dx[] = new int[]{0,0,1,-1};
+        int dy[] = new int[]{1,-1,0,0};
+        int level = 1;
+        // BFS
+        while(queue.peek()!=null) {
+            while(queue.peek()!=null) {
+                ArrayList<Integer> monster = queue.remove();
+                // Iterate over all neighbors
+                for(int i=0; i<dx.length; i++) {
+                    int newX = dx[i] + monster.get(0);
+                    int newY = dy[i] + monster.get(1);
+
+                    // Valid point
+                    if(newX>=0 && newX<m && newY>=0 && newY<n) {
+                        // If not visited
+                        if(grid[newX][newY] == -1) {
+                            queue.add(new ArrayList<>(Arrays.asList(newX,newY)));
+                            grid[newX][newY] = level;
+                        }
+                    }
+                }
+            }
+            queue.remove();
+            queue.add(null);
+            level++;
+        }
+
+        Arrays.stream(grid).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val + " ");
+            });
+            System.out.println();
+        });
+        int min = findPath(grid, visited, dp, startRow, startCol, endRow, endCol, dx, dy, Integer.MAX_VALUE, -1);
+        System.out.println("Total Paths: "+totalPaths);
+        System.out.println("Total Recursions: "+totalRecursions);
+        return min;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -853,7 +987,17 @@ public class Graphs {
         // Nearest Exit in a Maze
         /*char[][] maze = new char[][]{{'+','+','.','+'},{'.','.','.','+'},{'+','+','+','.'}};
         System.out.println(nearestExit(maze, new int[]{1,2}));*/
-        char[][] maze = new char[][]{{'+','+','+'},{'.','.','.'},{'+','+','+'}};
-        System.out.println(nearestExit(maze, new int[]{1,0}));
+        /*char[][] maze = new char[][]{{'+','+','+'},{'.','.','.'},{'+','+','+'}};
+        System.out.println(nearestExit(maze, new int[]{1,0}));*/
+
+        // Avoid Monsters
+        ArrayList<Integer> monsterRows = new ArrayList<>();
+        monsterRows.add(2);
+        monsterRows.add(2);
+        ArrayList<Integer> monsterCols = new ArrayList<>();
+        monsterCols.add(2);
+        monsterCols.add(5);
+        System.out.println(avoidMonsters(8,8,6,6,
+                            0,3,monsterRows,monsterCols));
     }
 }
