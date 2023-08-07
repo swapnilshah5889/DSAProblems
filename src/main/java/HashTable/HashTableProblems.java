@@ -203,6 +203,40 @@ public class HashTableProblems {
         }
     }
 
+    public static class LRUCache {
+        LinkedHashMap<Integer, Integer> map;
+        int capacity;
+        public LRUCache(int capacity) {
+            this.map = new LinkedHashMap<>();
+            this.capacity = capacity;
+        }
+
+        public int get(int key) {
+            if(map.containsKey(key)) {
+                int val = map.get(key);
+                map.remove(key);
+                map.put(key, val);
+                return val;
+            }
+            else {
+                return -1;
+            }
+        }
+
+        public void set(int key, int value) {
+            if(map.containsKey(key)) {
+                map.remove(key);
+                map.put(key, value);
+            }
+            else if(map.size()==capacity) {
+                map.remove(map.entrySet().iterator().next().getKey());
+                map.put(key, value);
+            }
+            else{
+                map.put(key,value);
+            }
+        }
+    }
     public static void main(String[] args) {
         //Get minimum window string that contains all characters of the base string
         /*System.out.println(minimumWindowString("ADOBECODEBANC", "ABC"));
@@ -220,7 +254,8 @@ public class HashTableProblems {
             System.out.print(i+" ");*/
 
 
-        List<LionDescription> lions = new ArrayList<>();
+        // Lion Competition
+        /*List<LionDescription> lions = new ArrayList<>();
         lions.add(new LionDescription("marry", 300));
         lions.add(new LionDescription("rob", 250));
         List<LionSchedule> schedules = new ArrayList<>();
@@ -258,7 +293,16 @@ public class HashTableProblems {
         System.out.println();
 
         lionCompetition.lionLeft(16, 200);
-        lionCompetition.lionLeft(20, 250);
+        lionCompetition.lionLeft(20, 250);*/
+
+        LRUCache lruCache = new LRUCache(2);
+
+        lruCache.set(2,1);
+        lruCache.set(1,1);
+        lruCache.set(2,3);
+        lruCache.set(4,1);
+        lruCache.get(1); // -1
+        lruCache.get(2); // 3
     }
 
 }

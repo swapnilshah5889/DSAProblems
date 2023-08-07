@@ -1646,7 +1646,7 @@ public class DynamicProgramming {
         System.out.println(buyingCandies(candiesInPacket,sweetnessOfCandies,costOfCandies, budget));*/
 
         // Total Distinct Subsequences
-        /*System.out.println(distinctSubsequences("rabbbit","rabbit"));*/
+        System.out.println(distinctSubsequences("rabbbit","rabbit"));
 
         // Min cost to climb stairs
         /*System.out.println(minCostClimbingStairs(new int[]{10,15,20}));*/
