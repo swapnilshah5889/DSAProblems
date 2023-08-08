@@ -1458,9 +1458,86 @@ public class DynamicProgramming {
         return dp[0][dp.length-1];
     }
 
-//    private static List<List<String>> getAllPalindromes(String s) {
-//
-//    }
+    private static List<List<String>> findAllPalindromes(int dp[][], int index, String s,
+                                                         List<List<String>>[] stringDp) {
+
+        if(index == s.length()-1) {
+            if(stringDp[index] == null) {
+                List<List<String>> ans = new ArrayList<>();
+                ans.add(Arrays.asList(s.substring(index)));
+
+                stringDp[index] = ans;
+            }
+            return stringDp[index];
+        }
+
+        if(stringDp[index] == null) {
+            List<List<String>> ans = new ArrayList<>();
+
+            for (int i = index; i < dp.length; i++) {
+
+                // Palindrome
+                if (dp[index][i] == 1) {
+                    if (i == s.length() - 1) {
+                        ans.add(new ArrayList<>(Arrays.asList(s.substring(index))));
+                    } else {
+                        List<List<String>> nextStrings = findAllPalindromes(dp, i + 1, s, stringDp);
+                        for (List<String> list : nextStrings) {
+                            List<String> temp = new ArrayList<>();
+                            temp.add(s.substring(index, i + 1));
+                            temp.addAll(list);
+                            ans.add(temp);
+                        }
+                    }
+                }
+            }
+
+            stringDp[index] = ans;
+        }
+        return stringDp[index];
+    }
+    private static List<List<String>> getAllPalindromes(String s) {
+        int dp[][] = new int[s.length()][s.length()];
+        List<List<String>>[] stringDp = new ArrayList[s.length()];
+        for(int i=0;i<stringDp.length; i++) {
+            stringDp[i] = null;
+        }
+
+        for(int i=0; i<dp.length; i++) {
+            dp[i][i] = 1;
+        }
+
+        for(int i=dp.length-2; i>=0; i--) {
+            char currChar = s.charAt(i);
+            for(int j=i+1; j<dp.length; j++) {
+                char c = s.charAt(j);
+                // Characters match
+                if(currChar == c) {
+                    // 2 Character String
+                    if (j - i == 1) {
+                        dp[i][j] = 1;
+                    }
+                    // > 2 character string
+                    else {
+                        dp[i][j] = dp[i + 1][j - 1] == 1 ? 1 : 0;
+                    }
+                }
+                // characters do not match
+                else {
+                    dp[i][j] = 0;
+                }
+            }
+        }
+
+        Arrays.stream(dp).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val + " ");
+            });
+            System.out.println();
+        });
+
+        return findAllPalindromes(dp, 0, s, stringDp);
+    }
 
     public static int palindromePartition(String A) {
         int dp[][] = new int[A.length()][A.length()];
@@ -1771,7 +1848,8 @@ public class DynamicProgramming {
 
         // Palindrom Partition
 //        System.out.println(palindromePartition("beebeeed"));
-        System.out.println(palindromePartition("ababb"));
+//        System.out.println(palindromePartition("ababb"));
+        System.out.println(getAllPalindromes("bbbb"));
 
     }
 
