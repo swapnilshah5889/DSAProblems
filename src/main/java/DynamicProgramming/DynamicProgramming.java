@@ -1458,43 +1458,105 @@ public class DynamicProgramming {
         return dp[0][dp.length-1];
     }
 
+//    private static List<List<String>> getAllPalindromes(String s) {
+//
+//    }
+
     public static int palindromePartition(String A) {
-        int dp[][] = new int[A.length()+1][A.length()+1];
+        int dp[][] = new int[A.length()][A.length()];
 
         for(int i=0; i<dp.length; i++) {
-            dp[0][i] = 0;
-            dp[i][0] = 0;
+            dp[i][i] = 1;
         }
 
-        for(int i=1; i<dp.length; i++) {
-            char currChar = A.charAt(A.length()-i);
-            for(int j=1; j<dp.length; j++) {
-                char c = A.charAt(j-1);
+        for(int i=dp.length-2; i>=0; i--) {
+            char currChar = A.charAt(i);
+            for(int j=i+1; j<dp.length; j++) {
+                char c = A.charAt(j);
+                // Characters match
                 if(currChar == c) {
-                    dp[i][j] = 1 + dp[i-1][j-1];
+                    // 2 Character String
+                    if (j - i == 1) {
+                        dp[i][j] = 1;
+                    }
+                    // > 2 character string
+                    else {
+                        dp[i][j] = dp[i + 1][j - 1] == 1 ? 1 : 0;
+                    }
                 }
+                // characters do not match
                 else {
-                    dp[i][j] = dp[i-1][j];
+                    dp[i][j] = 0;
                 }
-
             }
+            System.out.println();
         }
 
-        int levels = -1;
-        int i=dp.length-1;
-        while(i>0) {
-            i = i-dp[dp.length-1][i];
-            levels++;
+        int[] pal = new int[A.length()];
+        int[] cuts = new int[A.length()];
+        cuts[0] = 0;
+        for(int i=1; i<pal.length; i++) {
+            // String from start to i is palindrome
+            // So no cuts needed
+            if(dp[0][i] == 1) {
+                pal[i] = 0;
+//                if(i == pal.length-1) {
+//                    cuts.add(i);
+//                }
+                cuts[i] = 0;
+            }
+            // Take minimum of all substrings
+            // That are palindrome
+            else {
+                int min = Integer.MAX_VALUE;
+                for(int j=1; j<=i; j++) {
+                    if(dp[j][i] == 1) {
+                        int temp = 1 + pal[j - 1];
+                        if(temp < min) {
+                            min = temp;
+                            cuts[i] = j;
+                        }
+                    }
+                }
+                pal[i] = min;
+            }
         }
 
         Arrays.stream(dp).forEach(arr -> {
             Arrays.stream(arr).forEach(val -> {
-                System.out.print(val + " ");
+                System.out.print(val+" ");
             });
             System.out.println();
         });
 
-        return levels;
+        System.out.println("Pal : ");
+        Arrays.stream(pal).forEach(val -> {
+            System.out.print(val + " ");
+        });
+        System.out.println();
+
+        System.out.println("Cuts : ");
+        Arrays.stream(cuts).forEach(val -> {
+            System.out.print(val + " ");
+        });
+        System.out.println();
+        List<String> palindromicStrings = new ArrayList<>();
+        int end = cuts.length;
+        int start = cuts[end-1];
+        while(start>=0) {
+            String s = A.substring(start, end);
+            palindromicStrings.add(s);
+            end = start;
+            if(end==0)
+                break;
+            start = cuts[end-1];
+        }
+        Collections.reverse(palindromicStrings);
+        palindromicStrings.forEach(string -> {
+            System.out.print(string + " ");
+        });
+        System.out.println();
+        return pal[pal.length-1];
     }
 
     public static void main(String[] args) {
@@ -1646,7 +1708,7 @@ public class DynamicProgramming {
         System.out.println(buyingCandies(candiesInPacket,sweetnessOfCandies,costOfCandies, budget));*/
 
         // Total Distinct Subsequences
-        System.out.println(distinctSubsequences("rabbbit","rabbit"));
+        /*System.out.println(distinctSubsequences("rabbbit","rabbit"));*/
 
         // Min cost to climb stairs
         /*System.out.println(minCostClimbingStairs(new int[]{10,15,20}));*/
@@ -1708,9 +1770,9 @@ public class DynamicProgramming {
         System.out.println(matrixChainMultiplication(A));*/
 
         // Palindrom Partition
-//        System.out.println(palindromePartition("bebeeed"));
-//        System.out.println(palindromePartition("aab"));
-//        System.out.println(palindromePartition("bebqqeeeq"));
+//        System.out.println(palindromePartition("beebeeed"));
+        System.out.println(palindromePartition("ababb"));
+
     }
 
 
