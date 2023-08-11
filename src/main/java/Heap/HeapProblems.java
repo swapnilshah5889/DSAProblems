@@ -133,6 +133,56 @@ public class HeapProblems {
         return ans;
     }
 
+    public static long totalCostForWorkers(int[] costs, int k, int candidates) {
+        PriorityQueue<Integer> queue1 = new PriorityQueue<>();
+        if(candidates*2 >= costs.length) {
+            for(int i=0; i<costs.length; i++) {
+                queue1.add(costs[i]);
+            }
+            long ans = 0;
+            for(int i=0; i<k; i++) {
+                ans += queue1.remove();
+            }
+            return ans;
+        }
+        else {
+            PriorityQueue<Integer> queue2 = new PriorityQueue<>();
+            int lastIndex = costs.length-1;
+            for(int i=0; i<candidates; i++) {
+                queue1.add(costs[i]);
+                queue2.add(costs[lastIndex]);
+                lastIndex--;
+            }
+            long ans = 0;
+            int ind1 = candidates;
+            int ind2 = costs.length-1-candidates;
+            for(int i=0; i<k; i++) {
+                if(queue2.isEmpty()) {
+                    ans += queue1.remove();
+                }
+                else if(queue1.isEmpty()) {
+                    ans += queue2.remove();
+                }
+                else if(queue2.peek() < queue1.peek()) {
+                    ans += queue2.remove();
+                    if(ind2>=ind1) {
+                        queue2.add(costs[ind2]);
+                        ind2--;
+                    }
+                }
+                else {
+                    ans += queue1.remove();
+                    if(ind1<=ind2) {
+                        queue1.add(costs[ind1]);
+                        ind1++;
+                    }
+                }
+
+            }
+            return ans;
+        }
+    }
+
     public static void main(String[] args) {
 
         /*List<Integer> list  = Arrays.asList(2,4,5,11,6,7,8,20,12,1,3);
@@ -150,7 +200,11 @@ public class HeapProblems {
         /*System.out.println(LargestElementSubarrays(Arrays.asList(1, 2, 3, 4, 5, 6),4));*/
 
         //Running Median Problem
-        System.out.println(RunningMedian(Arrays.asList(32, 91, 86, 8, 4, 100, 98, 15, 79, 32, 4, 99 )));
+        /*System.out.println(RunningMedian(Arrays.asList(32, 91, 86, 8, 4, 100, 98, 15, 79, 32, 4, 99 )));*/
+
+        // total cost to hire k workers
+        int[] costs = new int[]{17,12,10,2,7,2,11,20,8};
+        System.out.println(totalCostForWorkers(costs, 3, 4));
 
     }
 
