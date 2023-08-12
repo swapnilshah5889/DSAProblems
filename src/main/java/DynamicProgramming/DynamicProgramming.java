@@ -1636,6 +1636,112 @@ public class DynamicProgramming {
         return pal[pal.length-1];
     }
 
+    public static int sellStocksRecurr(int dp[], int count, List<Integer> stocks, int index, int profit) {
+        if(count == 0) {
+            return profit;
+        }
+        if(index<0){
+            return 0;
+        }
+
+        int maxPrice = 0;
+        for (int j = index; j > 0; j--) {
+            int currPrice = stocks.get(j);
+            for (int i = j - 1; i >= 0; i--) {
+                if (stocks.get(i) < currPrice) {
+
+                    maxPrice = Math.max(maxPrice, dp[i] + currPrice - stocks.get(i));
+                }
+            }
+
+
+        }
+
+        return maxPrice;
+    }
+    public static int bestTimeToSellStocks(final List<Integer> A) {
+        /*int dp[] = new int[A.size()];
+        dp[0] = 0;
+        int min = A.get(0);
+        for(int i=1; i<dp.length; i++){
+            if(A.get(i) > min) {
+                dp[i] = Math.max(dp[i-1],A.get(i)-min);
+            }
+            else {
+                min = Math.min(A.get(i), min);
+                dp[i] = dp[i-1];
+            }
+        }
+        Arrays.stream(dp).forEach(val->{
+            System.out.print(val+ " ");
+        });
+        System.out.println();
+        int maxPrice = 0;
+
+        for (int j = A.size()-1; j > 0; j--) {
+            int currPrice = A.get(j);
+            int tempPrice = 0;
+            for (int i = j - 1; i >= 0; i--) {
+                if (A.get(i) < currPrice) {
+                    maxPrice = Math.max(maxPrice, dp[i] + currPrice - A.get(i));
+                }
+            }
+
+
+        }
+
+        return maxPrice;*/
+
+        int firstBuy = Integer.MAX_VALUE;
+        int secondSell = 0;
+        int firstSell = 0;
+        int secondBuy = Integer.MAX_VALUE;
+
+        for(int i=0; i<A.size(); i++) {
+            int curr = A.get(i);
+            firstBuy = Math.min(firstBuy, curr);
+            firstSell = Math.max(firstSell, A.get(i) - firstBuy);
+            secondBuy = Math.min(secondBuy, A.get(i)-firstSell);
+            secondSell = Math.max(secondSell, A.get(i)-secondBuy);
+        }
+
+        return secondSell;
+    }
+
+    public static int intersectingChords(int A, int[] dp) {
+
+        if(dp[A] == -1) {
+            int ans = 0;
+            for(int i=0; i<A; i++) {
+                ans += intersectingChords(i, dp) * intersectingChords(A-i-1, dp);
+            }
+
+            dp[A] = ans;
+        }
+
+        return dp[A];
+    }
+
+    public static int intersectingChords(int A) {
+        if(A<=2) {
+            if(A==2) {
+                return 2;
+            }
+            else {
+                return 1;
+            }
+        }
+        else {
+            int dp[] = new int[A+1];
+            Arrays.fill(dp,-1);
+            dp[0] = 1;
+            dp[1] = 1;
+            dp[2] = 2;
+
+            return intersectingChords(A,dp);
+        }
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -1849,7 +1955,16 @@ public class DynamicProgramming {
         // Palindrom Partition
 //        System.out.println(palindromePartition("beebeeed"));
 //        System.out.println(palindromePartition("ababb"));
-        System.out.println(getAllPalindromes("bbbb"));
+        /*System.out.println(getAllPalindromes("bbbb"));*/
+
+        // Best time to sell stocks
+        /*List<Integer> A = new ArrayList<>(Arrays.asList(7, 2, 4, 8, 7));
+        System.out.println(bestTimeToSellStocks(A));
+        System.out.println(bestTimeToSellStocks(Arrays.asList(3,3,5,0,0,3,1,4)));
+        System.out.println(bestTimeToSellStocks(Arrays.asList(2,1,2,1,0,0,1)));*/
+
+        // Intersecting chords
+        System.out.println(intersectingChords(4));
 
     }
 

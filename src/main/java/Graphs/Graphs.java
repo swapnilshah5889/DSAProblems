@@ -881,6 +881,7 @@ public class Graphs {
     }
     private static int totalPaths;
     private static int totalRecursions;
+
     public static int avoidMonsters(int m, int n, int startRow, int startCol,
                                     int endRow, int endCol, ArrayList<Integer> monsterRows,
                                     ArrayList<Integer> monsterCols) {
@@ -993,9 +994,9 @@ public class Graphs {
         // Avoid Monsters
         ArrayList<Integer> monsterRows = new ArrayList<>();
         monsterRows.add(2);
-        monsterRows.add(2);
+        monsterRows.add(7);
         ArrayList<Integer> monsterCols = new ArrayList<>();
-        monsterCols.add(2);
+        monsterCols.add(7);
         monsterCols.add(5);
         System.out.println(avoidMonsters(8,8,6,6,
                             0,3,monsterRows,monsterCols));
