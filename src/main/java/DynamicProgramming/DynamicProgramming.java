@@ -1742,6 +1742,34 @@ public class DynamicProgramming {
         }
     }
 
+    public static int maxUncrossedLines(int[] nums1, int[] nums2, int index1, int index2, int[][]dp) {
+        if(index1 == -1 || index2 == -1) {
+            return 0;
+        }
+
+        if(dp[index1][index2] == -1) {
+            int total = 0;
+            if (nums1[index1] == nums2[index2]) {
+                total = (1 + maxUncrossedLines(nums1, nums2, index1 - 1, index2 - 1, dp));
+            }
+            total = Math.max(total, maxUncrossedLines(nums1, nums2, index1 - 1, index2, dp));
+            total = Math.max(total, maxUncrossedLines(nums1, nums2, index1, index2 - 1, dp));
+            dp[index1][index2] = total;
+        }
+
+        return dp[index1][index2];
+    }
+
+    public static int maxUncrossedLines(int[] nums1, int[] nums2) {
+        int[][] dp = new int[nums1.length][nums2.length];
+        for(int i=0; i<dp.length; i++) {
+            for(int j=0; j<dp[0].length; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        return maxUncrossedLines(nums1,nums2, nums1.length-1, nums2.length-1, dp);
+    }
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -1964,7 +1992,12 @@ public class DynamicProgramming {
         System.out.println(bestTimeToSellStocks(Arrays.asList(2,1,2,1,0,0,1)));*/
 
         // Intersecting chords
-        System.out.println(intersectingChords(4));
+        /*System.out.println(intersectingChords(4));*/
+
+        // Maximum uncrossed lines
+        int[] nums1 = new int[]{2,5,1,2,5};
+        int[] nums2 = new int[]{10,5,2,1,5,2};
+        System.out.println(maxUncrossedLines(nums1, nums2));
 
     }
 
