@@ -84,7 +84,78 @@ class Problems {
 
         return total;
     }
+
+    public int freeCars(ArrayList<Integer> A, ArrayList<Integer> B) {
+
+        PriorityQueue<Pair> queue = new PriorityQueue<Pair>(new Comparator<Pair>() {
+            @Override
+            public int compare(Pair o1, Pair o2) {
+                if(o1.val1.equals(o2.val1)) {
+                    return o2.val2.compareTo(o1.val2);
+                }
+
+                return o1.val1.compareTo(o2.val1);
+            }
+        });
+
+        PriorityQueue<Pair> queue2 = new PriorityQueue<Pair>(new Comparator<Pair>() {
+            @Override
+            public int compare(Pair o1, Pair o2) {
+                if(o1.val1.equals(o2.val1)) {
+                    return o2.val2.compareTo(o1.val2);
+                }
+
+                return o1.val1.compareTo(o2.val1);
+            }
+        });
+
+        for(int i=0; i<A.size(); i++) {
+            queue.add(new Pair(A.get(i), B.get(i)));
+            queue2.add(new Pair(A.get(i), B.get(i)));
+        }
+
+
+        ArrayList<Pair> cars = new ArrayList<>();
+        cars.add(queue.remove());
+        int total = cars.get(0).val2;
+        int mod = (int) Math.pow(10, 9) + 7;
+        while(!queue.isEmpty()) {
+            Pair car = queue.remove();
+            if(cars.size() < car.val1) {
+                cars.add(car);
+                total = (int)(((long)total + car.val2)%mod);
+            }
+            else {
+                int replaceIndex = -1;
+                for(int i=0; i<cars.size(); i++) {
+                    if(cars.get(i).val2 < car.val2) {
+                        // Found lower value than new car
+                        if(replaceIndex == -1) {
+                            replaceIndex = i;
+                        }
+                        // Found lower value than previous old car
+                        else if(cars.get(replaceIndex).val2 > cars.get(i).val2) {
+                            replaceIndex = i;
+                        }
+                    }
+                }
+                // Replace car
+                if(replaceIndex != -1) {
+                    total -= cars.get(replaceIndex).val2;
+                    cars.set(replaceIndex, car);
+                    total = (int)(((long)total + car.val2)%mod);
+                }
+            }
+        }
+
+        cars.stream().forEach(car -> {
+            System.out.println(car.val1 + " - "+ car.val2);
+        });
+
+        return total;
+    }
 }
+
 public class Greedy {
 
 
@@ -96,8 +167,13 @@ public class Greedy {
         System.out.println(greedyProblems.distributeCandies(studentMarks));*/
 
         // Schedule maximum jobs
-        ArrayList<Integer> startTimes = new ArrayList<>(Arrays.asList(1, 5, 7, 1));
+        /*ArrayList<Integer> startTimes = new ArrayList<>(Arrays.asList(1, 5, 7, 1));
         ArrayList<Integer> endTimes = new ArrayList<>(Arrays.asList(7, 8, 8, 8));
-        System.out.println(greedyProblems.maximumJobs(startTimes, endTimes));
+        System.out.println(greedyProblems.maximumJobs(startTimes, endTimes));*/
+
+        // Find maximum profit by buying cars
+        ArrayList<Integer> deadline = new ArrayList<>(Arrays.asList(1,7,6,2,8,4,4,6,8,2));
+        ArrayList<Integer> profit = new ArrayList<>(Arrays.asList(8,11,7,7,10,8,7,5,4,9));
+        System.out.println(greedyProblems.freeCars(deadline, profit));
     }
 }
