@@ -195,7 +195,27 @@ class Problems {
         }
         return total;
     }
+
+    public int findPowerofK(int A, int k) {
+        return (int) (Math.log(A) / Math.log(k));
+    }
+    public int coinChangePowersofK(int A, int k) {
+        int dp[] = new int[findPowerofK(A, k)+1];
+        Arrays.fill(dp, -1);
+        int totalCoins = 0;
+        while(A>0) {
+            int pow = findPowerofK(A, k);
+            if(dp[pow] == -1) {
+                dp[pow] = (int) Math.pow(k, pow);
+            }
+            A -= dp[pow];
+            totalCoins++;
+        }
+
+        return totalCoins;
+    }
 }
+
 
 public class Greedy {
 
@@ -204,8 +224,8 @@ public class Greedy {
         Problems greedyProblems = new Problems();
 
         // Distribute Candies
-        ArrayList<Integer> studentMarks = new ArrayList<>(Arrays.asList(6,7,5,4,3,2,1));
-        System.out.println(greedyProblems.distributeCandies(studentMarks));
+        /*ArrayList<Integer> studentMarks = new ArrayList<>(Arrays.asList(6,7,5,4,3,2,1));
+        System.out.println(greedyProblems.distributeCandies(studentMarks));*/
 
         // Schedule maximum jobs
         /*ArrayList<Integer> startTimes = new ArrayList<>(Arrays.asList(1, 5, 7, 1));
@@ -219,5 +239,9 @@ public class Greedy {
 
         // Find minimum hops
         /*System.out.println(greedyProblems.minimumHops("..x.xx..xx....x.."));*/
+
+        // Find coin change if coin denominations are in powers of a single coin k
+        int coin = 5;
+        System.out.println( greedyProblems.coinChangePowersofK(47, coin) );
     }
 }
