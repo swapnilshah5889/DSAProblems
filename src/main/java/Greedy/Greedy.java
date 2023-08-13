@@ -16,39 +16,43 @@ class Pair {
 class Problems {
     public int distributeCandies(ArrayList<Integer> A) {
 
-        int total = A.size();
-        int candies[] = new int[A.size()];
-        Arrays.fill(candies, 1);
-        while(true) {
-            boolean leftSwipe = false;
-            // Left swipe
-            for(int i=1; i<A.size(); i++) {
-                // If marks greater and candies less
-                if(A.get(i) > A.get(i-1) && candies[i] <= candies[i-1]) {
-                    candies[i]++;
-                    total++;
-                    leftSwipe = true;
-                }
-            }
-            boolean rightSwipe = false;
-            // Right swipe
-            for(int i=A.size()-2; i>=0; i--) {
-                // If marks greater and candies less
-                if(A.get(i) > A.get(i+1) && candies[i] <= candies[i+1]) {
-                    candies[i]++;
-                    total++;
-                    rightSwipe = true;
-                }
-            }
-            if(!leftSwipe && !rightSwipe) {
-                break;
+        int candiesLeft[] = new int[A.size()];
+        Arrays.fill(candiesLeft, 1);
+
+        // Left swipe
+        for(int i=1; i<A.size(); i++) {
+            // If marks greater and candies less
+            if(A.get(i) > A.get(i-1) && candiesLeft[i] <= candiesLeft[i-1]) {
+                candiesLeft[i] = candiesLeft[i-1] + 1;
             }
         }
 
-        Arrays.stream(candies).forEach(value -> {
+        int candiesRight[] = new int[A.size()];
+        Arrays.fill(candiesRight, 1);
+
+        // Right swipe
+        for(int i=A.size()-2; i>=0; i--) {
+            // If marks greater and candies less
+            if(A.get(i) > A.get(i+1) && candiesRight[i] <= candiesRight[i+1]) {
+                candiesRight[i] = candiesRight[i+1] + 1;
+            }
+
+        }
+
+        Arrays.stream(candiesLeft).forEach(value -> {
             System.out.print(value + " ");
         });
         System.out.println();
+        Arrays.stream(candiesRight).forEach(value -> {
+            System.out.print(value + " ");
+        });
+        System.out.println();
+
+        int total = 0;
+        for(int i=0; i<candiesRight.length; i++) {
+            total += Math.max(candiesLeft[i], candiesRight[i]);
+        }
+
         return total;
     }
 
@@ -200,8 +204,8 @@ public class Greedy {
         Problems greedyProblems = new Problems();
 
         // Distribute Candies
-        /*ArrayList<Integer> studentMarks = new ArrayList<>(Arrays.asList(6,7,5,4,3,2,1));
-        System.out.println(greedyProblems.distributeCandies(studentMarks));*/
+        ArrayList<Integer> studentMarks = new ArrayList<>(Arrays.asList(6,7,5,4,3,2,1));
+        System.out.println(greedyProblems.distributeCandies(studentMarks));
 
         // Schedule maximum jobs
         /*ArrayList<Integer> startTimes = new ArrayList<>(Arrays.asList(1, 5, 7, 1));
@@ -214,6 +218,6 @@ public class Greedy {
         System.out.println(greedyProblems.freeCars(deadline, profit));*/
 
         // Find minimum hops
-        System.out.println(greedyProblems.minimumHops("..x.xx..xx....x.."));
+        /*System.out.println(greedyProblems.minimumHops("..x.xx..xx....x.."));*/
     }
 }
