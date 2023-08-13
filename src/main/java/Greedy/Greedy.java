@@ -1,6 +1,4 @@
 package Greedy;
-
-
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +12,7 @@ class Pair {
         this.val2 = val2;
     }
 }
+
 class Problems {
     public int distributeCandies(ArrayList<Integer> A) {
 
@@ -154,6 +153,44 @@ class Problems {
 
         return total;
     }
+
+    public int minimumHops(String A) {
+        A = A.toLowerCase();
+        ArrayList<Integer> xIndexes = new ArrayList<>();
+        for(int i=0; i<A.length(); i++) {
+            if(A.charAt(i) == 'x') {
+                xIndexes.add(i);
+            }
+        }
+
+        int total = 0;
+        if(xIndexes.size()>0) {
+            int mod = (int) Math.pow(10,7) + 3;
+            int mid = xIndexes.size()/2;
+            int left = mid-1;
+            // Left Swipe
+            for(int i = xIndexes.get(mid)-1; i>=0; i--) {
+                if(left == -1){
+                    break;
+                }
+
+                total = (int) (((long)total + i - xIndexes.get(left))%mod);
+                left--;
+            }
+
+            int right = mid+1;
+            // Right Swipe
+            for(int i = xIndexes.get(mid)+1; i<A.length(); i++) {
+                if(right == xIndexes.size()){
+                    break;
+                }
+
+                total = (int) (((long)total + xIndexes.get(right) - i)%mod);
+                right++;
+            }
+        }
+        return total;
+    }
 }
 
 public class Greedy {
@@ -172,8 +209,11 @@ public class Greedy {
         System.out.println(greedyProblems.maximumJobs(startTimes, endTimes));*/
 
         // Find maximum profit by buying cars
-        ArrayList<Integer> deadline = new ArrayList<>(Arrays.asList(1,7,6,2,8,4,4,6,8,2));
+        /*ArrayList<Integer> deadline = new ArrayList<>(Arrays.asList(1,7,6,2,8,4,4,6,8,2));
         ArrayList<Integer> profit = new ArrayList<>(Arrays.asList(8,11,7,7,10,8,7,5,4,9));
-        System.out.println(greedyProblems.freeCars(deadline, profit));
+        System.out.println(greedyProblems.freeCars(deadline, profit));*/
+
+        // Find minimum hops
+        System.out.println(greedyProblems.minimumHops("..x.xx..xx....x.."));
     }
 }
