@@ -75,6 +75,32 @@ class Problems {
         return uniquePaths;
     }
 
+    public ArrayList<ArrayList<Integer>> getPermutations(ArrayList<Integer> A) {
+        if(A.size() == 0) {
+            return new ArrayList<>();
+        }
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+        for(int i=0; i<A.size(); i++) {
+            int val = A.remove(i);
+            ArrayList<ArrayList<Integer>> permutations = getPermutations(A);
+            if(permutations.size()>0) {
+                for (ArrayList<Integer> subp : permutations) {
+                    subp.add(0, val);
+                    ans.add(subp);
+                }
+            }
+            else {
+                ans.add(new ArrayList<>(Arrays.asList(val)));
+            }
+            A.add(i, val);
+        }
+
+        return ans;
+    }
+
+    public ArrayList<ArrayList<Integer>> permutations(ArrayList<Integer> A) {
+        return getPermutations(A);
+    }
 }
 
 public class Backtracking {
@@ -86,6 +112,10 @@ public class Backtracking {
         SampleMaze sm = new SampleMaze();
 
         // Unique paths from start to end and avoid blockages
-        System.out.println("Ans: "+bt.mazeUniquePaths(sm.getSampleMaze(0)));
+        /*System.out.println("Ans: "+bt.mazeUniquePaths(sm.getSampleMaze(0)));*/
+
+        // Get all permutations
+        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(1,2,3));
+        System.out.println(bt.permutations(A));
     }
 }
