@@ -198,6 +198,68 @@ class Problems {
         getPhoneLetterCombinations(A, 0, new StringBuffer(), digits, ans);
         return ans;
     }
+
+    public boolean checkSquarefulPermutation(ArrayList<Integer> a, int start, int end) {
+        if(a.size() < 2)
+            return false;
+        if(start<0)
+            start = 0;
+        for(int i=start+1; i<=end; i++) {
+            int prev = a.get(i-1);
+            int curr = a.get(i);
+            double sqrt = Math.pow(prev+curr, 0.5);
+            double sqrt1 = ((int)sqrt);
+            if(sqrt1 != sqrt) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int getSquarefulPermutations(ArrayList<Integer> A,
+                          HashSet<String> uniqueSet, int index) {
+        if(index == A.size()-1) {
+            StringBuffer sb = new StringBuffer();
+            for(Integer i : A) sb.append(i);
+
+            if(!uniqueSet.contains(sb.toString())) {
+                uniqueSet.add(sb.toString());
+                if(checkSquarefulPermutation(A, index-2, index)) {
+                    System.out.println(A);
+                    System.out.println(checkSquarefulPermutation(A, 0 , index));
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            }
+
+        }
+
+        if(index >= 2) {
+            if(!checkSquarefulPermutation(A, index-2, index-1)) {
+                return 0;
+            }
+        }
+
+        int total=0;
+        for(int i=index; i<A.size(); i++) {
+            int temp = A.get(i);
+            A.set(i, A.get(index));
+            A.set(index, temp);
+            total += getSquarefulPermutations(A, uniqueSet, index+1);
+            temp = A.get(i);
+            A.set(i, A.get(index));
+            A.set(index, temp);
+        }
+
+        return total;
+    }
+
+    public int squarefulArrays(ArrayList<Integer> a) {
+        HashSet<String> uniqeSet = new HashSet<>();
+        return getSquarefulPermutations(a, uniqeSet, 0);
+    }
 }
 
 public class Backtracking {
@@ -217,7 +279,11 @@ public class Backtracking {
         System.out.println(bt.uniquePermutations(A));*/
 
         // Get all phone letter combinations
-        System.out.println(bt.phoneLetterCombinations("012"));
+        /*System.out.println(bt.phoneLetterCombinations("012"));*/
+
+        // Get total squareful arrays
+        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(428,56,88,12));
+        System.out.println(bt.squarefulArrays(A));
 
     }
 }
