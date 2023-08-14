@@ -3,6 +3,7 @@ package Backtracking;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 
 class SampleMaze {
     public ArrayList<ArrayList<Integer>> getSampleMaze(int type) {
@@ -101,6 +102,47 @@ class Problems {
     public ArrayList<ArrayList<Integer>> permutations(ArrayList<Integer> A) {
         return getPermutations(A);
     }
+
+    public ArrayList<ArrayList<Integer>> getUniquePermutations(ArrayList<Integer> A, HashSet<String> uniqueSet, int size) {
+        if(A.size() == 0) {
+            return new ArrayList<>();
+        }
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+        int currSize = A.size();
+        for(int i=0; i<A.size(); i++) {
+            int val = A.remove(i);
+            ArrayList<ArrayList<Integer>> permutations = getUniquePermutations(A, uniqueSet, size);
+            if(permutations.size()>0) {
+                for (ArrayList<Integer> subp : permutations) {
+                    subp.add(0, val);
+                    StringBuffer sb = new StringBuffer();
+                    for(Integer t : subp) {
+                        sb.append(t+"");
+                    }
+                    if(size == currSize) {
+                        if (!uniqueSet.contains(sb.toString())) {
+                            ans.add(subp);
+                            uniqueSet.add(sb.toString());
+                        }
+                    }
+                    else {
+                        ans.add(subp);
+                    }
+                }
+            }
+            else {
+                ans.add(new ArrayList<>(Arrays.asList(val)));
+            }
+            A.add(i, val);
+        }
+
+        return ans;
+    }
+
+    public ArrayList<ArrayList<Integer>> uniquePermutations(ArrayList<Integer> A) {
+        HashSet<String> uniqueSet = new HashSet<>();
+        return getUniquePermutations(A, uniqueSet, A.size());
+    }
 }
 
 public class Backtracking {
@@ -115,7 +157,12 @@ public class Backtracking {
         /*System.out.println("Ans: "+bt.mazeUniquePaths(sm.getSampleMaze(0)));*/
 
         // Get all permutations
-        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(1,2,3));
-        System.out.println(bt.permutations(A));
+        /*ArrayList<Integer> A = new ArrayList<>(Arrays.asList(1,2,3));
+        System.out.println(bt.permutations(A));*/
+
+        // Get all unique permutations
+        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(1,2));
+        System.out.println(bt.uniquePermutations(A));
+
     }
 }
