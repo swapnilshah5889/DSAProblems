@@ -279,6 +279,19 @@ class Problems {
         return flips;
 
     }
+
+    public int findMiceHoles(ArrayList<Integer> A, ArrayList<Integer> B) {
+        Collections.sort(A);
+        Collections.sort(B);
+        int max = 0;
+        for(int i=0; i<A.size(); i++) {
+            int temp = Math.abs(A.get(i) - B.get(i));
+            System.out.println(temp);
+            max = Math.max(max, temp);
+        }
+
+        return max;
+    }
 }
 
 
@@ -315,6 +328,11 @@ public class Greedy {
         System.out.println(greedyProblems.shipProfits(4, 3, shipVacancies));*/
 
         // Flip binary string k consecutive times to make it all 1s
-        System.out.println(greedyProblems.convertBinaryString("00010110", 3));
+        /*System.out.println(greedyProblems.convertBinaryString("00010110", 3));*/
+
+        // Find mouse and holes
+        ArrayList<Integer> mice = new ArrayList<>(Arrays.asList(-2));
+        ArrayList<Integer> holes = new ArrayList<>(Arrays.asList(-6));
+        System.out.println(greedyProblems.findMiceHoles(mice, holes));
     }
 }
