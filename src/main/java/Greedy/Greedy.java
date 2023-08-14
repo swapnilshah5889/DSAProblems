@@ -1,9 +1,6 @@
 package Greedy;
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.PriorityQueue;
+import java.util.*;
 
 class Pair {
     Integer val1, val2;
@@ -214,7 +211,76 @@ class Problems {
 
         return totalCoins;
     }
+
+    public ArrayList<Integer> shipProfits(int A, int B, ArrayList<Integer> C) {
+
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        for(int i=0; i<C.size(); i++) {
+            maxHeap.add(C.get(i));
+            minHeap.add(C.get(i));
+        }
+        int maxProfit = 0;
+        int minProfit = 0;
+        while(A>0) {
+
+            // Maximize profit
+            int max = maxHeap.remove();
+            maxProfit += max;
+            max--;
+            if(max>0)
+                maxHeap.add(max);
+
+            // Minimize profit
+            int min = minHeap.remove();
+            minProfit += min;
+            min--;
+            if(min>0)
+                minHeap.add(min);
+            A--;
+
+        }
+
+        return new ArrayList<>(Arrays.asList(maxProfit, minProfit));
+    }
+
+    public int convertBinaryString(String A, int B) {
+        int[] prefixSum = new int[A.length()];
+        Arrays.fill(prefixSum, 0);
+
+        int xor = 0;
+        int flips = 0;
+
+        for(int i=0; i<=A.length()-B; i++) {
+            xor = xor ^ prefixSum[i];
+            System.out.println(A.charAt(i) + " "+ xor);
+            if( (A.charAt(i) == '0' && xor == 0) || (A.charAt(i) == '1' && xor==1)) {
+                if(i+B < A.length())
+                    prefixSum[i+B] = 1;
+                xor = 1-xor;
+                flips++;
+            }
+        }
+
+        System.out.println();
+        System.out.println(flips);
+        Arrays.stream(prefixSum).forEach(val -> {
+            System.out.print(val + " ");
+        });
+        System.out.println();
+
+        for(int i=A.length()-B+1; i<A.length(); i++) {
+            xor = xor ^ prefixSum[i];
+            if( (xor ^ Integer.parseInt(A.charAt(i)+"")) == 0) {
+                return -1;
+            }
+        }
+
+        return flips;
+
+    }
 }
+
 
 
 public class Greedy {
@@ -241,7 +307,14 @@ public class Greedy {
         /*System.out.println(greedyProblems.minimumHops("..x.xx..xx....x.."));*/
 
         // Find coin change if coin denominations are in powers of a single coin k
-        int coin = 5;
-        System.out.println( greedyProblems.coinChangePowersofK(47, coin) );
+        /*int coin = 5;
+        System.out.println( greedyProblems.coinChangePowersofK(47, coin) );*/
+
+        // Maximum and minimum profit for a ship company
+        /*ArrayList<Integer> shipVacancies = new ArrayList<>(Arrays.asList(2,2,2));
+        System.out.println(greedyProblems.shipProfits(4, 3, shipVacancies));*/
+
+        // Flip binary string k consecutive times to make it all 1s
+        System.out.println(greedyProblems.convertBinaryString("00010110", 3));
     }
 }
