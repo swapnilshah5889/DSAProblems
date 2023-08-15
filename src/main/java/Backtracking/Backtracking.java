@@ -1,5 +1,7 @@
 package Backtracking;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.lang.reflect.Array;
 import java.util.*;
 
@@ -261,42 +263,62 @@ class Problems {
         return getSquarefulPermutations(a, uniqeSet, 0);
     }
 
-    public int removeInvalidParenthesis(String A, int index, Stack<Character> stack) {
-        if(index == A.length() && stack.isEmpty()){
-            return 1;
+    public void removeInvalidParenthesis(String A, int index, HashSet<String> uniqueSets, int rightOffset,
+                                        int leftOffset, String processed, ArrayList<String> ans) {
+        if(rightOffset>leftOffset) {
+            return;
+        }
+        if(index == A.length()) {
+            // Valid parenthesis
+            if(rightOffset == leftOffset) {
+                // Add to ans
+                if(ans.size() == 0) {
+                    ans.add(processed);
+                    uniqueSets.add(processed);
+                }
+                // Verify max length
+                else {
+                    // If better solution
+                    if(processed.length() > ans.get(0).length()) {
+                        ans = new ArrayList<>();
+                        uniqueSets = new HashSet<>();
+                        ans.add(processed);
+                        uniqueSets.add(processed);
+                    }
+                    // If same length - add to ans
+                    else if(processed.length() == ans.get(0).length() && !uniqueSets.contains(processed)) {
+                        ans.add(processed);
+                        uniqueSets.add(processed);
+                    }
+                }
+            }
+            return;
         }
 
         char currChar = A.charAt(index);
-        int total = 0;
-
-        // Choose current character
-        // Valid parenthesis
         if(currChar == '(') {
-            stack.push(currChar);
-            total += removeInvalidParenthesis(A, index+1, stack);
-            if(!stack.isEmpty() && stack.size() == index+1)
-                stack.pop();
-            else
-                stack.push(currChar);
-
+            removeInvalidParenthesis(A, index+1, uniqueSets, rightOffset, leftOffset+1,
+                    processed+(currChar+""), ans);
+            removeInvalidParenthesis(A, index+1, uniqueSets, rightOffset, leftOffset,
+                    processed, ans);
         }
-        // If current is ')'
+        else if(currChar == ')') {
+            removeInvalidParenthesis(A, index+1, uniqueSets, rightOffset+1, leftOffset,
+                    processed+(""+currChar), ans);
+            removeInvalidParenthesis(A, index+1, uniqueSets, rightOffset, leftOffset,
+                    processed, ans);
+        }
         else {
-            // Valid parenthesis
-            if(!stack.isEmpty() && stack.peek() == '(') {
-                stack.pop();
-                total += removeInvalidParenthesis(A, index+1, stack);
-            }
+            removeInvalidParenthesis(A, index+1, uniqueSets, rightOffset, leftOffset,
+                    processed+(""+currChar), ans);
         }
-
-        // Don't choose current character
-        total += removeInvalidParenthesis(A, index+1, stack);
-
-        return total;
     }
-    public int removeInvalidParenthesis(String A) {
-        Stack<Character> stack = new Stack<>();
-        return removeInvalidParenthesis(A, 0, stack);
+
+    public ArrayList<String> removeInvalidParenthesis(String A) {
+        ArrayList<String> ans = new ArrayList<>();
+        HashSet<String> uniqueSets = new HashSet<>();
+        removeInvalidParenthesis(A, 0, uniqueSets, 0, 0, "", ans);
+        return ans;
     }
 
     public void getUniqueClone(ArrayList<Integer> a, HashSet<String> uniqueSets,
@@ -365,10 +387,10 @@ public class Backtracking {
         System.out.println(bt.squarefulArrays(A));*/
 
         // Remove invalid parenthesis
-        /*System.out.println(bt.removeInvalidParenthesis("()())()"));*/
+        System.out.println(bt.removeInvalidParenthesis("(a)())()"));
 
         // Subsets II - get all unique subsets in sorted manner
-        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(5,4));
-        System.out.println(bt.subsetsII(A));
+        /*ArrayList<Integer> A = new ArrayList<>(Arrays.asList(5,4));
+        System.out.println(bt.subsetsII(A));*/
     }
 }
