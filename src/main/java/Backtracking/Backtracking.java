@@ -260,6 +260,85 @@ class Problems {
         HashSet<String> uniqeSet = new HashSet<>();
         return getSquarefulPermutations(a, uniqeSet, 0);
     }
+
+    public int removeInvalidParenthesis(String A, int index, Stack<Character> stack) {
+        if(index == A.length() && stack.isEmpty()){
+            return 1;
+        }
+
+        char currChar = A.charAt(index);
+        int total = 0;
+
+        // Choose current character
+        // Valid parenthesis
+        if(currChar == '(') {
+            stack.push(currChar);
+            total += removeInvalidParenthesis(A, index+1, stack);
+            if(!stack.isEmpty() && stack.size() == index+1)
+                stack.pop();
+            else
+                stack.push(currChar);
+
+        }
+        // If current is ')'
+        else {
+            // Valid parenthesis
+            if(!stack.isEmpty() && stack.peek() == '(') {
+                stack.pop();
+                total += removeInvalidParenthesis(A, index+1, stack);
+            }
+        }
+
+        // Don't choose current character
+        total += removeInvalidParenthesis(A, index+1, stack);
+
+        return total;
+    }
+    public int removeInvalidParenthesis(String A) {
+        Stack<Character> stack = new Stack<>();
+        return removeInvalidParenthesis(A, 0, stack);
+    }
+
+    public void getUniqueClone(ArrayList<Integer> a, HashSet<String> uniqueSets,
+                                             ArrayList<ArrayList<Integer>> ans) {
+        StringBuffer sb = new StringBuffer();
+//        System.out.println(a);
+        for(Integer i : a) {
+            sb.append(i+"");
+        }
+        if(sb.length() == 0){
+            sb.append("empty");
+        }
+        if(!uniqueSets.contains(sb.toString())) {
+            uniqueSets.add(sb.toString());
+            ArrayList<Integer> clone = new ArrayList<>(a);
+            ans.add(clone);
+        }
+
+    }
+    public void getSubsets(ArrayList<Integer> A, int index, ArrayList<Integer> processed,
+                   ArrayList<ArrayList<Integer>> ans, HashSet<String> uniqueSets) {
+        if(index == A.size()) {
+            getUniqueClone(processed, uniqueSets, ans);
+            return;
+        }
+
+        getUniqueClone(processed, uniqueSets, ans);
+        for(int i=index; i<A.size(); i++) {
+            processed.add(A.get(i));
+            getSubsets(A, i+1, processed, ans, uniqueSets);
+            processed.remove(processed.size()-1);
+        }
+
+    }
+
+    public ArrayList<ArrayList<Integer>> subsetsII(ArrayList<Integer> A) {
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+        HashSet<String> uniqueSets = new HashSet<>();
+        Collections.sort(A);
+        getSubsets(A, 0, new ArrayList<>(), ans, uniqueSets);
+        return ans;
+    }
 }
 
 public class Backtracking {
@@ -282,8 +361,14 @@ public class Backtracking {
         /*System.out.println(bt.phoneLetterCombinations("012"));*/
 
         // Get total squareful arrays
-        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(428,56,88,12));
-        System.out.println(bt.squarefulArrays(A));
+        /*ArrayList<Integer> A = new ArrayList<>(Arrays.asList(428,56,88,12));
+        System.out.println(bt.squarefulArrays(A));*/
 
+        // Remove invalid parenthesis
+        /*System.out.println(bt.removeInvalidParenthesis("()())()"));*/
+
+        // Subsets II - get all unique subsets in sorted manner
+        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(5,4));
+        System.out.println(bt.subsetsII(A));
     }
 }
