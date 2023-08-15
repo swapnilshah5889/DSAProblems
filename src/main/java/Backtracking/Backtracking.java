@@ -361,6 +361,37 @@ class Problems {
         getSubsets(A, 0, new ArrayList<>(), ans, uniqueSets);
         return ans;
     }
+
+    public void generateParenthesis(int left, int right, List<String> ans, StringBuffer processed) {
+        // Valid parenthesis
+        if(left == 0 && right == 0) {
+            ans.add(processed.toString());
+        }
+        // Invalid parenthesis
+        // because closing brackets cannot be more than
+        // opening brackets at any point
+        if(left>right) {
+            return;
+        }
+
+        // If opening brackets available
+        if(left>0) {
+            generateParenthesis(left-1, right, ans, processed.append("("));
+            processed.deleteCharAt(processed.length()-1);
+        }
+        // If closing brackets available
+        if(right>0) {
+            generateParenthesis(left, right-1, ans, processed.append(")"));
+            processed.deleteCharAt(processed.length()-1);
+        }
+
+    }
+
+    public List<String> generateParenthesis(int i) {
+        List<String> ans = new ArrayList<>();
+        generateParenthesis(i, i, ans, new StringBuffer());
+        return ans;
+    }
 }
 
 public class Backtracking {
@@ -387,10 +418,13 @@ public class Backtracking {
         System.out.println(bt.squarefulArrays(A));*/
 
         // Remove invalid parenthesis
-        System.out.println(bt.removeInvalidParenthesis("(a)())()"));
+        /*System.out.println(bt.removeInvalidParenthesis("(a)())()"));*/
 
         // Subsets II - get all unique subsets in sorted manner
         /*ArrayList<Integer> A = new ArrayList<>(Arrays.asList(5,4));
         System.out.println(bt.subsetsII(A));*/
+        
+        // Generate parenthesis
+        System.out.println(bt.generateParenthesis(3));
     }
 }
