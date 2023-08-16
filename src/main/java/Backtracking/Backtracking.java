@@ -392,6 +392,114 @@ class Problems {
         generateParenthesis(i, i, ans, new StringBuffer());
         return ans;
     }
+
+    public void generateUniqueSubsets(int[] nums, List<Integer> processed, int index,
+                                      HashSet<String> uniqueSets, List<List<Integer>> ans) {
+        if(nums.length == index-1) {
+            processed.add(nums[index]);
+            System.out.println(processed);
+            return;
+        }
+
+        for(int i=index; i<nums.length; i++) {
+            processed.add(nums[i]);
+            StringBuffer sb = new StringBuffer();
+            for (Integer p : processed) {
+                sb.append(p);
+            }
+            if(!uniqueSets.contains(sb.toString())) {
+                ArrayList<Integer> subset = new ArrayList<>(processed);
+                ans.add(subset);
+                uniqueSets.add(sb.toString());
+            }
+            generateUniqueSubsets(nums, processed, i+1, uniqueSets, ans);
+            processed.remove(processed.size()-1);
+        }
+
+    }
+
+    public List<List<Integer>> generateUniqueSubsets(int[] nums) {
+        Arrays.sort(nums);
+        List<List<Integer>> ans = new ArrayList<>();
+        HashSet<String> uniqueSets = new HashSet<>();
+        generateUniqueSubsets(nums, new ArrayList<>(), 0, uniqueSets, ans);
+        return ans;
+    }
+
+    public void combinationSum(int[] candidates, int index, int target, List<Integer> processed,
+                               HashSet<String> uniqueSets, List<List<Integer>> ans, int sum) {
+
+        int[] temp = new int[]{2,2,22,4};
+        if(temp.length == processed.size()) {
+            boolean found = true;
+            for (int i=0; i<processed.size(); i++) {
+                if(processed.get(i) != temp[i]) {
+                    found=false;
+                    break;
+                }
+            }
+            if(found) {
+                System.out.println(processed);
+                System.out.println(sum);
+            }
+        }
+
+        if(sum > target) {
+            return;
+        }
+
+        if(sum == target) {
+            StringBuffer sb = new StringBuffer();
+            for(Integer p : processed) {
+                if(p<10)
+                    sb.append("0"+p);
+                else
+                    sb.append(""+p);
+            }
+            if(!uniqueSets.contains(sb.toString())) {
+                uniqueSets.add(sb.toString());
+                ans.add(processed);
+            }
+            return;
+        }
+
+        for(int i=index; i<candidates.length; i++) {
+            ArrayList<Integer> subseq = new ArrayList<>(processed);
+            subseq.add(candidates[i]);
+            // Repeat element
+            combinationSum(candidates, i, target, subseq, uniqueSets, ans, sum+candidates[i]);
+            // Next element
+            combinationSum(candidates, i+1, target, subseq, uniqueSets, ans, sum+candidates[i]);
+        }
+    }
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> ans = new ArrayList<>();
+        HashSet<String> uniqueSets = new HashSet<>();
+        combinationSum(candidates, 0, target, new ArrayList<>(), uniqueSets, ans, 0);
+        return ans;
+    }
+
+    public void getCombinations(int n, int index, int k, List<Integer> processed, List<List<Integer>> ans) {
+        if(k<0) {
+            return;
+        }
+        if(k == 0) {
+            ans.add(processed);
+            return;
+        }
+
+        for(int i=index; i<=n; i++) {
+            ArrayList<Integer> subset = new ArrayList<>(processed);
+            subset.add(i);
+            getCombinations(n, i+1, k-1, subset, ans);
+        }
+
+    }
+    public List<List<Integer>> combinations(int n, int k) {
+        List<List<Integer>> ans = new ArrayList<>();
+        getCombinations(n,1,k,new ArrayList<>(), ans);
+        return ans;
+    }
 }
 
 public class Backtracking {
@@ -425,6 +533,15 @@ public class Backtracking {
         System.out.println(bt.subsetsII(A));*/
         
         // Generate parenthesis
-        System.out.println(bt.generateParenthesis(3));
+        /*System.out.println(bt.generateParenthesis(3));*/
+
+        // Generate unique subsets
+        /*System.out.println(bt.generateUniqueSubsets(new int[]{1,2,2}));*/
+
+        // Combination sum
+        /*System.out.println(bt.combinationSum(new int[]{2,2,3,7}, 7));*/
+
+        // Get all combinations from 1 to n numbers of size k
+        System.out.println(bt.combinations(4,2));
     }
 }
