@@ -536,6 +536,69 @@ class Problems {
         combinationSum2(candidates, 0, target, new ArrayList<>(), uniqueSets, ans, 0);
         return ans;
     }
+
+
+    private boolean searchWord(char[][] board, boolean[][] visited, int i, int j, String word, int wIndex) {
+
+        if(i<0 || j<0 || i>=board.length || j>=board[0].length) {
+            return false;
+        }
+
+        /*Arrays.stream(visited).forEach(arr->{
+            for(int x=0; x<arr.length; x++) {
+                System.out.print(arr[x]+" ");
+            }
+            System.out.println();
+        });
+        System.out.println(wIndex);*/
+        boolean found = false;
+        if(!visited[i][j]) {
+            visited[i][j] = true;
+            char currChar = word.charAt(wIndex);
+            // Found
+            if (board[i][j] == currChar) {
+                // Word found
+                if (wIndex == word.length() - 1) {
+                    found = true;
+                }
+                // Find the word
+                else {
+                    // Check all neighbors
+                    found = searchWord(board, visited, i + 1, j, word, wIndex + 1)
+                            || searchWord(board, visited, i, j + 1, word, wIndex + 1)
+                            || searchWord(board, visited, i - 1, j, word, wIndex + 1)
+                            || searchWord(board, visited, i, j - 1, word, wIndex + 1);
+                }
+            }
+            visited[i][j] = false;
+        }
+        return found;
+    }
+
+    public boolean wordSearch(char[][] board, String word) {
+        boolean visited[][] = new boolean[board.length][board[0].length];
+
+        char firstChar = word.charAt(0);
+        boolean found = false;
+        for(int i=0; i<board.length; i++) {
+            for(int j=0; j<board[0].length; j++) {
+                if(board[i][j] == firstChar) {
+                    for(int x=0; x<visited.length; x++) {
+                        for(int y=0; y<visited[0].length; y++) {
+                            visited[x][y] = false;
+                        }
+                    }
+
+                    if(searchWord(board, visited, i, j, word, 0)){
+                        found = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return found;
+    }
 }
 
 public class Backtracking {
@@ -583,6 +646,14 @@ public class Backtracking {
 
         // Combination Sum II: Get unique sub-array combinations that sum up to target
         // And repeating elements is now allowed
-        System.out.println(bt.combinationSum2(new int[]{10,1,2,7,6,1,5}, 8));
+        /*System.out.println(bt.combinationSum2(new int[]{10,1,2,7,6,1,5}, 8));*/
+
+        // Word Search: Search the given word in a given matrix
+        char[][] grid = new char[][]{
+                {'A', 'B', 'C', 'E'},
+                {'S', 'F', 'C', 'S'},
+                {'A', 'D', 'E', 'E'}
+        };
+        System.out.println(bt.wordSearch(grid, "SEB"));
     }
 }
