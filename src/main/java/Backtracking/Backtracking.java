@@ -500,6 +500,42 @@ class Problems {
         getCombinations(n,1,k,new ArrayList<>(), ans);
         return ans;
     }
+
+    public void combinationSum2(int[] candidates, int index, int target, List<Integer> processed,
+                               HashSet<String> uniqueSets, List<List<Integer>> ans, int sum) {
+
+        if(sum > target) {
+            return;
+        }
+
+        if(sum == target) {
+            StringBuffer sb = new StringBuffer();
+            for(Integer p : processed) {
+                sb.append("*"+p);
+            }
+            if(!uniqueSets.contains(sb.toString())) {
+                uniqueSets.add(sb.toString());
+                ans.add(processed);
+            }
+        }
+
+        for(int i=index; i<candidates.length; i++) {
+            ArrayList<Integer> subseq = new ArrayList<>(processed);
+            subseq.add(candidates[i]);
+            // Next element
+            if(i==index || candidates[i] > candidates[index]) {
+                combinationSum2(candidates, i+1, target, subseq, uniqueSets, ans, sum+candidates[i]);
+            }
+        }
+    }
+
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        List<List<Integer>> ans = new ArrayList<>();
+        HashSet<String> uniqueSets = new HashSet<>();
+        combinationSum2(candidates, 0, target, new ArrayList<>(), uniqueSets, ans, 0);
+        return ans;
+    }
 }
 
 public class Backtracking {
@@ -538,10 +574,15 @@ public class Backtracking {
         // Generate unique subsets
         /*System.out.println(bt.generateUniqueSubsets(new int[]{1,2,2}));*/
 
-        // Combination sum
+        // Combination sum: Get unique sub-array combinations that sum up to target
+        // And repeating elements is allowed
         /*System.out.println(bt.combinationSum(new int[]{2,2,3,7}, 7));*/
 
         // Get all combinations from 1 to n numbers of size k
-        System.out.println(bt.combinations(4,2));
+        /*System.out.println(bt.combinations(4,2));*/
+
+        // Combination Sum II: Get unique sub-array combinations that sum up to target
+        // And repeating elements is now allowed
+        System.out.println(bt.combinationSum2(new int[]{10,1,2,7,6,1,5}, 8));
     }
 }
