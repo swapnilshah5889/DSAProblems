@@ -951,6 +951,33 @@ public class Graphs {
         return min;
     }
 
+    public static void getAllPaths(List<List<Integer>> ans, List<Integer> path, int target,
+                                   int[][] graph, int edge) {
+        // Target reached
+        if(edge == target) {
+            path.add(edge);
+            ans.add(new ArrayList<>(path));
+            path.remove(path.size()-1);
+            return;
+        }
+
+        // If edge has neighbors - Iterate over neighbors
+        if(graph[edge].length > 0) {
+            int[] neighbors = graph[edge];
+            path.add(edge);
+            for(Integer neighbor : neighbors) {
+                getAllPaths(ans, path, target, graph, neighbor);
+            }
+            path.remove(path.size()-1);
+        }
+
+    }
+    public static List<List<Integer>> allPathsSourceTarget(int[][] graph) {
+        List<List<Integer>> ans = new ArrayList<>();
+        getAllPaths(ans, new ArrayList<>(), graph.length-1, graph, 0);
+        return ans;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -992,13 +1019,17 @@ public class Graphs {
         System.out.println(nearestExit(maze, new int[]{1,0}));*/
 
         // Avoid Monsters
-        ArrayList<Integer> monsterRows = new ArrayList<>();
+        /*ArrayList<Integer> monsterRows = new ArrayList<>();
         monsterRows.add(2);
         monsterRows.add(7);
         ArrayList<Integer> monsterCols = new ArrayList<>();
         monsterCols.add(7);
         monsterCols.add(5);
         System.out.println(avoidMonsters(8,8,6,6,
-                            0,3,monsterRows,monsterCols));
+                            0,3,monsterRows,monsterCols));*/
+
+        // Get all paths from source to target
+        int[][] graph = new int[][]{{1,2}, {3}, {3}, {}};
+        System.out.println(allPathsSourceTarget(graph));
     }
 }
