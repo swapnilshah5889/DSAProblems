@@ -599,6 +599,48 @@ class Problems {
 
         return found;
     }
+
+    public int findAllPaths(int[][] grid, int i, int j, int target, int curr) {
+
+        // Invalid point
+        if(i<0 || j<0 || i==grid.length || j == grid[0].length) {
+            return 0;
+        }
+        // Target achieved
+        if(grid[i][j] == 2 && target == curr) {
+//            System.out.println("Achieved: "+target+ " - "+curr);
+            return 1;
+        }
+        int ans = 0;
+        // If not visited
+        if(grid[i][j] == 0) {
+            grid[i][j] = 1;
+
+            ans = findAllPaths(grid, i+1, j, target, curr+1) +
+                        findAllPaths(grid, i-1, j, target, curr+1) +
+                        findAllPaths(grid, i, j+1, target, curr+1) +
+                        findAllPaths(grid, i, j-1, target, curr+1);
+            grid[i][j] = 0;
+        }
+        return ans;
+    }
+
+    public int uniquePathsIII(int[][] grid) {
+        int emptySpaces = 0;
+        int startx=0, starty=0;
+        for(int i=0; i<grid.length; i++) {
+            for(int j=0; j<grid[0].length; j++) {
+                if(grid[i][j] == 0) {
+                    emptySpaces++;
+                }
+                else if(grid[i][j] == 1) {
+                    startx=i; starty=j;
+                }
+            }
+        }
+        grid[startx][starty] = 0;
+        return findAllPaths(grid, startx, starty, emptySpaces, -1);
+    }
 }
 
 public class Backtracking {
@@ -649,11 +691,16 @@ public class Backtracking {
         /*System.out.println(bt.combinationSum2(new int[]{10,1,2,7,6,1,5}, 8));*/
 
         // Word Search: Search the given word in a given matrix
-        char[][] grid = new char[][]{
+        /*char[][] grid = new char[][]{
                 {'A', 'B', 'C', 'E'},
                 {'S', 'F', 'C', 'S'},
                 {'A', 'D', 'E', 'E'}
         };
-        System.out.println(bt.wordSearch(grid, "SEB"));
+        System.out.println(bt.wordSearch(grid, "SEB"));*/
+
+        // Unique Paths - Find all unique paths from source to target such that
+        // it covers all empty spaces and avoids all monsters
+        int[][] grid = new int[][]{{1,0,0,0}, {0,0,0,0}, {0,0,2,-1}};
+        System.out.println(bt.uniquePathsIII(grid));
     }
 }
