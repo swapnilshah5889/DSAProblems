@@ -641,6 +641,103 @@ class Problems {
         grid[startx][starty] = 0;
         return findAllPaths(grid, startx, starty, emptySpaces, -1);
     }
+
+    public boolean validSudoku(char[][] A) {
+        HashSet<Character> set;
+        // Check all rows
+        for(int i=0; i<A.length; i++) {
+            set = new HashSet<>();
+            for(int j=0; j<A.length; j++) {
+                // If not empty
+                if(A[i][j] != '.') {
+                    // If duplicate return false
+                    if(set.contains(A[i][j])) {
+                        return false;
+                    }
+                    set.add(A[i][j]);
+                }
+            }
+        }
+
+        // Check all columns
+        for(int i=0; i<A.length; i++) {
+            set = new HashSet<>();
+            for(int j=0; j<A.length; j++) {
+                // If not empty
+                if(A[j][i] != '.') {
+                    // If duplicate return false
+                    if(set.contains(A[j][i])) {
+                        return false;
+                    }
+                    set.add(A[j][i]);
+                }
+            }
+        }
+
+        // Check all blocks
+        for(int i=0; i<9; i+=3) {
+            for(int j=0; j<9; j+=3) {
+                set = new HashSet<>();
+                // Check the block
+                for(int x = i; x<i+3; x++) {
+                    for(int y = j; y<j+3; y++) {
+                        // If not empty
+                        if(A[x][y] != '.') {
+                            // If duplicate return false
+                            if(set.contains(A[x][y])) {
+                                return false;
+                            }
+                            set.add(A[x][y]);
+                        }
+                    }
+                }
+
+            }
+        }
+        return true;
+    }
+
+    public boolean sudokuRecurr(char[][] A, int k, int n) {
+        if(k == 81) {
+            return true;
+        }
+        int i = k/n;
+        int j = k%n;
+        boolean valid = false;
+        if(A[i][j] == '.') {
+            for(int val=1; val<=9 ;val++) {
+                char c = (char) (val+'0');
+                A[i][j] = c;
+                // If sudoku is valid
+                if(validSudoku(A)) {
+                    if (sudokuRecurr(A, k + 1, n)) {
+                        valid = true;
+                        break;
+                    }
+                }
+            }
+            if(!valid)
+                A[i][j] = '.';
+        }
+        else {
+            valid = sudokuRecurr(A, k+1, n);
+        }
+        return valid;
+    }
+
+    public void printSudoku(char[][] a) {
+        for(int i=0; i<a.length; i++) {
+            for(int j=0; j<a.length; j++) {
+                System.out.print(a[i][j] +" ");
+            }
+            System.out.println();
+        }
+    }
+
+    public char[][] solveSudoku(char[][] A) {
+        sudokuRecurr(A, 0, 9);
+        return A;
+    }
 }
 
 public class Backtracking {
@@ -700,7 +797,23 @@ public class Backtracking {
 
         // Unique Paths - Find all unique paths from source to target such that
         // it covers all empty spaces and avoids all monsters
-        int[][] grid = new int[][]{{1,0,0,0}, {0,0,0,0}, {0,0,2,-1}};
-        System.out.println(bt.uniquePathsIII(grid));
+        /*int[][] grid = new int[][]{{1,0,0,0}, {0,0,0,0}, {0,0,2,-1}};
+        System.out.println(bt.uniquePathsIII(grid));*/
+
+        // Sudoku solver
+        char[][] sudoku = new char[][]{
+                {'5', '3', '.', '.', '7', '.', '.', '.', '.'},
+                {'6', '.', '.', '1', '9', '5', '.', '.', '.'},
+                {'.', '9', '8', '.', '.', '.', '.', '6', '.'},
+                {'8', '.', '.', '.', '6', '.', '.', '.', '3'},
+                {'4', '.', '.', '8', '.', '3', '.', '.', '1'},
+                {'7', '.', '.', '.', '2', '.', '.', '.', '6'},
+                {'.', '6', '.', '.', '.', '.', '2', '8', '.'},
+                {'.', '.', '.', '4', '1', '9', '.', '.', '5'},
+                {'.', '.', '.', '.', '8', '.', '.', '7', '9'}
+        };
+        bt.solveSudoku(sudoku);
+        System.out.println(bt.validSudoku(sudoku));
+        bt.printSudoku(sudoku);
     }
 }
