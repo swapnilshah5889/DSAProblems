@@ -978,6 +978,54 @@ public class Graphs {
         return ans;
     }
 
+    public static int[][] updateMatrix(int[][] mat) {
+        Queue<Pair> queue = new LinkedList<>();
+        for(int i=0; i<mat.length; i++) {
+            for(int j=0; j<mat.length; j++) {
+                if(mat[i][j] == 0) {
+                    queue.add(new Pair(i,j));
+                }
+                else {
+                    mat[i][j] = -1;
+                }
+            }
+        }
+
+        queue.add(null);
+        int dx[] = new int[]{1,-1,0,0};
+        int dy[] = new int[]{0,0,1,-1};
+        int level=1;
+        // Breadth first search
+        while(queue.peek() != null) {
+            // Itereate over the current level
+            while(queue.peek() != null) {
+                Pair p = queue.remove();
+                // Iterate over neighbors
+                for(int i=0; i<dx.length; i++) {
+                    int newX = p.key + dx[i];
+                    int newY = p.val + dy[i];
+                    // If valid point
+                    if(newX>=0 && newY>=0 && newX<mat.length && newY<mat[0].length) {
+                        // If point not visited
+                        // Update the level in the matrix and
+                        // Add this point to queue
+                        if(mat[newX][newY] == -1) {
+                            mat[newX][newY] = level;
+                            queue.add(new Pair(newX, newY));
+                        }
+                    }
+                }
+            }
+            // remove previous null
+            queue.remove();
+            // append null for the next level
+            queue.add(null);
+            level++;
+        }
+
+        return mat;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -1029,7 +1077,17 @@ public class Graphs {
                             0,3,monsterRows,monsterCols));*/
 
         // Get all paths from source to target
-        int[][] graph = new int[][]{{1,2}, {3}, {3}, {}};
-        System.out.println(allPathsSourceTarget(graph));
+        /*int[][] graph = new int[][]{{1,2}, {3}, {3}, {}};
+        System.out.println(allPathsSourceTarget(graph));*/
+
+        // Update 0-1 matrix - returns distance of closest 0 for every cell
+        int[][] matrix = new int[][]{{0,0,0}, {0,1,0}, {1,1,1}};
+        matrix = updateMatrix(matrix);
+        Arrays.stream(matrix).forEach(arr -> {
+            for(int i : arr) {
+                System.out.print(i+" ");
+            }
+            System.out.println();
+        });
     }
 }

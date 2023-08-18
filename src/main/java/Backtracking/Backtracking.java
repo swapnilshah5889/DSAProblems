@@ -738,6 +738,102 @@ class Problems {
         sudokuRecurr(A, 0, 9);
         return A;
     }
+
+
+    public void placeQueen(int[][] board, int i, int j) {
+        // column
+        for(int x=i; x<board.length; x++) {
+            board[x][j]++;
+        }
+        // Diagonal
+
+        for(int x=i+1, y = j+1; x<board.length && y<board[0].length; x++, y++) {
+            board[x][y]++;
+        }
+
+        // Anti Diagonal
+        for(int x=i+1, y = j-1; y>=0 && x<board.length; x++, y--) {
+            board[x][y]++;
+        }
+    }
+    public void removeQueen(int[][] board, int i, int j) {
+        // column
+        for(int x=i; x<board.length; x++) {
+            board[x][j]--;
+        }
+        // Diagonal
+
+        for(int x=i+1, y = j+1; x<board.length && y<board[0].length; x++, y++) {
+            board[x][y]--;
+        }
+
+        // Anti Diagonal
+        for(int x=i+1, y = j-1; y>=0 && x<board.length; x++, y--) {
+            board[x][y]--;
+        }
+    }
+
+    public void printBoard(int[][] board) {
+        Arrays.stream(board).forEach(arr -> {
+            for(int a : arr) {
+                System.out.print((a) +" ");
+            }
+            System.out.println();
+        });
+    }
+
+    private boolean solveNQueens(int[][] board, int n, int i, int placed,
+                                 ArrayList<ArrayList<String>> ans) {
+        // All rows traversed
+        if(i == n) {
+            if(placed == n) {
+                int[][] boardSolution = new int[board.length][board.length];
+                for(int x=0; x<board.length; x++) {
+                    boardSolution[x] = Arrays.copyOf(board[x], board[x].length);
+                }
+                ArrayList<String> solution = new ArrayList<>();
+                for (int x = 0; x < boardSolution.length; x++) {
+                    StringBuffer sb = new StringBuffer();
+                    for (int y = 0; y < boardSolution.length; y++) {
+                        if (boardSolution[x][y] == 1) {
+                            sb.append('Q');
+                            removeQueen(boardSolution, x, y);
+                        } else {
+                            sb.append('.');
+                        }
+                    }
+                    solution.add(sb.toString());
+                }
+                ans.add(solution);
+            }
+            return true;
+        }
+
+        boolean found = false;
+        // Check if possible to place queen for current row
+        for (int y = 0; y < n; y++) {
+            if(board[i][y] == 0) {
+                placeQueen(board, i, y);
+                found = solveNQueens(board, n, i + 1, placed+1, ans);
+                removeQueen(board, i, y);
+            }
+        }
+
+        return found;
+    }
+
+    public ArrayList<ArrayList<String>> nQueens(int A) {
+        int[][] board = new int[A][A];
+        for(int i=0; i<board.length; i++) {
+            for(int j=0; j<board.length; j++) {
+                board[i][j] = 0;
+            }
+        }
+        ArrayList<ArrayList<String>> ans = new ArrayList<>();
+        solveNQueens(board, A, 0, 0, ans);
+        return ans;
+    }
+
 }
 
 public class Backtracking {
@@ -801,7 +897,7 @@ public class Backtracking {
         System.out.println(bt.uniquePathsIII(grid));*/
 
         // Sudoku solver
-        char[][] sudoku = new char[][]{
+        /*char[][] sudoku = new char[][]{
                 {'5', '3', '.', '.', '7', '.', '.', '.', '.'},
                 {'6', '.', '.', '1', '9', '5', '.', '.', '.'},
                 {'.', '9', '8', '.', '.', '.', '.', '6', '.'},
@@ -814,6 +910,9 @@ public class Backtracking {
         };
         bt.solveSudoku(sudoku);
         System.out.println(bt.validSudoku(sudoku));
-        bt.printSudoku(sudoku);
+        bt.printSudoku(sudoku);*/
+
+        // N Queens Problem
+        System.out.println(bt.nQueens(4));
     }
 }
