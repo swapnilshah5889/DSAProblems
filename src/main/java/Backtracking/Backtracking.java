@@ -54,6 +54,7 @@ class Problems {
         visited[startR][startC] = false;
 
     }
+
     public int mazeUniquePaths(ArrayList<ArrayList<Integer>> A) {
         boolean visited[][] = new boolean[A.size()][A.get(0).size()];
         uniquePaths = 0;
@@ -537,7 +538,6 @@ class Problems {
         return ans;
     }
 
-
     private boolean searchWord(char[][] board, boolean[][] visited, int i, int j, String word, int wIndex) {
 
         if(i<0 || j<0 || i>=board.length || j>=board[0].length) {
@@ -739,7 +739,6 @@ class Problems {
         return A;
     }
 
-
     public void placeQueen(int[][] board, int i, int j) {
         // column
         for(int x=i; x<board.length; x++) {
@@ -834,6 +833,106 @@ class Problems {
         return ans;
     }
 
+    public boolean matrixValid(ArrayList<ArrayList<Integer>> matrix, int maxSum) {
+
+        // Check all rows
+        for(int i=0; i<matrix.size(); i++) {
+
+            for(int j=0; j<matrix.get(0).size(); j++) {
+                int sum = 0;
+                for(int k=j; k<matrix.get(0).size(); k++) {
+                    sum+=matrix.get(i).get(k);
+                    if(sum>maxSum) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // Check all columns
+        for(int i=0; i<matrix.get(0).size(); i++) {
+
+            for(int j=0; j<matrix.size(); j++) {
+                int sum = 0;
+                for(int k=j; k<matrix.size(); k++) {
+                    sum+=matrix.get(k).get(i);
+                    if(sum > maxSum) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean verticalHorizontalSum(ArrayList<ArrayList<Integer>> matrix, int maxSum, int op) {
+
+        if(op == -1) {
+            return false;
+        }
+
+        // Check all rows
+        for(int i=0; i<matrix.size(); i++) {
+
+            for(int j=0; j<matrix.get(0).size(); j++) {
+                int sum = 0;
+                for(int k=j; k<matrix.get(0).size(); k++) {
+                    sum+=matrix.get(i).get(k);
+//                    System.out.println(i + "," + j + " - "+i+","+k+" => "+sum);
+                    if(sum>maxSum) {
+
+                        for(int index=j; index<=k; index++) {
+                            // Set Backtracking value
+                            matrix.get(i).set(index, matrix.get(i).get(index)*-1);
+                            if(verticalHorizontalSum(matrix, maxSum, op-1)) {
+                                return true;
+                            }
+                            // Backtrack unset value
+                            matrix.get(i).set(index, matrix.get(i).get(index)*-1);
+                        }
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // Check all columns
+        for(int i=0; i<matrix.get(0).size(); i++) {
+
+            for(int j=0; j<matrix.size(); j++) {
+                int sum = 0;
+                for(int k=j; k<matrix.size(); k++) {
+                    sum+=matrix.get(k).get(i);
+//                    System.out.println(j + "," + i + " - "+k+","+i+" => "+sum);
+                    if(sum > maxSum) {
+                        for(int index=j; index<=k; index++) {
+                            // Set Backtracking value
+                            matrix.get(index).set(i, matrix.get(index).get(i)*-1);
+                            if(verticalHorizontalSum(matrix, maxSum, op-1)) {
+                                return true;
+                            }
+                            // Backtrack unset value
+                            matrix.get(index).set(i, matrix.get(index).get(i)*-1);
+                        }
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public int verticalAndHorizontalSums(int A, ArrayList<ArrayList<Integer>> B, int C) {
+        boolean ans = verticalHorizontalSum(B, C, A);
+        B.forEach(list -> {
+            list.forEach(val -> {
+                System.out.print(val +" ");
+            });
+            System.out.println();
+        });
+        return ans ? 1 : 0;
+    }
+
 }
 
 public class Backtracking {
@@ -913,6 +1012,14 @@ public class Backtracking {
         bt.printSudoku(sudoku);*/
 
         // N Queens Problem
-        System.out.println(bt.nQueens(4));
+        /*System.out.println(bt.nQueens(4));*/
+
+        // Vertical and Horizontal Sum [[],[],[]]
+        ArrayList<ArrayList<Integer>> matrix = new ArrayList<>();
+        matrix.add(new ArrayList<>(Arrays.asList(16,-20,44,-46,-85,-96,89)));
+        matrix.add(new ArrayList<>(Arrays.asList(60,-96,-67,-33,91,27,58)));
+        matrix.add(new ArrayList<>(Arrays.asList(26,90,-80,-39,47,-42,64)));
+        System.out.println(bt.verticalHorizontalSum( matrix, 5, 86));
     }
+
 }
