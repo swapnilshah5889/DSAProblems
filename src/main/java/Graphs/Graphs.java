@@ -1026,6 +1026,46 @@ public class Graphs {
         return mat;
     }
 
+    public static int damagedRoads(ArrayList<Integer> A, ArrayList<Integer> B) {
+        TreeMap<Integer,List<Integer>> map = new TreeMap<>();
+        // Rows
+        int rows = A.size();
+        for(int i=0; i<rows; i++) {
+            map.putIfAbsent(A.get(i), new ArrayList<>());
+            map.get(A.get(i)).add(1);
+        }
+        int cols = B.size();
+        for(int i=0; i<cols; i++) {
+            map.putIfAbsent(B.get(i), new ArrayList<>());
+            map.get(B.get(i)).add(0);
+        }
+        rows++;
+        cols++;
+        int ans = 0;
+        int mod = (int) Math.pow(10,9) + 7;
+        for(Map.Entry<Integer, List<Integer>> edge : map.entrySet()) {
+            //System.out.println("Edge : "+edge.getKey());
+            int currWeight = edge.getKey();
+            for(Integer direction : edge.getValue()) {
+                // Column edge
+                if(direction == 0) {
+                    //System.out.println("Column => "+rows +" X "+currWeight);
+                    ans = (int)(( ((long)rows * currWeight) + ans )%mod);
+                    cols--;
+                }
+                // Row edge
+                else {
+                    //System.out.println("Row => "+cols +" X "+currWeight);
+                    ans = (int)(( ((long)cols * currWeight) + ans )%mod);
+                    rows--;
+                }
+            }
+
+        }
+
+        return ans;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -1081,13 +1121,17 @@ public class Graphs {
         System.out.println(allPathsSourceTarget(graph));*/
 
         // Update 0-1 matrix - returns distance of closest 0 for every cell
-        int[][] matrix = new int[][]{{0,0,0}, {0,1,0}, {1,1,1}};
+        /*int[][] matrix = new int[][]{{0,0,0}, {0,1,0}, {1,1,1}};
         matrix = updateMatrix(matrix);
         Arrays.stream(matrix).forEach(arr -> {
             for(int i : arr) {
                 System.out.print(i+" ");
             }
             System.out.println();
-        });
+        });*/
+
+        // Damaged roads minimum cost to connect cities
+        System.out.println(damagedRoads(new ArrayList<>(Arrays.asList(2,2,4,1,2,4,2)),
+                            new ArrayList<>(Arrays.asList(3,3,4,5)) ));
     }
 }
