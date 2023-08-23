@@ -1995,9 +1995,9 @@ public class DynamicProgramming {
         /*System.out.println(intersectingChords(4));*/
 
         // Maximum uncrossed lines
-        int[] nums1 = new int[]{2,5,1,2,5};
+        /*int[] nums1 = new int[]{2,5,1,2,5};
         int[] nums2 = new int[]{10,5,2,1,5,2};
-        System.out.println(maxUncrossedLines(nums1, nums2));
+        System.out.println(maxUncrossedLines(nums1, nums2));*/
 
     }
 

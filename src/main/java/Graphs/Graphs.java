@@ -1066,6 +1066,122 @@ public class Graphs {
         return ans;
     }
 
+    static class Edge {
+        Integer node, weight;
+        Edge(int node, int weight) {
+            this.node = node;
+            this.weight = weight;
+        }
+    }
+
+    public static int[] djkstras(int A, int[][] B, int C) {
+        HashMap<Integer, List<Edge>> graph = new HashMap<>();
+        PriorityQueue<Edge> queue = new PriorityQueue<>(new Comparator<Edge>() {
+            @Override
+            public int compare(Edge o1, Edge o2) {
+                return o1.weight.compareTo(o2.weight);
+            }
+        });
+        int[] distances = new int[A];
+        Arrays.fill(distances, -1);
+        distances[C] = 0;
+
+        for(int i=0; i<B.length; i++) {
+            int node1 = B[i][0];
+            int node2 = B[i][1];
+            int weight = B[i][2];
+            // Node 1 to node 2 edge
+            graph.putIfAbsent(node1, new ArrayList<>());
+            graph.get(node1).add(new Edge(node2, weight));
+            // Node 2 to node 1 edge
+            graph.putIfAbsent(node2, new ArrayList<>());
+            graph.get(node2).add(new Edge(node1, weight));
+
+            // Add edge to queue if starting node
+            if(node1 == C) {
+                queue.add(new Edge(node2, weight));
+                distances[node2] = weight;
+            }
+            else if(node2 == C) {
+                queue.add(new Edge(node1, weight));
+                distances[node1] = weight;
+            }
+        }
+
+        /*for(Map.Entry<Integer, List<Edge>> node : graph.entrySet()) {
+            System.out.println("Edges of node: "+node.getKey());
+            for(Edge edge : node.getValue()) {
+                System.out.print(edge.node +" - "+edge.weight +" | ");
+            }
+            System.out.println();
+        }*/
+
+        boolean[] visited = new boolean[A];
+        while(!queue.isEmpty()) {
+            Edge edge = queue.remove();
+            if(!visited[edge.node]) {
+                visited[edge.node] = true;
+                for (Edge neighbor : graph.get(edge.node)) {
+                    if(!visited[neighbor.node]) {
+                        if (distances[neighbor.node] == -1) {
+                            distances[neighbor.node] = edge.weight + neighbor.weight;
+                            queue.add(new Edge(neighbor.node, distances[neighbor.node]));
+                        } else {
+                            int newCost = edge.weight + neighbor.weight;
+                            if (newCost < distances[neighbor.node]) {
+                                queue.add(new Edge(neighbor.node, newCost));
+                                distances[neighbor.node] = newCost;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return distances;
+    }
+
+    public static int[][] floydWarshall(int[][] A) {
+
+        for(int k=0; k<A.length; k++) {
+            for(int i=0; i<A.length; i++) {
+                // If Not self node
+                 if(k != i) {
+                    // Check all paths from
+                    // i to j passing via middle node k
+                    for(int j=0; j<A.length; j++) {
+                        // If i to k is reachable and
+                        // k to j is reachable
+                        // and k to j is not a self node
+                        if( k != j && A[i][k] !=-1 && A[k][j] != -1 ) {
+                            int newCost = A[k][i] + A[j][k];
+                            if(A[i][j] == -1 || newCost < A[i][j]) {
+                                A[i][j] = newCost;
+                            }
+                        }
+                    }
+                 }
+            }
+        }
+
+        return A;
+    }
+
+    public static void minMazeDistanceRecur(int[][] A, int currI, int currJ, int targetI, int targetJ, int dist) {
+
+        if(currI < 0 || currJ < 0 || currI >= A.length || currJ >= A[0].length) {
+            return;
+        }
+
+
+
+    }
+    public static int minMazeDistance(int[][] A, int[][] B, int[][] C) {
+
+
+        return 0;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -1131,7 +1247,40 @@ public class Graphs {
         });*/
 
         // Damaged roads minimum cost to connect cities
-        System.out.println(damagedRoads(new ArrayList<>(Arrays.asList(2,2,4,1,2,4,2)),
-                            new ArrayList<>(Arrays.asList(3,3,4,5)) ));
+        /*System.out.println(damagedRoads(new ArrayList<>(Arrays.asList(2,2,4,1,2,4,2)),
+                            new ArrayList<>(Arrays.asList(3,3,4,5)) ));*/
+
+        // Djkstra's Algorithm
+        /*int[][] graph = new int[][]{
+                {0, 4, 9},
+                {3, 4, 6},
+                {1, 2, 1},
+                {2, 5, 1},
+                {2, 4, 5},
+                {0, 3, 7},
+                {0, 1, 1},
+                {4, 5, 7},
+                {0, 5, 1}
+        };
+        int[] distances = djkstras(6, graph, 4);
+        Arrays.stream(distances).forEach(val -> {
+            System.out.print(val+" ");
+        });
+        System.out.println();*/
+
+        // Floyd Warshall's Algorithm - Shortest path from all nodes to all nodes
+        int[][] distances = new int[][]{
+                {0 , 3 , 2, -1},
+                {-1 , 0 , -1, 1},
+                {-1 , 1 , 0, 6},
+                {1 , -1 , -1, 0}
+        };
+        distances = floydWarshall(distances);
+        Arrays.stream(distances).forEach(arr ->{
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val +" ");
+            });
+            System.out.println();
+        });
     }
 }
