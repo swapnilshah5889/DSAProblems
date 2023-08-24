@@ -1,4 +1,5 @@
 package Graphs;
+import DynamicProgramming.DynamicProgramming;
 import com.sun.source.tree.Tree;
 
 import java.util.*;
@@ -1182,6 +1183,129 @@ public class Graphs {
         return 0;
     }
 
+    public static ArrayList<Integer> maximumDepth(int A, ArrayList<Integer> B, ArrayList<Integer> C, ArrayList<Integer> D,
+                                   ArrayList<Integer> E, ArrayList<Integer> F) {
+
+        // Adjacency List
+        HashMap<Integer, List<Integer>> graph = new HashMap<>();
+        for(int i=0; i<B.size(); i++) {
+            int node1 = B.get(i);
+            int node2 = C.get(i);
+            graph.putIfAbsent(node1, new ArrayList<>());
+            graph.get(node1).add(node2);
+            graph.putIfAbsent(node2, new ArrayList<>());
+            graph.get(node2).add(node1);
+        }
+
+        for(Integer key : graph.keySet()) {
+            System.out.println(key+" -> ");
+            System.out.println(graph.get(key));
+        }
+        System.out.println();
+
+        Queue<Integer> queue = new LinkedList<>();
+        HashSet<Integer> visitedSet = new HashSet<>();
+        HashMap<Integer, List<Integer>> graphLevel = new HashMap<>();
+        queue.add(1);
+        queue.add(null);
+        int level = 1;
+        graphLevel.put(0, new ArrayList<>(Arrays.asList(D.get(0))));
+        // BFS
+        while(queue.peek()!=null){
+            TreeSet<Integer> set = new TreeSet<>();
+            while(queue.peek()!=null) {
+                int node = queue.remove();
+                if(!visitedSet.contains(node)) {
+                    visitedSet.add(node);
+                    List<Integer> children = graph.get(node);
+                    for (Integer child : children) {
+                        if(!visitedSet.contains(child)) {
+                            set.add(D.get(child - 1));
+                            queue.add(child);
+                        }
+                    }
+                }
+            }
+            if(set.size()>0) {
+                graphLevel.put(level, new ArrayList<>(set));
+                queue.remove();
+                queue.add(null);
+                level++;
+            }
+            else{
+                break;
+            }
+        }
+
+        for(Integer key : graphLevel.keySet()) {
+            System.out.print(key+" = ");
+            for(Integer e : graphLevel.get(key))
+                System.out.print(e+" ");
+            System.out.println();
+        }
+
+        // Process Queries
+        ArrayList<Integer> ans = new ArrayList<>();
+        for(int i=0; i<E.size(); i++) {
+            int currLevel = E.get(i)%level;
+//            System.out.println("Curr level : "+currLevel);
+            int threshold = F.get(i);
+            List<Integer> edges = graphLevel.get(currLevel);
+            // Maximum less than threshold
+            if(edges.get(edges.size()-1) < threshold) {
+                ans.add(-1);
+            }
+            // Minimum greater than threshold
+            else if(edges.get(0) >= threshold) {
+                ans.add(edges.get(0));
+            }
+            // Value in between
+            else {
+                // Binary search
+                int l = 0, r = edges.size() - 1;
+                int maxMin = edges.get(r);
+                while (l <= r) {
+                    int mid = (l + r) / 2;
+
+                    // If value found
+                    if(edges.get(mid) == threshold) {
+                        maxMin = threshold;
+                        break;
+                    }
+                    // Greater value
+                    else if(edges.get(mid) > threshold) {
+                        r = mid - 1;
+                    }
+                    // Less Value
+                    else {
+                        // If end
+                        if(mid == edges.size()-1){
+                            if(edges.get(mid-1) >= threshold) {
+                                maxMin = edges.get(mid-1);
+                            }
+                            else{
+                                maxMin = edges.get(mid);
+                            }
+                            break;
+                        }
+                        else {
+                            if(edges.get(mid+1) >= threshold) {
+                                maxMin = edges.get(mid+1);
+                                break;
+                            }
+                            else{
+                                l = mid+1;
+                            }
+                        }
+                    }
+                }
+                ans.add(maxMin);
+            }
+        }
+
+        return ans;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -1269,7 +1393,7 @@ public class Graphs {
         System.out.println();*/
 
         // Floyd Warshall's Algorithm - Shortest path from all nodes to all nodes
-        int[][] distances = new int[][]{
+        /*int[][] distances = new int[][]{
                 {0 , 3 , 2, -1},
                 {-1 , 0 , -1, 1},
                 {-1 , 1 , 0, 6},
@@ -1281,6 +1405,21 @@ public class Graphs {
                 System.out.print(val +" ");
             });
             System.out.println();
-        });
+        });*/
+
+        // Maximum Depth
+        System.out.println(maximumDepth(5, new ArrayList<>(Arrays.asList(1, 4, 3, 1)),
+                new ArrayList<>(Arrays.asList(5, 2, 4, 4)),
+                new ArrayList<>(Arrays.asList(7, 38, 27, 37, 1)),
+                new ArrayList<>(Arrays.asList(1, 1, 2)),
+                new ArrayList<>(Arrays.asList(32, 18, 26))
+        ));
+        /*System.out.println(maximumDepth(3, new ArrayList<>(Arrays.asList(1, 2)),
+                new ArrayList<>(Arrays.asList(3, 1)),
+                new ArrayList<>(Arrays.asList(7, 15, 27)),
+                new ArrayList<>(Arrays.asList(1, 10, 1)),
+                new ArrayList<>(Arrays.asList(29, 6, 26))
+        ));*/
+
     }
 }

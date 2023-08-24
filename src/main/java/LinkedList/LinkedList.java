@@ -91,8 +91,66 @@ public class LinkedList {
 
     }
 
-    public static void main(String[] args) {
+    public static void printList(Node A) {
+        while(A!=null) {
+            System.out.print(A.val);
+            A = A.next;
+            if(A!=null) {
+                System.out.print(" -> ");
+            }
+        }
+        System.out.println();
+    }
+    public static Node reverseList(Node A) {
+        Node prev = null, curr = A, next = A.next;
+        while(curr!=null) {
+            curr.next = prev;
+            prev = curr;
+            curr = next;
+            if(next!=null)
+                next = next.next;
+        }
+        return prev;
+    }
 
+    public static Node reorderList(Node A) {
+        Node fast=A, slow=A, prev=null;
+        while(fast != null && fast.next!=null) {
+            prev = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        prev.next = null;
+        Node n2 = reverseList(slow);
+        Node n1 = A;
+        while(n1!=null && n2!=null) {
+            Node temp1 = n1;
+            Node temp2 = n2;
+            n1 = n1.next;
+            n2 = n2.next;
+            temp1.next = temp2;
+            temp2.next = n1;
+        }
+        if(n2!=null) {
+            n1=A;
+            while(n1.next!=null) {
+                n1 = n1.next;
+            }
+            n1.next = n2;
+        }
+
+        return A;
+    }
+
+    public static void main(String[] args) {
+        Node n = new Node(1);
+        n.next = new Node(2);
+        n.next.next = new Node(3);
+        n.next.next.next = new Node(4);
+        n.next.next.next.next = new Node(5);
+        n.next.next.next.next.next = new Node(6);
+        n = reorderList(n);
+        printList(n);
     }
 
 }

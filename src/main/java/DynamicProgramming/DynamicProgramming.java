@@ -1436,6 +1436,13 @@ public class DynamicProgramming {
             dp[i][i+1] = A.get(i)*A.get(i+1)*A.get(i+2);
         }
 
+        Arrays.stream(dp).forEach(arr-> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val+ " ");
+            });
+            System.out.println();
+        });
+
         for(int index=1; index<dp.length; index++) {
             int i = 0;
             for(int j=index+1; j<dp.length; j++) {
@@ -1770,6 +1777,8 @@ public class DynamicProgramming {
         return maxUncrossedLines(nums1,nums2, nums1.length-1, nums2.length-1, dp);
     }
 
+
+
     public static void main(String[] args) {
 
         // Find Nth Fibonacci number
@@ -1976,9 +1985,9 @@ public class DynamicProgramming {
 
         // Matrix Chain Multiplication
 
-        /*ArrayList<Integer> A = new ArrayList<>(Arrays.asList(15,50,3,50,50,47)); // 18915
+        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(2,3,2,2,2,2)); // 18915
 //        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(5,4,6,2,7));
-        System.out.println(matrixChainMultiplication(A));*/
+        System.out.println(matrixChainMultiplication(A));
 
         // Palindrom Partition
 //        System.out.println(palindromePartition("beebeeed"));
