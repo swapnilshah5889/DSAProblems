@@ -1306,6 +1306,75 @@ public class Graphs {
         return ans;
     }
 
+    public static ArrayList<Integer> sheldonAndCities(int A, int B, int C, ArrayList<Integer> D,
+                                                      ArrayList<Integer> E, ArrayList<Integer> F,
+                                                      ArrayList<Integer> G, ArrayList<Integer> H) {
+
+        int[][] graph = new int[A+1][A+1];
+        for(int i=0; i<graph.length; i++) {
+            for(int j=0; j<graph.length; j++) {
+                graph[i][j] = i==j?0:-1;
+            }
+        }
+
+        // Adjacency List
+        for(int i=0; i<D.size(); i++) {
+            int city1 = D.get(i);
+            int city2 = E.get(i);
+
+            if (city1 != city2) {
+                if(graph[city1][city2] == -1) {
+                    graph[city1][city2] = F.get(i);
+                }
+                else {
+                    graph[city1][city2] = Math.min(graph[city1][city2], F.get(i));
+                }
+                graph[city2][city1] = graph[city1][city2];
+            }
+
+        }
+
+
+        // Floyd Warshall
+        for(int k=1; k<graph.length; k++ ){
+            for(int i=1; i<graph.length; i++ ){
+                // If not self node
+                if(i!=k) {
+                    // Check for all nodes [j][i] to [i][k] path
+                    for (int j = 1; j<graph.length; j++) {
+                        // If not self node
+                        if( j!=k && graph[i][k] != -1 && graph[k][j] != -1) {
+                            int newCost = graph[i][k] + graph[k][j];
+                            if(graph[i][j] == -1) {
+                                graph[i][j] = newCost;
+                            }
+                            else {
+                                graph[i][j] = Math.min(graph[i][j], newCost);
+                            }
+                            graph[j][i] = graph[i][j];
+                        }
+                    }
+                }
+            }
+        }
+
+        for(int i=0; i<graph.length; i++) {
+            for(int j=0; j<graph.length; j++) {
+                System.out.print(graph[i][j]+ " ");
+            }
+            System.out.println();
+        }
+
+        // Process queries
+        ArrayList<Integer> distances = new ArrayList<>();
+        int[] idx = { 0 };
+        G.stream().forEach(val -> {
+            distances.add(graph [G.get(idx[0])][H.get(idx[0])]);
+            idx[0]++;
+        });
+        return distances;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -1408,12 +1477,12 @@ public class Graphs {
         });*/
 
         // Maximum Depth
-        System.out.println(maximumDepth(5, new ArrayList<>(Arrays.asList(1, 4, 3, 1)),
+        /*System.out.println(maximumDepth(5, new ArrayList<>(Arrays.asList(1, 4, 3, 1)),
                 new ArrayList<>(Arrays.asList(5, 2, 4, 4)),
                 new ArrayList<>(Arrays.asList(7, 38, 27, 37, 1)),
                 new ArrayList<>(Arrays.asList(1, 1, 2)),
                 new ArrayList<>(Arrays.asList(32, 18, 26))
-        ));
+        ));*/
         /*System.out.println(maximumDepth(3, new ArrayList<>(Arrays.asList(1, 2)),
                 new ArrayList<>(Arrays.asList(3, 1)),
                 new ArrayList<>(Arrays.asList(7, 15, 27)),
@@ -1421,5 +1490,20 @@ public class Graphs {
                 new ArrayList<>(Arrays.asList(29, 6, 26))
         ));*/
 
+        // Sheldon and pair of cities
+        /*System.out.println(sheldonAndCities(4,6,2,
+                new ArrayList<>(Arrays.asList(1, 2, 3, 2, 4, 3)),
+                new ArrayList<>(Arrays.asList(2, 3, 4, 4, 1, 1)),
+                new ArrayList<>(Arrays.asList(4, 1, 1, 1, 1, 1)),
+                new ArrayList<>(Arrays.asList(1, 1)),
+                new ArrayList<>(Arrays.asList(2, 3))
+        ));*/
+        System.out.println(sheldonAndCities(15,18,29,
+                new ArrayList<>(Arrays.asList(11,2,2,6,2,8,9,3,14,15,4,14,8,7,8,6,2,12)),
+                new ArrayList<>(Arrays.asList(2,1,1,2,1,1,7,3,2,13,2,1,6,1,7,1,2,10)),
+                new ArrayList<>(Arrays.asList(8337,6651,29,7765,3428,5213,6431,2864,3137,4024,8169,5013,7375,3786,4326,6415,8982,6864)),
+                new ArrayList<>(Arrays.asList(6,2,1,15,12,2,14,10,13,15,15,4,8,7,9,4,15,13,12,5,2,10,1,11,14,7,3,13,12)),
+                new ArrayList<>(Arrays.asList(5,2,15,13,6,2,8,6,3,13,15,3,1,1,4,4,5,8,1,3,1,10,15,9,2,1,1,10,2))
+        ));
     }
 }
