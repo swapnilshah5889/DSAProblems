@@ -184,6 +184,23 @@ public class LinkedList {
                 n.next.next.next.next = new Node(6);
             break;
 
+            case 2:
+                n = new Node(2);
+                n.next = new Node(3);
+                n.next.next = new Node(4);
+                n.next.next.next = new Node(3);
+                n.next.next.next.next = new Node(2);
+                break;
+
+            case 3:
+                n = new Node(2);
+                n.next = new Node(3);
+                n.next.next = new Node(4);
+                n.next.next.next = new Node(4);
+                n.next.next.next.next = new Node(3);
+                n.next.next.next.next.next = new Node(2);
+                break;
+
             default:
                 n = new Node(null);
                 break;
@@ -191,6 +208,44 @@ public class LinkedList {
 
         return n;
     }
+
+    public static Node getLLFromArray(int[] arr) {
+        Node head = new Node(arr[0]);
+        Node temp = head;
+        for(int i=1; i<arr.length; i++) {
+            temp.next = new Node(arr[i]);
+            temp = temp.next;
+        }
+        return head;
+    }
+
+    public static boolean palindromeList(Node head) {
+        if(head == null)
+            return false;
+        if(head.next == null) {
+            return true;
+        }
+
+        Node slow = head, fast = head.next;
+        int index = 1;
+        while(fast != null && fast.next != null) {
+            index++;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        slow.next = reverseList(slow.next);
+        Node n1=head, n2 = slow.next;
+        while(n1!=null && n2!=null) {
+            if(n1.val != n2.val) {
+                return false;
+            }
+            n1 = n1.next;
+            n2 = n2.next;
+        }
+        return true;
+    }
+
     public static void main(String[] args) {
 
         // Reorder list
@@ -204,7 +259,11 @@ public class LinkedList {
         printList(n);*/
 
         // Reverse Part List
-        printList(reversePartList(getSampleLinkedList(1), 3,4));
+        /*printList(reversePartList(getSampleLinkedList(1), 3,4));*/
+
+        // Palindrome List
+        Node head = getLLFromArray(new int[]{1,1,2,3,2,1,1});
+        System.out.println(palindromeList(head));
     }
 
 }
