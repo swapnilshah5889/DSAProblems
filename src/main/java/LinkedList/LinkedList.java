@@ -2,10 +2,20 @@ package LinkedList;
 
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
 public class LinkedList {
+
+    static class ListNode {
+        int val;
+        ListNode right, down;
+        ListNode(int x) {
+            val = x;
+            right = down = null;
+        }
+    }
 
     public static Node head = null;
     public static int size=0;
@@ -218,6 +228,16 @@ public class LinkedList {
         return head;
     }
 
+    public static ListNode getLLFromArrayII(int[] arr) {
+        ListNode head = new ListNode(arr[0]);
+        ListNode temp = head;
+        for(int i=1; i<arr.length; i++) {
+            temp.right = new ListNode(arr[i]);
+            temp = temp.right;
+        }
+        return head;
+    }
+
     public static boolean palindromeList(Node head) {
         if(head == null)
             return false;
@@ -396,6 +416,87 @@ public class LinkedList {
         return max;
     }
 
+    private static ListNode mergeLists(ListNode a, ListNode b) {
+        if(a.val>b.val){
+            return mergeLists(b,a);
+        }
+        ListNode prev=a, next=a.right, n2=b;
+        while(next!=null && n2!=null) {
+            // B value in between
+            if(n2.val >= prev.val && n2.val<=next.val) {
+                ListNode temp = n2;
+                n2 = n2.right;
+                prev.right = temp;
+                temp.right = next;
+                prev = temp;
+
+            }
+            else {
+                prev = next;
+                next = next.right;
+            }
+        }
+        if(next==null) {
+            prev.right = n2;
+        }
+
+        return a;
+
+    }
+
+    private static ListNode downToFlatList(ListNode n) {
+        ListNode head = n;
+        while(n!=null) {
+            ListNode temp = n.down;
+            n.down = null;
+            n.right = temp;
+            n = n.right;
+        }
+        return head;
+    }
+
+    private static ListNode flattenList(ListNode root) {
+
+        ListNode n1 = root;
+        while(n1!=null) {
+            if(n1.down!=null) {
+                ListNode start = root;
+                ListNode n2 = downToFlatList(n1.down);
+                n1.down = null;
+                root = mergeLists(start, n2);
+            }
+            n1 = n1.right;
+        }
+
+        return root;
+    }
+
+    public static ListNode merge(ListNode a, ListNode b) {
+        if (a == null)
+            return b;
+        if (b == null)
+            return a;
+        ListNode result;
+        if(a.val <= b.val) {
+            result = a;
+            result.right = merge(a.right, b);
+        }
+        else {
+            result = b;
+            result.right = merge(a, b.right);
+        }
+        return result;
+    }
+
+    public static ListNode flatten(ListNode root) {
+        if (root == null)
+            return root;
+        root.right = flatten(root.right);
+        ListNode downFlat = flatten(root.down);
+        root.down=null;
+        return merge(root, downFlat);
+    }
+
     public static void main(String[] args) {
 
         // Reorder list
@@ -422,8 +523,30 @@ public class LinkedList {
         System.out.println(longestPalindrome(head));*/
 
         // Longest Palindrome - Optimized and TC:O(N^2) SC:O(1)
-        System.out.println(longestPalindromeII(getLLFromArray(new int[]{1,2,3,3,2,1})));
+        /*System.out.println(longestPalindromeII(getLLFromArray(new int[]{1,2,3,3,2,1})));*/
 
+        // Flatten Linked List
+        ListNode head = getLLFromArrayII(new int[]{3,4});
+        head.down = new ListNode(7);
+        head.down.right = new ListNode(9);
+        head.down.down = new ListNode(7);
+        head.down.down.right = new ListNode(10);
+        head.down.down.down = new ListNode(8);
+        head.right.down = new ListNode(5);
+        head.right.down.right = new ListNode(6);
+        head.right.down.down = new ListNode(7);
+        head.right.down.down.down = new ListNode(11);
+        head.right.down.down.down.down = new ListNode(15);
+//        head.right.right.right.right.down = getLLFromArrayII(new int[]{31,39});
+        ListNode flatNode = flatten(head);
+        while(flatNode!=null) {
+            System.out.print(flatNode.val);
+            if(flatNode.right!=null) {
+                System.out.print("->");
+            }
+            flatNode = flatNode.right;
+        }
+        System.out.println();
     }
 
 
