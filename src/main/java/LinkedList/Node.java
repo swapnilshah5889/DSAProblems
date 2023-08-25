@@ -2,8 +2,8 @@ package LinkedList;
 
 public class Node {
     public Node next;
-    public int val;
-    Node(int data){
+    public Integer val;
+    Node(Integer data){
         this.val = data;
         this.next = null;
     }

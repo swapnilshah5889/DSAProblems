@@ -87,10 +87,6 @@ public class LinkedList {
         head = left;
     }
 
-    public static void reversePartLL(int start, int end){
-
-    }
-
     public static void printList(Node A) {
         while(A!=null) {
             System.out.print(A.val);
@@ -142,15 +138,73 @@ public class LinkedList {
         return A;
     }
 
+    private static Node reversePartList(Node head, int start, int end) {
+        if(head == null || head.next == null) {
+            return head;
+        }
+
+        printList(head);
+
+        int index = 0;
+        Node temp = head, prev=null;
+        while(index < start && head !=null) {
+            prev = temp;
+            temp = temp.next;
+            index++;
+        }
+        int len = end-start;
+        Node n1 = temp, n2 = temp.next;
+        while(n2!=null &&  len>0) {
+            Node n3 = n2.next;
+            n2.next = n1;
+            n1=n2;
+            n2 = n3;
+            len--;
+        }
+
+        if(prev!=null) {
+            prev.next = n1;
+        }
+        else {
+            head = n1;
+        }
+
+        temp.next = n2;
+        return head;
+    }
+
+    public static Node getSampleLinkedList(int type) {
+        Node n;
+        switch (type){
+            case 1:
+                n = new Node(2);
+                n.next = new Node(3);
+                n.next.next = new Node(4);
+                n.next.next.next = new Node(5);
+                n.next.next.next.next = new Node(6);
+            break;
+
+            default:
+                n = new Node(null);
+                break;
+        }
+
+        return n;
+    }
     public static void main(String[] args) {
-        Node n = new Node(1);
+
+        // Reorder list
+        /*Node n = new Node(1);
         n.next = new Node(2);
         n.next.next = new Node(3);
         n.next.next.next = new Node(4);
         n.next.next.next.next = new Node(5);
         n.next.next.next.next.next = new Node(6);
         n = reorderList(n);
-        printList(n);
+        printList(n);*/
+
+        // Reverse Part List
+        printList(reversePartList(getSampleLinkedList(1), 3,4));
     }
 
 }
