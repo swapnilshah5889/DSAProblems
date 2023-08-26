@@ -16,6 +16,17 @@ public class Graphs {
         }
     }
 
+    public static class MazeEdge {
+        int x;
+        int y;
+        int direction;
+        MazeEdge(int x, int y, int direction) {
+            this.x = x;
+            this.y = y;
+            this.direction = direction;
+        }
+    }
+
     public static class GraphEdge {
         int node1;
         int node2;
@@ -1375,6 +1386,117 @@ public class Graphs {
         return distances;
     }
 
+    public static boolean isValidPoint(int rows, int cols, int x, int y) {
+        if(x>=0 && x<rows && y>=0 && y<cols) {
+            return true;
+        }
+        return false;
+    }
+
+    public static List<Integer> getNextEdge(int rows, int cols, int x, int y, int direction) {
+        // Up
+        if(direction == 0 && isValidPoint(rows, cols, x-1, y)) {
+            return new ArrayList<>(Arrays.asList(x - 1, y));
+        }
+        // Right
+        else if(direction == 1 && isValidPoint(rows, cols, x, y+1)) {
+            return new ArrayList<>(Arrays.asList(x, y+1));
+        }
+        // Bottom
+        else if(direction == 2 && isValidPoint(rows, cols, x+1, y)) {
+            return new ArrayList<>(Arrays.asList(x+1, y));
+        }
+        // Right
+        else if( direction == 3 && isValidPoint(rows, cols, x, y-1)) {
+            return new ArrayList<>(Arrays.asList(x, y-1));
+        }
+
+        return null;
+    }
+
+    public static int shortestMazeDistance(ArrayList<ArrayList<Integer>> A, ArrayList<Integer> B,
+                                           ArrayList<Integer> C) {
+        int rows = A.size();
+        int cols = A.get(0).size();
+        boolean visited[][][] = new boolean[rows][cols][4];
+        Queue<MazeEdge> queue = new LinkedList<>();
+        // Set visited for all four directions
+        for(int i=0; i<visited.length; i++) {
+            for(int j=0; j<visited[0].length; j++) {
+
+                // Start position
+                if(B.get(0) == i && B.get(1) == j) {
+
+                    // All directions
+                    for(int d=0; d<4; d++) {
+                        visited[i][j][d] = true;
+                        List<Integer> edge = getNextEdge(rows, cols, i, j, d);
+                        if(edge!=null && A.get(edge.get(0)).get(edge.get(1))!=1) {
+                            queue.add(new MazeEdge(edge.get(0), edge.get(1), d));
+                        }
+                    }
+                }
+                else {
+                    Arrays.fill(visited[i][j], false);
+                }
+            }
+        }
+        queue.add(null);
+        boolean found = false;
+        int level = 1;
+        while(queue.peek()!=null) {
+            System.out.println("Level: "+level);
+            while(queue.peek()!=null) {
+                MazeEdge edge = queue.remove();
+                // If current edge not visited from this direction
+                // and not a wall
+                if(!visited[edge.x][edge.y][edge.direction] && A.get(edge.x).get(edge.y) != 1) {
+                    System.out.println("Edge: ("+edge.x+","+edge.y+") -> "+edge.direction);
+
+                    visited[edge.x][edge.y][edge.direction] = true;
+                    // Find next edge
+                    List<Integer> nextEdge = getNextEdge(rows, cols, edge.x, edge.y, edge.direction);
+
+                    // If current edge target
+                    if (edge.x == C.get(0) && edge.y == C.get(1)) {
+                        // If next edge a boundary or a wall
+                        if(nextEdge == null || A.get(nextEdge.get(0)).get(nextEdge.get(1)) == 1) {
+                            found = true;
+                            break;
+                        }
+                        // Else continue exploring
+
+                    }
+                    // Valid next edge - No boundary or wall
+                    if (nextEdge != null && A.get(nextEdge.get(0)).get(nextEdge.get(1)) != 1) {
+                        queue.add(new MazeEdge(nextEdge.get(0), nextEdge.get(1), edge.direction));
+                    }
+                    // Reached a block - visit all neighbors
+                    else {
+                        for(int i=0; i<4; i++) {
+                            if (i != edge.direction) {
+                                List<Integer> neighborEdge = getNextEdge(rows, cols, edge.x, edge.y, i);
+                                if(neighborEdge!=null) {
+                                    queue.add(new MazeEdge(neighborEdge.get(0), neighborEdge.get(1), i));
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+            System.out.println();
+            if(found) {
+                break;
+            }
+            queue.remove();
+            queue.add(null);
+            level++;
+        }
+
+        return found ? level : -1;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -1498,12 +1620,22 @@ public class Graphs {
                 new ArrayList<>(Arrays.asList(1, 1)),
                 new ArrayList<>(Arrays.asList(2, 3))
         ));*/
-        System.out.println(sheldonAndCities(15,18,29,
+        /*System.out.println(sheldonAndCities(15,18,29,
                 new ArrayList<>(Arrays.asList(11,2,2,6,2,8,9,3,14,15,4,14,8,7,8,6,2,12)),
                 new ArrayList<>(Arrays.asList(2,1,1,2,1,1,7,3,2,13,2,1,6,1,7,1,2,10)),
                 new ArrayList<>(Arrays.asList(8337,6651,29,7765,3428,5213,6431,2864,3137,4024,8169,5013,7375,3786,4326,6415,8982,6864)),
                 new ArrayList<>(Arrays.asList(6,2,1,15,12,2,14,10,13,15,15,4,8,7,9,4,15,13,12,5,2,10,1,11,14,7,3,13,12)),
                 new ArrayList<>(Arrays.asList(5,2,15,13,6,2,8,6,3,13,15,3,1,1,4,4,5,8,1,3,1,10,15,9,2,1,1,10,2))
-        ));
+        ));*/
+
+        // Shorted distance in maze - ball roll to target problem
+        ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        A.add(new ArrayList<>(Arrays.asList(1,1,0,1)));
+        A.add(new ArrayList<>(Arrays.asList(0,0,0,1)));
+        A.add(new ArrayList<>(Arrays.asList(1,0,0,1)));
+        A.add(new ArrayList<>(Arrays.asList(0,0,1,0)));
+        ArrayList<Integer> B = new ArrayList<>(Arrays.asList(1,1));
+        ArrayList<Integer> C = new ArrayList<>(Arrays.asList(2,1));
+        System.out.println(shortestMazeDistance(A,B,C));
     }
 }
