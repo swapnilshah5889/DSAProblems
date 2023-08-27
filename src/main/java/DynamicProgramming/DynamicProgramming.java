@@ -1428,20 +1428,25 @@ public class DynamicProgramming {
         return max;
     }
 
+    public static void printMatrixOrder(int[][] matrix, int i, int j) {
+        if((i+1)==j) {
+            System.out.print("A"+i);
+        }
+        else{
+            System.out.print("(");
+            printMatrixOrder(matrix, i, matrix[i][j]);
+            printMatrixOrder(matrix, matrix[i][j], j);
+            System.out.print(")");
+        }
+    }
     public static int matrixChainMultiplication(ArrayList<Integer> A) {
         int dp[][] = new int[A.size()-1][A.size()-1];
-
+        int matrix[][] = new int[A.size()-1][A.size()-1];
 
         for(int i=0; i<A.size()-2; i++) {
             dp[i][i+1] = A.get(i)*A.get(i+1)*A.get(i+2);
+            matrix[i][i+1] = i+1;
         }
-
-        Arrays.stream(dp).forEach(arr-> {
-            Arrays.stream(arr).forEach(val -> {
-                System.out.print(val+ " ");
-            });
-            System.out.println();
-        });
 
         for(int index=1; index<dp.length; index++) {
             int i = 0;
@@ -1449,7 +1454,11 @@ public class DynamicProgramming {
 
                 int max = Integer.MAX_VALUE;
                 for(int k=i+1; k<=j; k++) {
-                    max = Math.min(dp[i][k-1] + dp[k][j] + (A.get(i) * A.get(k) * A.get(j+1)), max);
+                    int sum =dp[i][k-1] + dp[k][j] + (A.get(i) * A.get(k) * A.get(j+1));
+                    if(sum<max) {
+                        max = sum;
+                        matrix[i][j] = k;
+                    }
                 }
                 dp[i][j] = max;
                 i++;
@@ -1462,6 +1471,15 @@ public class DynamicProgramming {
             });
             System.out.println();
         });
+        System.out.println();
+        Arrays.stream(matrix).forEach(arr -> {
+            Arrays.stream(arr).forEach(val -> {
+                System.out.print(val + " ");
+            });
+            System.out.println();
+        });
+
+        printMatrixOrder(matrix, 0, A.size()-2);
         return dp[0][dp.length-1];
     }
 
@@ -1985,8 +2003,7 @@ public class DynamicProgramming {
 
         // Matrix Chain Multiplication
 
-        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(2,3,2,2,2,2)); // 18915
-//        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(5,4,6,2,7));
+        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(2,3,2,2,2,2));
         System.out.println(matrixChainMultiplication(A));
 
         // Palindrom Partition

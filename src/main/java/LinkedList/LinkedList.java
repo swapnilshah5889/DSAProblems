@@ -529,6 +529,88 @@ public class LinkedList {
         return newHead;
     }
 
+    private static Node swapNodes(Node head, int k) {
+        if(head == null || head.next == null || k==0) {
+            return head;
+        }
+        System.out.println("Position: "+k);
+        int len = 0;
+        Node n = head;
+        while(n!=null) {
+            n=n.next;
+            len++;
+        }
+        k=k%len;
+        if(k<=0){
+            k+=len;
+        }
+        k--;
+
+        Node fPrev=null, fCurr=head;
+        int first = k;
+        while(first>0) {
+            fPrev = fCurr;
+            fCurr = fCurr.next;
+            first--;
+        }
+        int second = len-k-1;
+
+        Node lPrev=null, lCurr=head;
+        while(second>0) {
+            lPrev = lCurr;
+            lCurr = lCurr.next;
+            second--;
+        }
+
+        int temp = lCurr.val;
+        lCurr.val = fCurr.val;
+        fCurr.val = temp;
+
+        /*if(fCurr.next == lCurr) {
+            Node lNext = lCurr.next;
+            fPrev.next = lCurr;
+            lCurr.next = fCurr;
+            fCurr.next = lNext;
+        }
+        else if(lCurr.next == fCurr) {
+            Node fNext = fCurr.next;
+            lPrev.next = fCurr;
+            fCurr.next = lCurr;
+            lCurr.next = fNext;
+        }
+        else if(fPrev!=null && lPrev!=null) {
+            Node fNext = fCurr.next;
+            Node lNext = lCurr.next;
+
+            fPrev.next = lCurr;
+            lCurr.next = fNext;
+
+            lPrev.next = fCurr;
+            fCurr.next = lNext;
+        }
+
+        else {
+            Node fNext = fCurr.next;
+            Node lNext = lCurr.next;
+            fCurr.next = lNext;
+            lCurr.next = fNext;
+            // First index
+            if(lPrev!=null) {
+                lPrev.next = fCurr;
+                head = lCurr;
+            }
+            else {
+                fPrev.next = lCurr;
+                head = fCurr;
+            }
+        }*/
+
+        System.out.println(fCurr.val);
+        System.out.println(lCurr.val);
+        return head;
+
+    }
+
     public static void main(String[] args) {
 
         // Reorder list
@@ -581,10 +663,23 @@ public class LinkedList {
         System.out.println();*/
 
         // Reverse list in k groups
-        Node head = getLLFromArray(new int[]{1,2});
-        printList(reverseListKGroups(head,2));
+        Node head = getLLFromArray(new int[]{1,2,3,4,5,6,7,8,9});
+        printList(reverseListKGroups(head,4));
 
-//        printList(reversePartList(head,17,20));
+        // Swap k nodes
+//        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 0));
+//        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 1));
+//        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 2));
+//        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 3));
+//        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 4));
+//        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 5));
+//        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 6));
+//        printList(swapNodes(getLLFromArray(new int[]{7,9,6,6,7,8,3,0,9,5}), 6));
+//        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 8));
+//        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 9));
+//        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 10));
+
+
     }
 
 }
