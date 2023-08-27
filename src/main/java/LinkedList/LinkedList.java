@@ -156,30 +156,34 @@ public class LinkedList {
 
         int index = 0;
         Node temp = head, prev=null;
-        while(index < start && head !=null) {
+        while(index < start && temp !=null) {
             prev = temp;
             temp = temp.next;
             index++;
         }
-        int len = end-start;
-        Node n1 = temp, n2 = temp.next;
-        while(n2!=null &&  len>0) {
-            Node n3 = n2.next;
-            n2.next = n1;
-            n1=n2;
-            n2 = n3;
-            len--;
-        }
+        if(temp!=null) {
+            int len = end - start;
+            Node n1 = temp, n2 = temp.next;
+            while (n2 != null && len > 0) {
+                Node n3 = n2.next;
+                n2.next = n1;
+                n1 = n2;
+                n2 = n3;
+                len--;
+            }
 
-        if(prev!=null) {
-            prev.next = n1;
+            if (prev != null) {
+                prev.next = n1;
+            } else {
+                head = n1;
+            }
+
+            temp.next = n2;
+            return head;
         }
         else {
-            head = n1;
+            return null;
         }
-
-        temp.next = n2;
-        return head;
     }
 
     public static Node getSampleLinkedList(int type) {
@@ -497,6 +501,34 @@ public class LinkedList {
         return merge(root, downFlat);
     }
 
+    private static Node reverseListKGroups(Node head,int k) {
+        Node prev = head;
+
+        Node newHead = head;
+        int index = 0;
+        while(prev!=null) {
+
+            int j = k;
+            while(prev!=null && j>0) {
+                prev = prev.next;
+                j--;
+            }
+            if(prev==null && j>0){
+                break;
+            }
+
+            if(newHead==head){
+                newHead=reversePartList(head, index, index+k-1);
+            }
+            else {
+                reversePartList(newHead, index, index+k-1);
+            }
+            index+=k;
+
+        }
+        return newHead;
+    }
+
     public static void main(String[] args) {
 
         // Reorder list
@@ -526,7 +558,7 @@ public class LinkedList {
         /*System.out.println(longestPalindromeII(getLLFromArray(new int[]{1,2,3,3,2,1})));*/
 
         // Flatten Linked List
-        ListNode head = getLLFromArrayII(new int[]{3,4});
+        /*ListNode head = getLLFromArrayII(new int[]{3,4});
         head.down = new ListNode(7);
         head.down.right = new ListNode(9);
         head.down.down = new ListNode(7);
@@ -546,8 +578,13 @@ public class LinkedList {
             }
             flatNode = flatNode.right;
         }
-        System.out.println();
-    }
+        System.out.println();*/
 
+        // Reverse list in k groups
+        Node head = getLLFromArray(new int[]{1,2});
+        printList(reverseListKGroups(head,2));
+
+//        printList(reversePartList(head,17,20));
+    }
 
 }
