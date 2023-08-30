@@ -625,6 +625,56 @@ public class LinkedList {
         System.out.println(lruCache.get(4));
     }
 
+    private static Node partitionList(Node A, int B) {
+
+        Node first = null, firstHead = null;
+        Node last = null, lastHead = null;
+        Node n = A;
+        do {
+            Node n2 = n.next;
+            if(n.val < B) {
+                if(first==null) {
+                    first = n;
+                    first.next = null;
+                    firstHead = first;
+                }
+                else {
+                    first.next = n;
+                    first = first.next;
+                    first.next = null;
+                }
+            }
+            else {
+                if(last==null) {
+                    last = n;
+                    last.next = null;
+                    lastHead = last;
+                }
+                else {
+                    last.next = n;
+                    last = last.next;
+                    last.next = null;
+                }
+            }
+            n = n2;
+        }while (n!=null);
+
+        if(firstHead!=null) {
+            if(last!=null) {
+                first = firstHead;
+                while (first.next != null) {
+                    first = first.next;
+                }
+                first.next = lastHead;
+            }
+        }
+        else {
+            firstHead = lastHead;
+        }
+
+        return firstHead;
+    }
+
     public static void main(String[] args) {
 
         // Reorder list
@@ -694,7 +744,13 @@ public class LinkedList {
 //        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 10));
 
         // LRU Cache
-        LRUCache();
+        /*LRUCache();*/
+
+        // Partition List
+        /*Node head = getLLFromArray(new int[] {1, 4, 3, 2, 5, 2});
+        partitionList(head, 3);*/
+        Node head = getLLFromArray(new int[] {1, 2, 3, 1, 3});
+        partitionList(head, 2);
 
     }
 
