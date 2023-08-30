@@ -108,6 +108,7 @@ public class LinkedList {
         }
         System.out.println();
     }
+
     public static Node reverseList(Node A) {
         Node prev = null, curr = A, next = A.next;
         while(curr!=null) {
@@ -611,6 +612,19 @@ public class LinkedList {
 
     }
 
+    private static void LRUCache() {
+        LRUCache lruCache = new LRUCache(2);
+        lruCache.put(1,1);
+        lruCache.put(2,2);
+        System.out.println(lruCache.get(1));
+        lruCache.put(3,3);
+        System.out.println(lruCache.get(2));
+        lruCache.put(4,4);
+        System.out.println(lruCache.get(1));
+        System.out.println(lruCache.get(3));
+        System.out.println(lruCache.get(4));
+    }
+
     public static void main(String[] args) {
 
         // Reorder list
@@ -663,8 +677,8 @@ public class LinkedList {
         System.out.println();*/
 
         // Reverse list in k groups
-        Node head = getLLFromArray(new int[]{1,2,3,4,5,6,7,8,9});
-        printList(reverseListKGroups(head,4));
+        /*Node head = getLLFromArray(new int[]{1,2,3,4,5,6,7,8,9});
+        printList(reverseListKGroups(head,4));*/
 
         // Swap k nodes
 //        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 0));
@@ -679,6 +693,8 @@ public class LinkedList {
 //        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 9));
 //        printList(swapNodes(getLLFromArray(new int[]{1,2,3,4,5,6,7}), 10));
 
+        // LRU Cache
+        LRUCache();
 
     }
 
