@@ -1497,6 +1497,79 @@ public class Graphs {
         return found ? level : -1;
     }
 
+    static int finalMax;
+    public static int maxLength(HashMap<Integer, List<Integer>> graph,
+                         HashSet<Integer> visited, int node, int root) {
+        // Leaf
+        if(!graph.containsKey(node)) {
+            return 1;
+        }
+
+        // Not visited
+        int max = 0;
+        if(!visited.contains(node)) {
+            visited.add(node);
+            int firstMax = 0;
+            int secondMax = 0;
+            for(int i=0; i<graph.get(node).size(); i++) {
+                int tempMax = maxLength(graph, visited, graph.get(node).get(i), root);
+                if(tempMax>firstMax) {
+                    secondMax = firstMax;
+                    firstMax = tempMax;
+                }
+                else if(tempMax>secondMax) {
+                    secondMax = tempMax;
+                }
+            }
+//            System.out.println("Node: "+node);
+//            System.out.println("first: "+firstMax);
+//            System.out.println("second: "+secondMax);
+
+            finalMax = Math.max(finalMax, firstMax+secondMax);
+//            System.out.println("max: "+finalMax);
+            if(node != root) {
+                firstMax++;
+            }
+            max = Math.max(max, firstMax);
+            visited.remove(node);
+        }
+        return max;
+    }
+    public static int largestTreeDistance(ArrayList<Integer> A) {
+
+        HashMap<Integer, List<Integer>> graph = new HashMap<>();
+        int root = -1;
+        for(int i=0; i<A.size(); i++) {
+            int node1 = i;
+            int node2 = A.get(i);
+            // Root
+            if(node2 == -1) {
+                root = node1;
+            }
+            // Edges
+            else {
+                // // Node 1 to Node 2
+                // graph.putIfAbsent(node1, new ArrayList<>());
+                // graph.get(node1).add(node2);
+                // Node 2 to Node 1
+                graph.putIfAbsent(node2, new ArrayList<>());
+                graph.get(node2).add(node1);
+            }
+        }
+        // Edge Case
+        if(graph.keySet().size() == 0) {
+            return 0;
+        }
+
+        HashSet<Integer> visited = new HashSet<>();
+//        System.out.println(graph);
+        finalMax = 0;
+        maxLength(graph, visited, root, root);
+//        System.out.println();
+//        System.out.println("Final : "+finalMax);
+        return finalMax;
+    }
+
     public static void main(String[] args) {
         //Find all rotten oranges
         /*System.out.println(orangeTimeToRot(getSampleGraph(3)));*/
@@ -1629,13 +1702,19 @@ public class Graphs {
         ));*/
 
         // Shorted distance in maze - ball roll to target problem
-        ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        /*ArrayList<ArrayList<Integer>> A = new ArrayList<>();
         A.add(new ArrayList<>(Arrays.asList(1,1,0,1)));
         A.add(new ArrayList<>(Arrays.asList(0,0,0,1)));
         A.add(new ArrayList<>(Arrays.asList(1,0,0,1)));
         A.add(new ArrayList<>(Arrays.asList(0,0,1,0)));
         ArrayList<Integer> B = new ArrayList<>(Arrays.asList(1,1));
         ArrayList<Integer> C = new ArrayList<>(Arrays.asList(2,1));
-        System.out.println(shortestMazeDistance(A,B,C));
+        System.out.println(shortestMazeDistance(A,B,C));*/
+
+        // Largest Distance in a Tree
+//        System.out.println(largestTreeDistance(new ArrayList<>(List.of(-1,0,0,0,3))));
+//        System.out.println(largestTreeDistance(new ArrayList<>(List.of(-1,0))));
+//        System.out.println(largestTreeDistance(new ArrayList<>(List.of(-1))));
+        System.out.println(largestTreeDistance(new ArrayList<>(List.of(-1,0,0))));
     }
 }
