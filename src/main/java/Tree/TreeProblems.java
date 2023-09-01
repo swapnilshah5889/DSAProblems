@@ -133,35 +133,51 @@ public class TreeProblems {
         return root;
     }
 
-    public static int pathSumIIITraverse(TreeNode root, int sum, int prevSum, HashSet<Integer> set){
-        if(root == null) {
+    public static int pathSumIIITraverse(TreeNode node, List<Integer> sums, int target){
+
+        // Null Node
+        if(node == null) {
             return 0;
         }
-
-        prevSum += root.val;
-        int count = 0;
-        if(set.contains(prevSum - sum)){
-            count += 1;
+        // Leaf
+        if(node.left == null && node.right == null) {
+            sums.add(node.val);
+            if(node.val == target) {
+                return 1;
+            }
+            return 0;
         }
-        if(root.val == sum) {
+        ArrayList<Integer> leftList = new ArrayList<>();
+        ArrayList<Integer> rightList = new ArrayList<>();
+        int leftMax = pathSumIIITraverse(node.left, leftList, target);
+        int rightMax = pathSumIIITraverse(node.right, rightList, target);
+        leftList.addAll(rightList);
+        int currVal = node.val;
+        int count = 0;
+        for(int i=0; i<leftList.size(); i++) {
+            int newSum = currVal + leftList.get(i);
+            if(newSum == target) {
+                count++;
+            }
+            leftList.set(i, newSum);
+        }
+        if(currVal == target) {
             count++;
         }
-//        System.out.println(set);
-//        System.out.println(root.val);
-        set.add(prevSum);
-        count += pathSumIIITraverse(root.left, sum, prevSum, set);
-        count += pathSumIIITraverse(root.right, sum, prevSum, set);
-        set.remove(prevSum);
-        return count;
+        leftList.add(currVal);
+        sums.addAll(leftList);
+
+        return count + leftMax + rightMax;
     }
 
     // Count all unique paths starting from any node going only in bottom direction
     // That sum to the given value
     public static int pathSumIII(TreeNode root, int sum) {
-        HashSet<Integer> set = new HashSet<>();
-//        set.add(0);
-        return pathSumIIITraverse(root, sum, 0, set);
+        List<Integer> sums = new ArrayList<>();
+        return pathSumIIITraverse(root, sums, sum);
     }
+
+
 
     public static int maxLevelSum(TreeNode root) {
         Queue<TreeNode> queue = new LinkedList<>();
@@ -221,9 +237,8 @@ public class TreeProblems {
         System.out.println(ans);*/
 
         //Path Sum III
-        TreeNode root = BuildDemoTree(3);
-        System.out.println(pathSumIII(BuildDemoTree(4), 1));
-        System.out.println(pathSumIII(root, 0));
+        System.out.println(pathSumIII(BuildDemoTree(2), 8));
+//        System.out.println(pathSumIII(root, 0));
 
         // Max level sum
         /*System.out.println(maxLevelSum(BuildDemoTree(5)));*/
