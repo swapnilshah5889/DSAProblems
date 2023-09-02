@@ -239,6 +239,105 @@ public class HeapProblems {
         return total;
     }
 
+    public static class Fraction {
+        Double fraction;
+        int numInd;
+        int denoInd;
+        Fraction(double fraction, int numInd, int denoInd) {
+            this.fraction = fraction;
+            this.numInd = numInd;
+            this.denoInd = denoInd;
+        }
+    }
+
+    public static ArrayList<Integer> bthSmallestFraction(ArrayList<Integer> A, int B) {
+        Comparator<Fraction> c = new Comparator<Fraction>() {
+            @Override
+            public int compare(Fraction o1, Fraction o2) {
+                return o1.fraction.compareTo(o2.fraction);
+            }
+        };
+
+
+        PriorityQueue<Fraction> q = new PriorityQueue<>(c);
+
+        int lastInd = A.size()-1;
+        for(int i=0; i<A.size()-1; i++) {
+            double fraction = (double) A.get(i) / A.get(lastInd);
+            q.add(new Fraction(fraction, i, lastInd));
+        }
+
+        while(B>1) {
+            Fraction f = q.remove();
+//            System.out.println(f.fraction +" -> "+A.get(f.numInd)+","+A.get(f.denoInd));
+            if(f.denoInd>0) {
+                f.denoInd--;
+                f.fraction = (double) A.get(f.numInd) / A.get(f.denoInd);
+                q.add(f);
+            }
+            B--;
+        }
+
+        /*for(int i=0; i<A.size(); i++) {
+            for(int j=A.size()-1; j>i; j--) {
+                if(A.get(i) < A.get(j)) {
+                    double fraction = (double) A.get(i) / A.get(j);
+                    if(q.size() < B)
+                        q.add(new Fraction(fraction, A.get(i), A.get(j)));
+                    else if(q.peek() != null){
+                        if(fraction < q.peek().fraction){
+                            q.remove();
+                            q.add(new Fraction(fraction, A.get(i), A.get(j)));
+                        }
+                    }
+                }
+            }
+        }
+
+        for(Fraction f : q) {
+            System.out.println(f.fraction +" : "+f.num+"/"+f.deno);
+        }*/
+
+        return new ArrayList<>(List.of(A.get(q.peek().numInd), A.get(q.peek().denoInd)));
+    }
+
+    public static class Element {
+        Integer element;
+        int i, j;
+        Element(int element, int i, int j) {
+            this.element = element;
+            this.i = i;
+            this.j = j;
+        }
+    }
+
+    public static int bthSmallestElement(ArrayList<ArrayList<Integer>> A, int B) {
+        Comparator<Element> c = new Comparator<Element>() {
+            @Override
+            public int compare(Element o1, Element o2) {
+                return o1.element.compareTo(o2.element);
+            }
+        };
+        PriorityQueue<Element> q = new PriorityQueue<>(c);
+
+        for(int i=0; i<A.size(); i++) {
+            q.add(new Element(A.get(i).get(0), i, 0));
+        }
+
+        int cols = A.get(0).size();
+        while(B>1) {
+            Element e = q.remove();
+            if(e.j < cols-1) {
+                e.j++;
+                e.element = A.get(e.i).get(e.j);
+                q.add(e);
+            }
+            B--;
+        }
+
+        return A.get(q.peek().i).get(q.peek().j);
+    }
+
     public static void main(String[] args) {
 
         /*List<Integer> list  = Arrays.asList(2,4,5,11,6,7,8,20,12,1,3);
@@ -276,7 +375,20 @@ public class HeapProblems {
         System.out.println(closestPointsToOrigin(A, 5));*/
 
         // Minimum Candies
-        System.out.println(minimumCandies(new ArrayList<>(List.of(324,458,481,167,939,444,388,612,943,890,953,403,653,136,168,163,186,471)), 231));
+        /*System.out.println(minimumCandies(new ArrayList<>(List.of(324,458,481,167,939,444,388,612,
+                943,890,953,403,653,136,168,163,186,471)), 231));*/
+
+        // Bth Smallest fraction
+        /*System.out.println(bthSmallestFraction(new ArrayList<Integer>(List.of(1,2,3,5)), 3));*/
+
+        // Bth Smallest Element in Sorted Matrix
+        ArrayList<ArrayList<Integer>> A = new ArrayList<>(
+                List.of(
+                        new ArrayList<>(List.of(9, 11, 15)),
+                        new ArrayList<>(List.of(10, 15, 17))
+                )
+        );
+        System.out.println(bthSmallestElement(A, 6));
 
     }
 
