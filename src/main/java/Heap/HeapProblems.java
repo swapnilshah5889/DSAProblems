@@ -14,6 +14,15 @@ public class HeapProblems {
         }
     }
 
+    public static class DistancePair {
+        Double distance;
+        int index;
+        DistancePair(double distance, int index) {
+            this.distance = distance;
+            this.index = index;
+        }
+    }
+
     public List<Integer> heapify(List<Integer> A) {
         List<Integer> ans = new ArrayList<>();
 
@@ -183,6 +192,53 @@ public class HeapProblems {
         }
     }
 
+    public static double getDistance(int x, int y) {
+        return Math.pow(Math.pow(x,2) + Math.pow(y,2), 0.5);
+    }
+    public static ArrayList<ArrayList<Integer>> closestPointsToOrigin(ArrayList<ArrayList<Integer>> A, int B) {
+        Comparator<DistancePair> c = new Comparator<DistancePair>() {
+            @Override
+            public int compare(DistancePair o1, DistancePair o2) {
+                return o1.distance.compareTo(o2.distance);
+            }
+        };
+        PriorityQueue<DistancePair> q = new PriorityQueue<>(c);
+
+        int i=0;
+        for(ArrayList<Integer> point : A) {
+            DistancePair d = new DistancePair(getDistance(point.get(0), point.get(1)), i);
+            q.add(d);
+            i++;
+        }
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+        for(int j=0; j<B; j++) {
+            DistancePair d = q.remove();
+            ans.add(A.get(d.index));
+        }
+        return ans;
+    }
+
+    public static int minimumCandies(ArrayList<Integer> A, int B) {
+        PriorityQueue<Integer> q = new PriorityQueue<>();
+        for(int candy : A) {
+            q.add(candy);
+        }
+        int total = 0;
+        while(!q.isEmpty()) {
+            int candies = q.remove();
+            if(candies <= B) {
+                int eaten = candies / 2;
+                total += eaten;
+                if (!q.isEmpty()) {
+                    int newCandies = q.remove() + (candies - eaten);
+                    q.add(newCandies);
+                }
+            }
+        }
+
+        return total;
+    }
+
     public static void main(String[] args) {
 
         /*List<Integer> list  = Arrays.asList(2,4,5,11,6,7,8,20,12,1,3);
@@ -203,11 +259,25 @@ public class HeapProblems {
         /*System.out.println(RunningMedian(Arrays.asList(32, 91, 86, 8, 4, 100, 98, 15, 79, 32, 4, 99 )));*/
 
         // total cost to hire k workers
-        int[] costs = new int[]{17,12,10,2,7,2,11,20,8};
-        System.out.println(totalCostForWorkers(costs, 3, 4));
+        /*int[] costs = new int[]{17,12,10,2,7,2,11,20,8};
+        System.out.println(totalCostForWorkers(costs, 3, 4));*/
+
+        // B closest points to origin
+        /*ArrayList<ArrayList<Integer>> A = new ArrayList<>(
+                List.of(
+                    new ArrayList<>(List.of(26,41)),
+                    new ArrayList<>(List.of(40,47)),
+                    new ArrayList<>(List.of(47,7)),
+                    new ArrayList<>(List.of(50,34)),
+                    new ArrayList<>(List.of(18,28))
+                )
+        );
+
+        System.out.println(closestPointsToOrigin(A, 5));*/
+
+        // Minimum Candies
+        System.out.println(minimumCandies(new ArrayList<>(List.of(324,458,481,167,939,444,388,612,943,890,953,403,653,136,168,163,186,471)), 231));
 
     }
-
-
 
 }
