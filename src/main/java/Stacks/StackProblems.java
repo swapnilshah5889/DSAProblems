@@ -3,9 +3,7 @@ package Stacks;
 import java.net.Inet4Address;
 import java.sql.Array;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.Stack;
 
 public class StackProblems {
@@ -523,6 +521,116 @@ public class StackProblems {
         return ans;
     }
 
+    public static Character getBracketSign(Character sign, Character newSign) {
+        if(sign == '+') {
+            return newSign;
+        }
+        // Sign -
+        else {
+            //
+            if(newSign == '-') {
+                return '+';
+            }
+            else {
+                return '-';
+            }
+        }
+    }
+
+    public static Character addToExpression(Stack<Character> stack, Character c) {
+
+        if(!stack.isEmpty() ) {
+            // Stack has -
+            if(stack.peek() == '-') {
+                if (c == '+') {
+                    return '-';
+                } else {
+                    return '+';
+                }
+            }
+            // Stack has +
+            else {
+                return c;
+            }
+        }
+        else {
+            return c;
+        }
+    }
+
+    public static HashMap<Character, Character> openExpression(String s) {
+        Stack<Character> stack = new Stack<>();
+        HashMap<Character, Character> map = new HashMap<>();
+        StringBuffer sb = new StringBuffer();
+        int i=0;
+        while(i<s.length()) {
+            char c = s.charAt(i);
+            if(c == '-' || c == '+') {
+                if(s.charAt(i+1) != '(') {
+
+                    Character sign = addToExpression(stack, c);
+                    sb.append(sign);
+                    i++;
+                    sb.append(s.charAt(i));
+                    map.put(s.charAt(i), sign);
+                    i++;
+                }
+                else {
+                    if(stack.isEmpty())
+                        stack.push(c);
+                    else {
+                        stack.push(getBracketSign(stack.peek(), c));
+                    }
+                    i+=2;
+                }
+            }
+            else {
+                if(c==')') {
+                    stack.pop();
+                }
+                else if(c == '(') {
+                    if(stack.isEmpty())
+                        stack.push('+');
+                    else {
+                        stack.push(getBracketSign(stack.peek(), '+'));
+                    }
+                }
+                else {
+                    Character sign = addToExpression(stack, '+');
+                    sb.append(sign);
+                    sb.append(c);
+                    map.put(c, sign);
+                }
+                i++;
+            }
+        }
+//        return sb.toString();
+        return map;
+    }
+
+    public static int compareExpressions(String A, String B) {
+        HashMap<Character, Character> aMap = openExpression(A);
+        HashMap<Character, Character> bMap = openExpression(B);
+        // If unequal variables
+        if(aMap.size() != bMap.size()){
+            return 0;
+        }
+        // Equal variables
+        Set<Character> aKeys = aMap.keySet();
+        for(Character key : aKeys) {
+            // Variable not present
+            if(!bMap.containsKey(key)) {
+                return 0;
+            }
+            // Variable sign not equal
+            if(bMap.get(key) != aMap.get(key)) {
+                return 0;
+            }
+        }
+
+        return 1;
+    }
+
     public static void main(String[] args) {
         //Build Stack
         /*Stacks.Stack myStack = new Stacks.Stack();
@@ -577,7 +685,13 @@ public class StackProblems {
         buildNearestMaximumStack(Arrays.asList(4, 7, 3, 8));
         System.out.println(maxAndMin(Arrays.asList(4, 7, 3, 8)));*/
 
-        System.out.println(sortListUsingTwoStacks(Arrays.asList(5,2,4,1,7,1)));
+        /*System.out.println(sortListUsingTwoStacks(Arrays.asList(5,2,4,1,7,1)));*/
+
+        // Compare expression
+//        System.out.println(compareExpressions("(a+b-(c+(-d+e-f)))", "a+b-c+d-e+f")); // +a+b-c+d-e+f
+//        System.out.println(compareExpressions("-a-b-c", "-(a+b+c)"));
+//        System.out.println(compareExpressions("a-b-(c-d)", "a-b-c-d"));
+        System.out.println(compareExpressions("-(a-(-z-(b-(c+t)-x)+l)-q)", "-a+l-b-(z-(c+t)-x-q)"));
     }
 
 }
