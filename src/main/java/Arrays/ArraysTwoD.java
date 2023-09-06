@@ -175,7 +175,7 @@ public class ArraysTwoD {
         //Max water in a container
         /*System.out.println(maxWaterInContainer(new int[]{1,8,6,2,5,4,8,3,7}));*/
 
-        System.out.println(generate(4));
+        System.out.println(generate(4   ));
 
     }
 

@@ -631,6 +631,62 @@ public class StackProblems {
         return 1;
     }
 
+    public static boolean lowerPrecedence(HashMap<Character, Integer> map,
+                              Character c, Stack<Character> stack) {
+        if(stack.isEmpty()) {
+            return false;
+        }
+        if(stack.peek() == '(') {
+            return false;
+        }
+
+        if(map.get(c) <= map.get(stack.peek())) {
+            return true;
+        }
+        return false;
+    }
+
+    public static String infixToPostfix(String A) {
+        HashMap<Character, Integer> map = new HashMap<>();
+        map.put('^',2);
+        map.put('/',1);
+        map.put('*',1);
+        map.put('+',0);
+        map.put('-',0);
+        Stack<Character> stack = new Stack<>();
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<A.length(); i++) {
+            char c = A.charAt(i);
+            if(c == '(' || c == ')' || c == '+' || c == '-'
+                || c == '*' || c == '/' || c == '^') {
+
+                if(c == ')') {
+                    while(stack.peek()!='(') {
+                        sb.append(stack.pop());
+                    }
+                    stack.pop();
+                }
+                else if ( c == '(') {
+                    stack.push(c);
+                }
+                else {
+                    // Pop higher precedence operators
+                    while(lowerPrecedence(map, c, stack)) {
+                        sb.append(stack.pop());
+                    }
+                    stack.push(c);
+                }
+            }
+            else {
+                sb.append(c);
+            }
+        }
+        while(!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        return sb.toString();
+    }
+
     public static void main(String[] args) {
         //Build Stack
         /*Stacks.Stack myStack = new Stacks.Stack();
@@ -688,10 +744,14 @@ public class StackProblems {
         /*System.out.println(sortListUsingTwoStacks(Arrays.asList(5,2,4,1,7,1)));*/
 
         // Compare expression
-//        System.out.println(compareExpressions("(a+b-(c+(-d+e-f)))", "a+b-c+d-e+f")); // +a+b-c+d-e+f
-//        System.out.println(compareExpressions("-a-b-c", "-(a+b+c)"));
-//        System.out.println(compareExpressions("a-b-(c-d)", "a-b-c-d"));
-        System.out.println(compareExpressions("-(a-(-z-(b-(c+t)-x)+l)-q)", "-a+l-b-(z-(c+t)-x-q)"));
+        /*System.out.println(compareExpressions("(a+b-(c+(-d+e-f)))", "a+b-c+d-e+f")); // +a+b-c+d-e+f
+        System.out.println(compareExpressions("-a-b-c", "-(a+b+c)"));
+        System.out.println(compareExpressions("a-b-(c-d)", "a-b-c-d"));
+        System.out.println(compareExpressions("-(a-(-z-(b-(c+t)-x)+l)-q)", "-a+l-b-(z-(c+t)-x-q)"));*/
+
+        // Infix to Postfix
+        System.out.println(infixToPostfix("a+b*(c^d-e)^(f+g*h)-i")); // abcd^e-fgh*+^*+i-
+        System.out.println(infixToPostfix("a+b*c"));
     }
 
 }
