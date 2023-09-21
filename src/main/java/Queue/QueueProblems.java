@@ -169,6 +169,36 @@ public class QueueProblems {
         return A;
     }
 
+    public static String firstNonRepeatingElements(String A) {
+        StringBuffer sb = new StringBuffer();
+        HashMap<Character, Integer> map = new HashMap<>();
+        Queue<Character> queue = new LinkedList<>();
+
+        for(int i=0; i<A.length(); i++) {
+            char curr = A.charAt(i);
+            map.put(curr, map.getOrDefault(curr, 0)+1);
+            queue.add(curr);
+
+            while(!queue.isEmpty()) {
+                if(map.get(queue.peek())==1) {
+                    break;
+                }
+                else {
+                    queue.remove();
+                }
+            }
+
+            if(queue.isEmpty()){
+                sb.append('#');
+            }
+            else {
+                sb.append(queue.peek());
+            }
+        }
+
+        return sb.toString();
+    }
+
     public static void main(String[] args) {
 
         //Sliding Window Maximum Using Deque
@@ -181,7 +211,12 @@ public class QueueProblems {
         /*System.out.println(reverseElements(new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5)), 3));*/
 
         // Get first N Integers
-        System.out.println(getFirstNIntegers(20));
+        /*System.out.println(getFirstNIntegers(20));*/
+
+        // First non repeating characters
+        System.out.println(firstNonRepeatingElements("iergxwhddh"));
+        System.out.println(firstNonRepeatingElements("abadbc"));
+        System.out.println(firstNonRepeatingElements("abcabc"));
 
     }
 }
