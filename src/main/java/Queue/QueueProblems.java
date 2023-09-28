@@ -199,6 +199,36 @@ public class QueueProblems {
         return sb.toString();
     }
 
+    private static int minMaxSumSubarrays(ArrayList<Integer> A, int B) {
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder());
+        int mod = (int) Math.pow(10, 9) + 7;
+        for(int i=0; i<B; i++) {
+            minHeap.add(A.get(i));
+            maxHeap.add(A.get(i));
+        }
+
+        int ans = (int)(((long)minHeap.peek() + maxHeap.peek())%mod);
+        if(ans<0) {
+            ans+=mod;
+        }
+
+        for(int i=B; i<A.size(); i++) {
+            minHeap.remove(A.get(i-B));
+            maxHeap.remove(A.get(i-B));
+            minHeap.add(A.get(i));
+            maxHeap.add(A.get(i));
+            ans = (int)(((long)ans + minHeap.peek() + maxHeap.peek())%mod);
+            if(ans<0) {
+                ans+=mod;
+            }
+        }
+
+        return ans;
+    }
+
+
+
     public static void main(String[] args) {
 
         //Sliding Window Maximum Using Deque
@@ -214,9 +244,13 @@ public class QueueProblems {
         /*System.out.println(getFirstNIntegers(20));*/
 
         // First non repeating characters
-        System.out.println(firstNonRepeatingElements("iergxwhddh"));
+        /*System.out.println(firstNonRepeatingElements("iergxwhddh"));
         System.out.println(firstNonRepeatingElements("abadbc"));
-        System.out.println(firstNonRepeatingElements("abcabc"));
+        System.out.println(firstNonRepeatingElements("abcabc"));*/
+
+        // Sum of min and max in all subarrays
+//        System.out.println(minMaxSumSubarrays(new ArrayList<>(Arrays.asList(2, 5, -1, 7, -3, -1, -2)), 4));
+        System.out.println(minMaxSumSubarrays(new ArrayList<>(Arrays.asList(-1, -2, -4)), 2));
 
     }
 }

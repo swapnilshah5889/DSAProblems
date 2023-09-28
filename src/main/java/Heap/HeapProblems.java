@@ -1,4 +1,6 @@
 package Heap;
+import org.checkerframework.checker.units.qual.A;
+
 import javax.sound.midi.Soundbank;
 import java.util.*;
 
@@ -338,6 +340,33 @@ public class HeapProblems {
         return A.get(q.peek().i).get(q.peek().j);
     }
 
+    public static int ans;
+    public static void subsequence (int nums[], PriorityQueue<Integer> minheap, int nums2[],
+                                    int index, int k, int sum) {
+        if(index >= nums.length) {
+            return;
+        }
+        if(k==1) {
+            sum += nums[index];
+            minheap.add(nums2[index]);
+            ans = Math.max(ans, sum*minheap.peek());
+            minheap.remove(nums2[index]);
+        }
+
+        minheap.add(nums2[index]);
+        for(int i=index+1; i<nums.length; i++) {
+            subsequence(nums, minheap, nums2, i, k-1, sum+nums[index]);
+        }
+        minheap.remove(nums2[index]);
+    }
+
+    public static int maxSubsequenceScore (int[] nums, int[] nums2,  int k) {
+        ans = Integer.MIN_VALUE;
+        for(int i=0; i<=nums.length-k; i++)
+            subsequence(nums, new PriorityQueue<>(), nums2, i, k, 0);
+        return ans;
+    }
+
     public static void main(String[] args) {
 
         /*List<Integer> list  = Arrays.asList(2,4,5,11,6,7,8,20,12,1,3);
@@ -382,13 +411,16 @@ public class HeapProblems {
         /*System.out.println(bthSmallestFraction(new ArrayList<Integer>(List.of(1,2,3,5)), 3));*/
 
         // Bth Smallest Element in Sorted Matrix
-        ArrayList<ArrayList<Integer>> A = new ArrayList<>(
+        /*ArrayList<ArrayList<Integer>> A = new ArrayList<>(
                 List.of(
                         new ArrayList<>(List.of(9, 11, 15)),
                         new ArrayList<>(List.of(10, 15, 17))
                 )
         );
-        System.out.println(bthSmallestElement(A, 6));
+        System.out.println(bthSmallestElement(A, 6));*/
+
+        // Maximum subsequence score
+        System.out.println(maxSubsequenceScore(new int[]{1,3,3,2}, new int[]{2,1,3,4},3));
 
     }
 

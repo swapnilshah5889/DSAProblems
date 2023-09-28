@@ -530,6 +530,79 @@ public class BinarySearch {
         return A[startPoint];
     }
 
+    public static int binarySearch(ArrayList<Integer> A, int B, int l, int r, int d) {
+        if(l<0 || r>=A.size()) {
+            return -1;
+        }
+        int mid = (l+r) / 2;
+        while(l<=r) {
+
+            if(A.get(mid) == B) {
+                return mid;
+            }
+            // Increasing order
+            else if(d == 0) {
+                if(A.get(mid) > B) {
+                    r=mid-1;
+                }
+                else {
+                    l=mid+1;
+                }
+            }
+            // Decreasing order
+            else {
+                if(A.get(mid) > B) {
+                    l=mid+1;
+                }
+                else {
+                    r=mid-1;
+                }
+            }
+            mid = (l+r)/2;
+        }
+        if(mid<0 || mid>=A.size())
+            return -1;
+        return A.get(mid)==B? mid : -1;
+    }
+
+    public static int findBitonicElement(ArrayList<Integer> A, int B) {
+        int l=0, r=A.size()-1;
+        int mid = (l+r)/2;
+        while(l<r) {
+            if(mid==0) {
+                if(A.get(mid+1)>A.get(mid)) {
+                    mid = mid + 1;
+                }
+                break;
+            }
+            else if(mid == A.size()-1) {
+                if(A.get(mid-1)>A.get(mid)) {
+                    mid = mid-1;
+                }
+                break;
+            }
+            // target found
+            else if(A.get(mid-1) < A.get(mid) && A.get(mid+1) < A.get(mid)) {
+                break;
+            }
+            // Increasing sequence
+            else if(A.get(mid-1) < A.get(mid) && A.get(mid+1) > A.get(mid)) {
+                l=mid+1;
+            }
+            //
+            else {
+                r=mid-1;
+            }
+
+            mid = (l+r)/2;
+        }
+        int ans = binarySearch(A, B, 0, mid, 0);
+        if(ans == -1) {
+            ans = binarySearch(A, B, mid, A.size()-1, 1);
+        }
+        return ans;
+    }
+
     public static void main(String args[]){
 
         //Find element in rotated array
@@ -590,6 +663,11 @@ public class BinarySearch {
         /*System.out.println(findMinimumElementII(new int[]{1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1}));*/
 
         //Search for element in a rotated sorted array containing duplicate elements
-        System.out.println(findSmallestElementII(new int[]{2,2,3,3,4,5,5,5,6,6,7,7,8,9,9,11,0,0,1,2}, 12));
+        /*System.out.println(findSmallestElementII(new int[]{2,2,3,3,4,5,5,5,6,6,7,7,8,9,9,11,0,0,1,2}, 12));*/
+
+        // Search in bitonic array
+        System.out.println(findBitonicElement(new ArrayList<>(List.of(1,2,5,6,15,14,12,9,8,5,3,1)), 9));
+        System.out.println(findBitonicElement(new ArrayList<>(List.of(3, 9, 10, 20, 3, 1)), 9));
+        System.out.println(findBitonicElement(new ArrayList<>(List.of(5, 7, 10, 3, 2, 1)), 9));
     }
 }
