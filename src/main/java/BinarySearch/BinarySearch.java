@@ -603,6 +603,92 @@ public class BinarySearch {
         return ans;
     }
 
+    public static int matrixMedian(ArrayList<ArrayList<Integer>> A) {
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+
+        for(int i=0; i<A.size(); i++) {
+            min = Math.min(min, A.get(i).get(0));
+            max = Math.max(max, A.get(i).get(A.get(0).size()-1));
+        }
+
+        int goal = (A.size()*A.get(0).size())/2;
+        int mid = (min+max)/2;
+        while(min<max) {
+            int total = 0;
+            for(int i=0;i<A.size(); i++) {
+                for(int j=0;j<A.size(); j++) {
+                    if(A.get(i).get(j)<mid) {
+                        total++;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+
+            if(total == goal) {
+                break;
+            }
+            else if(total<goal) {
+                min = mid+1;
+            }
+            else {
+                max = mid;
+            }
+
+            mid = (min+max)/2;
+
+        }
+
+        System.out.println(min);
+        System.out.println(max);
+
+        return mid;
+    }
+
+    public static int kthElement(final List<Integer> A, int B) {
+        int max = Integer.MIN_VALUE;
+        int min = Integer.MAX_VALUE;
+        for(int i : A) {
+            min = Math.min(min, i);
+            max = Math.max(max, i);
+        }
+
+        int mid = (min+max)/2;
+        while(min<max) {
+            System.out.println(min+" - "+mid+" - "+max);
+            int count = 0;
+            for(int i=0; i<A.size(); i++) {
+                if(A.get(i)<=mid) {
+                    count++;
+                }
+            }
+            System.out.println("Count: "+count);
+            if(count == B) {
+                break;
+            }
+            else if(count < B) {
+                min = mid+1;
+            }
+            else {
+                max = mid;
+            }
+
+            mid = (min+max)/2;
+
+        }
+        int ans = Integer.MIN_VALUE;
+        for(int i=0;i<A.size(); i++) {
+            if(A.get(i)>ans && A.get(i)<=mid) {
+                ans = A.get(i);
+            }
+        }
+
+        return ans;
+    }
+
+
     public static void main(String args[]){
 
         //Find element in rotated array
@@ -666,8 +752,18 @@ public class BinarySearch {
         /*System.out.println(findSmallestElementII(new int[]{2,2,3,3,4,5,5,5,6,6,7,7,8,9,9,11,0,0,1,2}, 12));*/
 
         // Search in bitonic array
-        System.out.println(findBitonicElement(new ArrayList<>(List.of(1,2,5,6,15,14,12,9,8,5,3,1)), 9));
+        /*System.out.println(findBitonicElement(new ArrayList<>(List.of(1,2,5,6,15,14,12,9,8,5,3,1)), 9));
         System.out.println(findBitonicElement(new ArrayList<>(List.of(3, 9, 10, 20, 3, 1)), 9));
-        System.out.println(findBitonicElement(new ArrayList<>(List.of(5, 7, 10, 3, 2, 1)), 9));
+        System.out.println(findBitonicElement(new ArrayList<>(List.of(5, 7, 10, 3, 2, 1)), 9));*/
+
+        // Matrix Median
+        /*ArrayList<ArrayList<Integer>> A = new ArrayList<>();
+        A.add(new ArrayList<>(Arrays.asList(1,3,7)));
+        A.add(new ArrayList<>(Arrays.asList(2,6,9)));
+        A.add(new ArrayList<>(Arrays.asList(3,6,9)));
+        System.out.println(matrixMedian(A));*/
+
+        // Find kth smallest element
+        System.out.println(kthElement(new ArrayList<>(Arrays.asList(74,90,85,58,69,77,90,85,18,36)), 1));
     }
 }
