@@ -466,12 +466,10 @@ public class HeapProblems {
         );
         System.out.println(bthSmallestElement(A, 6));*/
 
-        System.out.println(maximumSubsequenceScore(new int[]{23,16,20,7,3}, new int[]{19,21,22,22,12}, 3));
-        System.out.println(maximumSubsequenceScore(new int[]{4,2,3,1,1}, new int[]{7,5,10,9,6}, 1));
-
 
         // Maximum subsequence score
-        System.out.println(maxSubsequenceScore(new int[]{1,3,3,2}, new int[]{2,1,3,4},3));
+        System.out.println(maximumSubsequenceScore(new int[]{23,16,20,7,3}, new int[]{19,21,22,22,12}, 3));
+        System.out.println(maximumSubsequenceScore(new int[]{4,2,3,1,1}, new int[]{7,5,10,9,6}, 1));
 
     }
 
