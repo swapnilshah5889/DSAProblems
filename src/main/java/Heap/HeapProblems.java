@@ -338,6 +338,33 @@ public class HeapProblems {
         return A.get(q.peek().i).get(q.peek().j);
     }
 
+    public static int ans;
+    public static void subsequence (int nums[], PriorityQueue<Integer> minheap, int nums2[],
+                                    int index, int k, int sum) {
+        if(index >= nums.length) {
+            return;
+        }
+        if(k==1) {
+            sum += nums[index];
+            minheap.add(nums2[index]);
+            ans = Math.max(ans, sum*minheap.peek());
+            minheap.remove(nums2[index]);
+        }
+
+        minheap.add(nums2[index]);
+        for(int i=index+1; i<nums.length; i++) {
+            subsequence(nums, minheap, nums2, i, k-1, sum+nums[index]);
+        }
+        minheap.remove(nums2[index]);
+    }
+
+    public static int maxSubsequenceScore (int[] nums, int[] nums2,  int k) {
+        ans = Integer.MIN_VALUE;
+        for(int i=0; i<=nums.length-k; i++)
+            subsequence(nums, new PriorityQueue<>(), nums2, i, k, 0);
+        return ans;
+    }
+
     public class NumPair {
         int value;
         int index;
@@ -441,6 +468,10 @@ public class HeapProblems {
 
         System.out.println(maximumSubsequenceScore(new int[]{23,16,20,7,3}, new int[]{19,21,22,22,12}, 3));
         System.out.println(maximumSubsequenceScore(new int[]{4,2,3,1,1}, new int[]{7,5,10,9,6}, 1));
+
+
+        // Maximum subsequence score
+        System.out.println(maxSubsequenceScore(new int[]{1,3,3,2}, new int[]{2,1,3,4},3));
 
     }
 
