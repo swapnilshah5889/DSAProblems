@@ -688,6 +688,92 @@ public class BinarySearch {
         return ans;
     }
 
+    public static int findPotionIndex(int[] potions, int success) {
+        /*for(long i:potions) {
+            System.out.print(i+" ");
+        }
+        System.out.println();*/
+        int l=0, r=potions.length-1;
+        int mid = (l+r) / 2;
+        while(l<r) {
+
+            // Edge case
+            if(mid == potions.length-1) {
+                if(potions[mid]<success) {
+                    return potions.length;
+                }
+                else {
+                    return potions.length - 1;
+                }
+            }
+
+            // Target found
+            if(potions[mid]<success && potions[mid+1]>=success) {
+                break;
+            }
+            // Right
+            else if(potions[mid] >= success) {
+                r=mid;
+            }
+            // Left
+            else {
+                l = mid+1;
+            }
+            mid = (l+r)/2;
+        }
+        if(potions[mid] >= success) {
+            mid--;
+        }
+        return mid;
+    }
+    public static int[] successfulPairs(int[] spells, int[] potions, long success) {
+        Arrays.sort(potions);
+        int[] ans = new int[spells.length];
+        for(int k=0; k<spells.length; k++) {
+//            System.out.println("Spell: "+spells[k]);
+            int target = (int) Math.ceil((double)success/spells[k]);
+            int index = findPotionIndex(potions, target);
+            ans[k] = potions.length - index - 1;
+        }
+
+        for(int i : ans) {
+            System.out.print(i+" ");
+        }
+        System.out.println();
+        return ans;
+    }
+
+    public static long getTotalHours(int[] piles, int capactiy) {
+        long sum = 0;
+        for(int i : piles) {
+            sum += (int)Math.ceil((double) i/capactiy);
+        }
+        return sum;
+    }
+
+    public static int minEatingSpeed(int[] piles, int h) {
+        Arrays.sort(piles);
+        int min=0, max=piles[0];
+        for(int i=1; i<piles.length; i++) {
+            max = Math.max(piles[i], max);
+        }
+
+        int mid = (min+max)/2;
+        while(min<max) {
+            long hours = getTotalHours(piles, mid);
+            System.out.println(min+" - "+mid+" - "+max+" ==> "+hours);
+
+            if(hours > h) {
+                min=mid+1;
+            }
+            else {
+                max=mid;
+            }
+            mid = (min+max)/2;
+        }
+
+        return mid;
+    }
 
     public static void main(String args[]){
 
@@ -764,6 +850,17 @@ public class BinarySearch {
         System.out.println(matrixMedian(A));*/
 
         // Find kth smallest element
-        System.out.println(kthElement(new ArrayList<>(Arrays.asList(74,90,85,58,69,77,90,85,18,36)), 1));
+        /*System.out.println(kthElement(new ArrayList<>(Arrays.asList(74,90,85,58,69,77,90,85,18,36)), 1));*/
+
+        // Successful pairs
+        /*successfulPairs(new int[]{5,1,3}, new int[]{1,2,3,4,5}, 7);
+        successfulPairs(new int[]{3,1,2}, new int[]{8,5,8}, 16);
+        successfulPairs(new int[]{15,8,19}, new int[]{38,36,23}, 328);*/
+
+        // Minimum Hours to eat the Piles
+        System.out.println(minEatingSpeed(new int[]{3,6,7,11}, 8));
+        System.out.println(minEatingSpeed(new int[]{30,11,23,4,20}, 5));
+        System.out.println(minEatingSpeed(new int[]{312884470}, 312884469));
+        System.out.println(minEatingSpeed(new int[]{805306368,805306368,805306368}, 1000000000));
     }
 }
