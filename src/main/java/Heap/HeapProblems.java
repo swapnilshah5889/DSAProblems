@@ -1,6 +1,4 @@
 package Heap;
-import org.checkerframework.checker.units.qual.A;
-
 import javax.sound.midi.Soundbank;
 import java.util.*;
 
@@ -367,6 +365,55 @@ public class HeapProblems {
         return ans;
     }
 
+    public class NumPair {
+        int value;
+        int index;
+        NumPair(int value, int index) {
+            this.value = value;
+            this.index = index;
+        }
+    }
+    public static int maximumSubsequenceScore(int[] nums1, int[] nums2, int k) {
+        Integer[][] nums = new Integer[nums1.length][2];
+        for(int i=0; i<nums1.length; i++) {
+            nums[i][0] = nums2[i];
+            nums[i][1] = i;
+        }
+
+        Comparator<Integer[]> c = new Comparator<Integer[]>() {
+            @Override
+            public int compare(Integer[] o1, Integer[] o2) {
+                return o2[0].compareTo(o1[0]);
+            }
+        };
+        Arrays.sort(nums, c);
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        int sum = 0;
+        for(int i=0; i<k; i++) {
+            sum += nums1[nums[i][1]];
+            pq.add(nums1[nums[i][1]]);
+        }
+
+        int ans = sum*nums[k-1][0];
+//        System.out.println(ans);
+        for(int i=k; i<nums.length; i++) {
+            int nextVal = nums1[nums[i][1]];
+
+            if(nextVal <= pq.peek()) {
+                continue;
+            }
+
+            Integer prevVal = pq.remove();
+            pq.add(nextVal);
+            sum -= prevVal;
+            sum += nextVal;
+            int newAns = sum * nums[i][0];
+            ans = Math.max(ans, newAns);
+        }
+
+        return ans;
+    }
+
     public static void main(String[] args) {
 
         /*List<Integer> list  = Arrays.asList(2,4,5,11,6,7,8,20,12,1,3);
@@ -419,8 +466,10 @@ public class HeapProblems {
         );
         System.out.println(bthSmallestElement(A, 6));*/
 
+
         // Maximum subsequence score
-        System.out.println(maxSubsequenceScore(new int[]{1,3,3,2}, new int[]{2,1,3,4},3));
+        System.out.println(maximumSubsequenceScore(new int[]{23,16,20,7,3}, new int[]{19,21,22,22,12}, 3));
+        System.out.println(maximumSubsequenceScore(new int[]{4,2,3,1,1}, new int[]{7,5,10,9,6}, 1));
 
     }
 

@@ -5,7 +5,7 @@ import com.sun.source.tree.Tree;
 import java.util.Arrays;
 import java.util.List;
 
-public class BinarySearchTree {
+public class    BinarySearchTree {
 
     public static void BSTInsertNode(TreeNode root, TreeNode child, int val){
         if(child==null) {
