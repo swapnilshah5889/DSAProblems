@@ -125,6 +125,59 @@ public class LeetCodePractice {
         return distinctElements.size();
     }
 
+
+    public static int checkPalindrome(String s, int l, int r, int count) {
+        if(l>r || l==r) {
+            System.out.println(count);
+            return count;
+        }
+
+        char lChar = s.charAt(l);
+        char rChar = s.charAt(r);
+        if(lChar == rChar) {
+            return checkPalindrome(s, l+1, r-1, count);
+        }
+        else {
+            return Math.min(
+                    checkPalindrome(s, l+1, r, count+1),
+                    checkPalindrome(s, l, r-1, count+1)
+            );
+        }
+
+    }
+
+    public static int checkPalindrome(String s, int l, int r, int count, Integer[][] dp) {
+        if(l>r || l==r) {
+            dp[l][r] = count;
+            System.out.println(count);
+        }
+
+        if(dp[l][r] == null) {
+            char lChar = s.charAt(l);
+            char rChar = s.charAt(r);
+            int minCount;
+            if(lChar == rChar) {
+                minCount = checkPalindrome(s, l+1, r-1, count, dp);
+            }
+            else {
+                minCount = Math.min(
+                        checkPalindrome(s, l+1, r, count+1, dp),
+                        checkPalindrome(s, l, r-1, count+1, dp)
+                );
+            }
+            dp[l][r] = minCount;
+        }
+
+        return dp[l][r];
+
+    }
+
+    public static int minimumInsertions(String s) {
+        Integer[][] dp = new Integer[s.length()][s.length()];
+        return checkPalindrome(s, 0, s.length()-1, 0);
+//        return checkPalindrome(s, 0, s.length()-1, 0, dp);
+    }
+
     public static void main(String[] args) {
 
         // Find first occurrence of a substring
@@ -142,8 +195,11 @@ public class LeetCodePractice {
         System.out.println(rc.ping(5952));*/
 
         // Distinct Elements
-        System.out.println(distinctElements(new Integer[]{5,5,5,5,1,7}, 2));
-        System.out.println(distinctElements(new Integer[]{1,5,9}, 2));
+        /*System.out.println(distinctElements(new Integer[]{5,5,5,5,1,7}, 2));
+        System.out.println(distinctElements(new Integer[]{1,5,9}, 2));*/
+
+        // Minimum Insertions
+        System.out.println(minimumInsertions("mynameisswapnilshah"));
 
     }
 
