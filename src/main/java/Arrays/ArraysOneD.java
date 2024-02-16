@@ -320,6 +320,42 @@ public class ArraysOneD {
         return ans;
     }
 
+    public static ArrayList<Integer> removeDuplicates(ArrayList<Integer> list) {
+
+        int prev = 0;
+        Integer prevVal = null;
+        for(int i=0; i<list.size(); i++) {
+            Integer currVal = list.get(i);
+            if(prevVal != currVal) {
+                list.set(prev, currVal);
+                prev++;
+                prevVal = currVal;
+            }
+        }
+        System.out.println(prev);
+        return list;
+    }
+
+    public static ArrayList<Integer> removeDuplicatesII(ArrayList<Integer> list) {
+        int count = 0;
+        int prev = 0;
+        Integer prevVal = null;
+        for(int i=0; i<list.size(); i++) {
+            Integer currVal = list.get(i);
+            if(prevVal != currVal) {
+                list.set(prev, currVal);
+                prev++;
+                prevVal = currVal;
+                count = 1;
+            }
+            else if(count < 2) {
+                prev++;
+                count++;
+            }
+        }
+        return list;
+    }
+
     public static void main(String[] args) {
 
         //Rain water trapping
@@ -352,7 +388,10 @@ public class ArraysOneD {
         System.out.println(oddEvenSpecialIndex(new ArrayList<>(Arrays.asList(1, 1, 1))));*/
 
         //Find product for every index in array where it has product of all elements except for that index
-        System.out.println(productArray(new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5))));
+        /*System.out.println(productArray(new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5))));*/
+
+        // Remove duplicates in place
+        System.out.println(removeDuplicatesII(new ArrayList<>(Arrays.asList(1,1,1,2,2,2,2,2,2,3,4,5))));
 
     }
 }
