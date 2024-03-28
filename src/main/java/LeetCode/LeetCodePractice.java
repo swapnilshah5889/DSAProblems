@@ -178,6 +178,7 @@ public class LeetCodePractice {
 //        return checkPalindrome(s, 0, s.length()-1, 0, dp);
     }
 
+
     public static void main(String[] args) {
 
         // Find first occurrence of a substring
@@ -199,7 +200,7 @@ public class LeetCodePractice {
         System.out.println(distinctElements(new Integer[]{1,5,9}, 2));*/
 
         // Minimum Insertions
-        System.out.println(minimumInsertions("mynameisswapnilshah"));
+//        System.out.println(minimumInsertions("mynameisswapnilshah"));
 
     }
 

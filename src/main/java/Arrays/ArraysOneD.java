@@ -1,5 +1,7 @@
 package Arrays;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.*;
 
 public class ArraysOneD {
@@ -342,7 +344,7 @@ public class ArraysOneD {
         Integer prevVal = null;
         for(int i=0; i<list.size(); i++) {
             Integer currVal = list.get(i);
-            if(prevVal != currVal) {
+            if(!Objects.equals(prevVal, currVal)) {
                 list.set(prev, currVal);
                 prev++;
                 prevVal = currVal;
@@ -354,6 +356,152 @@ public class ArraysOneD {
             }
         }
         return list;
+    }
+
+    public static void reversePartList(ArrayList<Integer> list, int start, int end) {
+
+        if(start>=list.size() || end>=list.size() || start<0 || end<0) {
+            return;
+        }
+
+        while(start<end) {
+            int temp = list.get(end);
+            list.set(end, list.get(start));
+            list.set(start, temp);
+            start++;
+            end--;
+        }
+    }
+    public static ArrayList<Integer> rotateArrayLeft(ArrayList<Integer> list, int k) {
+        k = k % list.size();
+        reversePartList(list, 0,k-1);
+        reversePartList(list, k,list.size()-1);
+        reversePartList(list, 0, list.size()-1);
+        return list;
+    }
+
+
+    public static ArrayList<Integer> rotateArrayRight(ArrayList<Integer> list, int k) {
+        k = list.size() - k;
+        reversePartList(list, 0,k-1);
+        reversePartList(list, k,list.size()-1);
+        reversePartList(list, 0, list.size()-1);
+        return list;
+    }
+
+    public static int[] repeatAndMissingNumber(final int[] A) {
+        int num = A[0]^1;
+        for(int i=1; i<A.length; i++) {
+            num = num^A[i];
+            num = num^(i+1);
+        }
+
+        int pos=0;
+        while(num>0) {
+            if(num%2 == 1) {
+                break;
+            }
+            pos++;
+            num /=2;
+        }
+        Integer g1 = null, g2 = null;
+        for(int i=1; i<=A.length; i++) {
+            if( ((A[i-1]>>pos) & 1) == 1 ) {
+                if(g1 == null) g1 = A[i-1];
+                else g1 = g1^A[i-1];
+            }
+            else {
+                if(g2 == null) g2 = A[i-1];
+                else g2 = g2^A[i-1];
+            }
+
+            if( ((i>>pos) & 1) == 1 ) {
+                if(g1 == null) g1 = i;
+                else g1 = g1^i;
+            }
+            else {
+                if(g2 == null) g2 = i;
+                else g2 = g2^i;
+            }
+        }
+
+        for(int i=0; i<A.length; i++) {
+            if(A[i] == g1) {
+                return new int[]{g1,g2};
+            }
+            else if(A[i] == g2) {
+                return new int[]{g2,g1};
+            }
+        }
+        return new int[]{g1,g2};
+    }
+
+    public static int inversions;
+    public static void mergeSort(long arr[], int start, int end) {
+        // base case
+        if(start >= end) return;
+        int mid = (start+end)/2;
+        // left sort
+        mergeSort(arr, start, mid);
+        // right sort
+        mergeSort(arr, mid+1, end);
+        // merge sorted arrays
+        merge(arr, start, mid, end);
+    }
+
+    public static void merge(long[] arr, int start, int mid, int end) {
+        long temp[] = new long[end-start+1];
+        int i=start, j=mid+1;
+        int index=0;
+        int totalInv = 0;
+        int p=j;
+        while(i<=mid && j<=end) {
+            while(p<=end && arr[i] > 2*arr[p]) {
+                totalInv++;
+                p++;
+            }
+            if(arr[i] <= arr[j]) {
+                temp[index] = arr[i];
+                i++;
+                inversions+=totalInv;
+            }
+            else {
+                temp[index] = arr[j];
+                j++;
+            }
+            index++;
+        }
+
+        while(i<=mid) {
+
+            while(p<=end && arr[i] > 2*arr[p]) {
+                totalInv++;
+                p++;
+            }
+
+            temp[index] = arr[i];
+            i++;
+            index++;
+            inversions += totalInv;
+        }
+
+        while(j<=end) {
+            temp[index] = arr[j];
+            j++;
+            index++;
+        }
+
+        for(i=0, j=start; i<temp.length; i++, j++) {
+            arr[j] = temp[i];
+        };
+    }
+
+    public static int reversePairs(int[] nums) {
+        inversions=0;
+        long[] arr = new long[nums.length];
+        for(int i=0; i<arr.length; i++) arr[i] = nums[i];
+        mergeSort(arr, 0, nums.length-1);
+        return inversions;
     }
 
     public static void main(String[] args) {
@@ -391,7 +539,17 @@ public class ArraysOneD {
         /*System.out.println(productArray(new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5))));*/
 
         // Remove duplicates in place
-        System.out.println(removeDuplicatesII(new ArrayList<>(Arrays.asList(1,1,1,2,2,2,2,2,2,3,4,5))));
+        /*System.out.println(removeDuplicatesII(new ArrayList<>(Arrays.asList(1,1,1,2,2,2,2,2,2,3,4,5))));*/
+
+        // Rotate array by k steps
+        /*System.out.println(rotateArrayRight(new ArrayList<>(Arrays.asList(1,2,3,4,5,6,7)), 2));*/
+
+        // Find missing and repeating number
+        /*int[] ans = repeatAndMissingNumber(new int[]{1,3,2,5,3});
+        System.out.println(ans[0]+","+ans[1]);*/
+
+        // Find Inversions II
+        System.out.println(reversePairs(new int[]{5,4,3,2,1}));
 
     }
 }
