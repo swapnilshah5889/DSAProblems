@@ -675,6 +675,52 @@ public class LinkedList {
         return firstHead;
     }
 
+    private static ListNode merge2(ListNode n1, ListNode n2) {
+        ListNode temp = null;
+        ListNode newHead = null;
+        while (n1 != null && n2 != null) {
+            ListNode curr;
+            if(n1.val <= n2.val) {
+                curr = n1;
+                n1 = n1.down;
+            }
+            else {
+                curr = n2;
+                n2 = n2.down;
+            }
+            if(temp == null) {
+                newHead = curr;
+                temp = curr;
+            } else {
+                temp.down = curr;
+                temp = temp.down;
+            }
+        }
+        if (n1!=null) {
+            temp.down = n1;
+        }
+        else {
+            temp.down = n2;
+        }
+
+        return newHead;
+    }
+
+    private static ListNode flatten2(ListNode root) {
+        // Your code here
+        if(root == null || root.right == null) return root;
+        ListNode n1 = root;
+        ListNode n2 = root.right;
+        n1.right = null;
+        while(n2!=null) {
+            ListNode curr = n2;
+            n2 = n2.right;
+//            curr.right = null;
+            n1 = merge2(n1, curr);
+        }
+        return n1;
+    }
+
     public static void main(String[] args) {
 
         // Reorder list
@@ -749,8 +795,36 @@ public class LinkedList {
         // Partition List
         /*Node head = getLLFromArray(new int[] {1, 4, 3, 2, 5, 2});
         partitionList(head, 3);*/
-        Node head = getLLFromArray(new int[] {1, 2, 3, 1, 3});
-        partitionList(head, 2);
+        /*Node head = getLLFromArray(new int[] {1, 2, 3, 1, 3});
+        partitionList(head, 2);*/
+
+        // Flatten Linked List GFG
+        ListNode n = new ListNode(5);
+        n.down = new ListNode(7);
+        n.down.down = new ListNode(8);
+        n.down.down.down = new ListNode(30);
+
+        n.right = new ListNode(10);
+        n.right.down = new ListNode(20);
+
+        n.right.right = new ListNode(19);
+        n.right.right.down = new ListNode(22);
+        n.right.right.down.down = new ListNode(50);
+
+        n.right.right.right = new ListNode(28);
+        n.right.right.right.down = new ListNode(35);
+        n.right.right.right.down.down = new ListNode(40);
+        n.right.right.right.down.down.down = new ListNode(45);
+        ListNode flatNode = flatten2(n);
+        while(flatNode!=null) {
+            System.out.print(flatNode.val);
+            if(flatNode.down!=null) {
+                System.out.print("->");
+            }
+            flatNode = flatNode.down;
+        }
+        System.out.println();
+
 
     }
 
