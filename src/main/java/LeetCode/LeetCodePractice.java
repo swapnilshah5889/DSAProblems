@@ -179,6 +179,109 @@ public class LeetCodePractice {
     }
 
 
+    public static String getNearestCity(String[] cities, int[] x, int[] y, String city) {
+        int index = -1;
+        for (int i = 0; i < cities.length; i++) {
+            if (city.equalsIgnoreCase(cities[i])) {
+                index = i;
+                break;
+            }
+        }
+        if (index == -1) {
+            return "NONE";
+        }
+        int currX = x[index];
+        int currY = y[index];
+        Integer minDist = null;
+        String closestCity = "NONE";
+        for (int i = 0; i < cities.length; i++) {
+            if (i != index && (x[i] == currX || y[i] == currY)) {
+                int dist = Math.abs(x[i] - currX) + Math.abs(y[i] - currY);
+                if (minDist == null || dist < minDist) {
+                    minDist = dist;
+                    closestCity = cities[i];
+                } else if (dist == minDist && cities[i].compareTo(closestCity) < 0) {
+                    closestCity = cities[i];
+                }
+            }
+        }
+        return closestCity;
+    }
+
+    public static List<String > solve(String[] cities, int[] x, int[] y, String[] queries) {
+        List<String> ans = new ArrayList<>();
+        for(String q : queries) ans.add(getNearestCity(cities, x, y, q));
+        return ans;
+    }
+
+    public static String getNearestCity(Map<Integer, List<String>> xMap, Map<Integer, List<String>> yMap, Map<String, int[]> cityMap, String city) {
+        if (!cityMap.containsKey(city)) {
+            return "NONE";
+        }
+
+        int[] coords = cityMap.get(city);
+        int currX = coords[0];
+        int currY = coords[1];
+        Integer minDist = null;
+        String closestCity = "NONE";
+
+        List<String> sameX = xMap.get(currX);
+        List<String> sameY = yMap.get(currY);
+
+        if (sameX != null) {
+            for (String c : sameX) {
+                if (!c.equals(city)) {
+                    int[] cCoords = cityMap.get(c);
+                    int dist = Math.abs(cCoords[0] - currX) + Math.abs(cCoords[1] - currY);
+                    if (minDist == null || dist < minDist || (dist == minDist && c.compareTo(closestCity) < 0)) {
+                        minDist = dist;
+                        closestCity = c;
+                    }
+                }
+            }
+        }
+
+        if (sameY != null) {
+            for (String c : sameY) {
+                if (!c.equals(city)) {
+                    int[] cCoords = cityMap.get(c);
+                    int dist = Math.abs(cCoords[0] - currX) + Math.abs(cCoords[1] - currY);
+                    if (minDist == null || dist < minDist || (dist == minDist && c.compareTo(closestCity) < 0)) {
+                        minDist = dist;
+                        closestCity = c;
+                    }
+                }
+            }
+        }
+
+        return closestCity;
+    }
+
+    public static List<String> solve2(String[] cities, int[] x, int[] y, String[] queries) {
+        Map<Integer, List<String>> xMap = new HashMap<>();
+        Map<Integer, List<String>> yMap = new HashMap<>();
+        Map<String, int[]> cityMap = new HashMap<>();
+
+        for (int i = 0; i < cities.length; i++) {
+            cityMap.put(cities[i], new int[]{x[i], y[i]});
+
+            xMap.putIfAbsent(x[i], new ArrayList<>());
+            xMap.get(x[i]).add(cities[i]);
+
+            yMap.putIfAbsent(y[i], new ArrayList<>());
+            yMap.get(y[i]).add(cities[i]);
+        }
+
+        List<String> ans = new ArrayList<>();
+        for (String q : queries) {
+            ans.add(getNearestCity(xMap, yMap, cityMap, q));
+        }
+
+        return ans;
+    }
+
+
+
     public static void main(String[] args) {
 
         // Find first occurrence of a substring
@@ -201,6 +304,29 @@ public class LeetCodePractice {
 
         // Minimum Insertions
 //        System.out.println(minimumInsertions("mynameisswapnilshah"));
+
+
+        System.out.println(solve(new String[]{"c1", "c2", "c3"}, new int[]{3,2,1}, new int[]{3,2,3}, new String[] {"c1", "c2", "c3"}));
+        System.out.println(solve2(new String[]{"c1", "c2", "c3"}, new int[]{3,2,1}, new int[]{3,2,3}, new String[] {"c1", "c2", "c3"}));
+
+        System.out.println(solve(new String[]{"fastcity", "bigbanana", "xyz"}, new int[]{23,23,23}, new int[]{1,10,20}, new String[] {"fastcity", "bigbanana", "xyz"}));
+        System.out.println(solve2(new String[]{"fastcity", "bigbanana", "xyz"}, new int[]{23,23,23}, new int[]{1,10,20}, new String[] {"fastcity", "bigbanana", "xyz"}));
+
+        System.out.println(solve(new String[]{"london", "warsaw", "hackerland"}, new int[]{1,10,20}, new int[]{1,10,10}, new String[] {"london", "warsaw", "hackerland"}));
+        System.out.println(solve2(new String[]{"london", "warsaw", "hackerland"}, new int[]{1,10,20}, new int[]{1,10,10}, new String[] {"london", "warsaw", "hackerland"}));
+
+
+        System.out.println(solve(
+                new String[]{"green", "apple", "blue", "red", "pink"},
+                new int[]{100,300,300,300,500},
+                new int[]{100,200,300,400,500},
+                new String[] {"green", "apple", "blue", "red", "pink"}));
+
+        System.out.println(solve2(
+                new String[]{"green", "apple", "blue", "red", "pink"},
+                new int[]{100,300,300,300,500},
+                new int[]{100,200,300,400,500},
+                new String[] {"green", "apple", "blue", "red", "pink"}));
 
     }
 

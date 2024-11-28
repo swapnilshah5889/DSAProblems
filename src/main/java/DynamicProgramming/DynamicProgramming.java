@@ -1795,7 +1795,57 @@ public class DynamicProgramming {
         return maxUncrossedLines(nums1,nums2, nums1.length-1, nums2.length-1, dp);
     }
 
+    public static int calculateDistance(int[][] dp, int[][] houseArr, int i, int j) {
+        int min = Integer.MAX_VALUE;
+        int prevDpRow = i-1;
+        for(; i<=j; i++) {
+            int distance = houseArr[i][j] + dp[prevDpRow][i-1];
+            min = Math.min(min, distance);
+        }
 
+        return min;
+    }
+
+    public static int allocateMailboxes(int[] houses, int k) {
+        int n = houses.length;
+        int houseArr[][] = new int[n][n];
+
+        for(int x=0; x<n-1; x++) {
+
+            int i = 0;
+            int j = x+1;
+            while(j < n) {
+                houseArr[i][j] = houses[j] - houses[i] + houseArr[i+1][j-1];
+                i++;
+                j++;
+            }
+        }
+
+        System.out.println("House Distances: ");
+        for(int[] a : houseArr) {
+            for(int b : a) System.out.print(b+" ");
+            System.out.println();
+        }
+
+        int[][] dp = new int[k][n];
+
+        for(int i=0; i<n; i++) dp[0][i] = houseArr[0][i];
+
+        for(int i=1; i<dp.length; i++) {
+            for(int j=i+1; j<dp[0].length; j++) {
+                int minDistance = calculateDistance(dp, houseArr, i, j);
+                dp[i][j] = minDistance;
+            }
+        }
+        System.out.println("DP Array: ");
+        for(int i=0; i<dp.length; i++) {
+            for (int j = 0; j < dp[0].length; j++) {
+                System.out.print(dp[i][j]+" ");
+            }
+            System.out.println();
+        }
+        return dp[dp.length-1][dp[0].length-1];
+    }
 
     public static void main(String[] args) {
 
@@ -2002,9 +2052,8 @@ public class DynamicProgramming {
         System.out.println(russianDollEnvelopes(A));*/
 
         // Matrix Chain Multiplication
-
-        ArrayList<Integer> A = new ArrayList<>(Arrays.asList(2,3,2,2,2,2));
-        System.out.println(matrixChainMultiplication(A));
+        /*ArrayList<Integer> A = new ArrayList<>(Arrays.asList(2,3,2,2,2,2));
+        System.out.println(matrixChainMultiplication(A));*/
 
         // Palindrom Partition
 //        System.out.println(palindromePartition("beebeeed"));
@@ -2025,6 +2074,9 @@ public class DynamicProgramming {
         int[] nums2 = new int[]{10,5,2,1,5,2};
         System.out.println(maxUncrossedLines(nums1, nums2));*/
 
+        // Allocate Mailboxes
+        allocateMailboxes(new int[]{1,4,8,10,20}, 3);
+        allocateMailboxes(new int[]{2,3,5,12,18}, 2);
     }
 
 
