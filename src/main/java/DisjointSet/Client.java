@@ -53,6 +53,10 @@ public class Client {
             System.out.println(rank.toString());
             System.out.println();
         }
+
+        public boolean sameComponent(int x, int y) {
+            return find(x) == find(y);
+        }
     }
 
     public static void main(String[] args) {
@@ -69,9 +73,12 @@ public class Client {
 
         System.out.println(set.find(7));
         System.out.println(set.find(5));
-        System.out.println(set.find(8));
-        System.out.println(set.find(6));
-
+        System.out.println(set.find(8)); // Will compress path for 8
         set.printSet();
+
+        System.out.println(set.sameComponent(4, 1)); // Will compress path for 4
+        set.printSet();
+
+        System.out.println(set.sameComponent(1, 8));
     }
 }
